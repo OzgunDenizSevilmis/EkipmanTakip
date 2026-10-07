@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   ActivityIndicator,
   ScrollView,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -35,6 +36,7 @@ function getLifecycleStatusLabel(
 
 export default function EquipmentDetailScreen({
   route,
+  navigation,
 }: EquipmentDetailScreenProps) {
   const { equipmentId } = route.params;
 
@@ -119,8 +121,26 @@ const { data: equipment, isLoading, error } = useQuery({
             {equipment.description || 'Açıklama bulunmuyor.'}
           </Text>
         </View>
-      </View>
+         </View>
+
+      <Pressable
+        style={({ pressed }) => [
+          styles.reserveButton,
+          pressed && styles.reserveButtonPressed,
+        ]}
+        onPress={() => {
+          navigation.navigate('ReservationForm', {
+            equipmentId: equipment.id,
+          });
+        }}
+      >
+        <Text style={styles.reserveButtonText}>
+          Rezervasyon Yap
+        </Text>
+      </Pressable>
     </ScrollView>
+
+    
   );
 }
 
@@ -217,5 +237,23 @@ const styles = StyleSheet.create({
     color: colors.error,
     fontSize: typography.body,
     textAlign: 'center',
+  },
+    reserveButton: {
+    minHeight: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    marginTop: spacing.lg,
+  },
+
+  reserveButtonPressed: {
+    backgroundColor: colors.primaryPressed,
+  },
+
+  reserveButtonText: {
+    color: colors.white,
+    fontSize: typography.body,
+    fontWeight: '700',
   },
 });
