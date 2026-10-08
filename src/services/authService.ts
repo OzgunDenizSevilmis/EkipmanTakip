@@ -55,4 +55,35 @@ async updatePassword(password: string) {
   ) {
     return supabase.auth.onAuthStateChange(callback);
   },
+  async getCurrentProfile() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    return {
+      data: null,
+      error: userError,
+    };
+  }
+
+  if (!user) {
+    return {
+      data: null,
+      error: new Error('Oturum açmış kullanıcı bulunamadı.'),
+    };
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, role')
+    .eq('id', user.id)
+    .single();
+
+  return {
+    data,
+    error,
+  };
+},
 };

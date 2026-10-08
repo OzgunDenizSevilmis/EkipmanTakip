@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
 import { MainTabs } from './MainTabs';
 import ReservationFormScreen from '../screens/app/ReservationFormScreen';
-
+import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
 
 export type AppStackParamList = {
   Main: undefined;
@@ -13,6 +13,7 @@ export type AppStackParamList = {
   ReservationForm: {
     equipmentId: string;
   };
+  AdminReservations: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -35,6 +36,11 @@ export function AppStack() {
   name="ReservationForm"
   component={ReservationFormScreen}
   options={{ title: 'Rezervasyon Oluştur' }}
+/>
+<Stack.Screen
+  name="AdminReservations"
+  component={AdminReservationsScreen}
+  options={{ title: 'Rezervasyon Yönetimi' }}
 />
     </Stack.Navigator>
   );

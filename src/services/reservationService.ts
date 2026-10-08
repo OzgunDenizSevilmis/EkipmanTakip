@@ -7,9 +7,8 @@ type CreateReservationInput = {
   purpose: string;
 };
 
-
 export const reservationService = {
-      async getMyReservations() {
+  async getMyReservations() {
     const {
       data: { user },
       error: userError,
@@ -29,76 +28,76 @@ export const reservationService = {
       };
     }
 
-const { data: reservations, error: reservationsError } = await supabase
-  .from('reservations')
-  .select(
-    `
-    id,
-    equipment_id,
-    user_id,
-    start_at,
-    end_at,
-    purpose,
-    status,
-    rejection_reason,
-    version,
-    created_at
-    `,
-  )
-  .eq('user_id', user.id)
-  .order('start_at', { ascending: false });
+    const { data: reservations, error: reservationsError } =
+      await supabase
+        .from('reservations')
+        .select(
+          `
+          id,
+          equipment_id,
+          user_id,
+          start_at,
+          end_at,
+          purpose,
+          status,
+          rejection_reason,
+          version,
+          created_at
+          `,
+        )
+        .eq('user_id', user.id)
+        .order('start_at', { ascending: false });
 
-if (reservationsError) {
-  return {
-    data: null,
-    error: reservationsError,
-  };
-}
+    if (reservationsError) {
+      return {
+        data: null,
+        error: reservationsError,
+      };
+    }
 
-const equipmentIds = [
-  ...new Set(
-    (reservations ?? [])
-      .map((reservation) => reservation.equipment_id)
-      .filter(Boolean),
-  ),
-];
+    const equipmentIds = [
+      ...new Set(
+        (reservations ?? [])
+          .map((reservation) => reservation.equipment_id)
+          .filter(Boolean),
+      ),
+    ];
 
-if (equipmentIds.length === 0) {
-  return {
-    data: reservations ?? [],
-    error: null,
-  };
-}
+    if (equipmentIds.length === 0) {
+      return {
+        data: reservations ?? [],
+        error: null,
+      };
+    }
 
-const { data: equipment, error: equipmentError } = await supabase
-  .from('equipment')
-  .select('id, name, code')
-  .in('id', equipmentIds);
+    const { data: equipment, error: equipmentError } = await supabase
+      .from('equipment')
+      .select('id, name, code')
+      .in('id', equipmentIds);
 
-if (equipmentError) {
-  return {
-    data: null,
-    error: equipmentError,
-  };
-}
+    if (equipmentError) {
+      return {
+        data: null,
+        error: equipmentError,
+      };
+    }
 
-const reservationsWithEquipment = (reservations ?? []).map(
-  (reservation) => ({
-    ...reservation,
-    equipment:
-      equipment?.find(
-        (item) => item.id === reservation.equipment_id,
-      ) ?? null,
-  }),
-);
+    const reservationsWithEquipment = (reservations ?? []).map(
+      (reservation) => ({
+        ...reservation,
+        equipment:
+          equipment?.find(
+            (item) => item.id === reservation.equipment_id,
+          ) ?? null,
+      }),
+    );
 
-return {
-  data: reservationsWithEquipment,
-  error: null,
-};
-
+    return {
+      data: reservationsWithEquipment,
+      error: null,
+    };
   },
-  
+
   async createReservation({
     equipmentId,
     startAt,
@@ -156,6 +155,109 @@ return {
     return {
       data,
       error: null,
+    };
+  },
+
+  async getAllReservations() {
+    const { data: reservations, error: reservationsError } =
+      await supabase
+        .from('reservations')
+        .select(
+          `
+          id,
+          equipment_id,
+          user_id,
+          start_at,
+          end_at,
+          purpose,
+          status,
+          rejection_reason,
+          version,
+          created_at
+          `,
+        )
+        .order('start_at', { ascending: false });
+
+    if (reservationsError) {
+      return {
+        data: null,
+        error: reservationsError,
+      };
+    }
+
+    const equipmentIds = [
+      ...new Set(
+        (reservations ?? [])
+          .map((reservation) => reservation.equipment_id)
+          .filter(Boolean),
+      ),
+    ];
+
+    if (equipmentIds.length === 0) {
+      return {
+        data: reservations ?? [],
+        error: null,
+      };
+    }
+
+    const { data: equipment, error: equipmentError } =
+      await supabase
+        .from('equipment')
+        .select('id, name, code')
+        .in('id', equipmentIds);
+
+    if (equipmentError) {
+      return {
+        data: null,
+        error: equipmentError,
+      };
+    }
+
+    const reservationsWithEquipment = (reservations ?? []).map(
+      (reservation) => ({
+        ...reservation,
+        equipment:
+          equipment?.find(
+            (item) => item.id === reservation.equipment_id,
+          ) ?? null,
+      }),
+    );
+
+    return {
+      data: reservationsWithEquipment,
+      error: null,
+    };
+  },
+
+  async approveReservation(reservationId: string) {
+    const { data, error } = await supabase.rpc(
+      'approve_reservation',
+      {
+        p_reservation_id: reservationId,
+      },
+    );
+
+    return {
+      data,
+      error,
+    };
+  },
+
+  async rejectReservation(
+    reservationId: string,
+    rejectionReason: string,
+  ) {
+    const { data, error } = await supabase.rpc(
+      'reject_reservation',
+      {
+        p_reservation_id: reservationId,
+        p_rejection_reason: rejectionReason,
+      },
+    );
+
+    return {
+      data,
+      error,
     };
   },
 };
