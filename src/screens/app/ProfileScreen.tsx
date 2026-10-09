@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
@@ -8,13 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { authService } from '../../services/authService';
+import type { MainTabParamList } from '../../navigation/MainTabs';
 import type { AppStackParamList } from '../../navigation/AppStack';
+import { authService } from '../../services/authService';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type Props = NativeStackScreenProps<AppStackParamList, 'Main'>;
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, 'Profile'>,
+  NativeStackScreenProps<AppStackParamList, 'Main'>
+>;
 
 export function ProfileScreen({ navigation }: Props) {
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -106,9 +113,7 @@ export function ProfileScreen({ navigation }: Props) {
         {isSigningOut ? (
           <ActivityIndicator color={colors.error} />
         ) : (
-          <Text style={styles.logoutButtonText}>
-            Çıkış Yap
-          </Text>
+          <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
         )}
       </TouchableOpacity>
     </View>
