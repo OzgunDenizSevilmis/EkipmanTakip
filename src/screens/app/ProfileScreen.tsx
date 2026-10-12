@@ -131,6 +131,21 @@ export function ProfileScreen({ navigation }: Props) {
               Yeni ekipman ekle ve mevcut ekipmanları düzenle.
             </Text>
           </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.maintenanceButton}
+  onPress={() => navigation.navigate('AdminLoans')}
+  activeOpacity={0.8}
+>
+  <Text style={styles.outlinedButtonText}>
+    Zimmet Yönetimi
+  </Text>
+  <Text style={styles.outlinedButtonDescription}>
+    Tüm zimmetleri ve iade durumlarını görüntüle.
+  </Text>
+</TouchableOpacity>
+
+
         </>
       ) : null}
 

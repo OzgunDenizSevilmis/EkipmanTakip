@@ -208,23 +208,21 @@ export const equipmentService = {
   },
 
   async deactivateEquipment(equipmentId: string) {
-    const { data, error } = await supabase
-      .from('equipment')
-      .update({ lifecycle_status: 'INACTIVE' })
-      .eq('id', equipmentId)
-      .eq('lifecycle_status', 'ACTIVE')
-      .select()
-      .maybeSingle();
-
-    if (!error && !data) {
+    if (!equipmentId.trim()) {
       return {
         data: null,
-        error: new Error(
-          'Ekipman bulunamadı veya yalnızca aktif ekipmanlar pasife alınabilir.',
-        ),
+        error: new Error('Pasife alınacak ekipman seçilmedi.'),
       };
     }
 
-    return { data, error };
+    const { error } = await supabase.rpc('deactivate_equipment', {
+      p_equipment_id: equipmentId,
+    });
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    return { data: true, error: null };
   },
 };

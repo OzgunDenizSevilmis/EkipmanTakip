@@ -1,7 +1,8 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AdminEquipmentScreen } from '../screens/admin/AdminEquipmentScreen';
 
+import { AdminEquipmentScreen } from '../screens/admin/AdminEquipmentScreen';
+import AdminLoansScreen from '../screens/admin/AdminLoansScreen';
 import { AdminMaintenanceScreen } from '../screens/admin/AdminMaintenanceScreen';
 import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
 import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
@@ -19,6 +20,7 @@ export type AppStackParamList = {
   AdminReservations: undefined;
   AdminMaintenance: undefined;
   AdminEquipment: undefined;
+  AdminLoans: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -55,11 +57,18 @@ export function AppStack() {
         component={AdminMaintenanceScreen}
         options={{ title: 'Bakım Yönetimi' }}
       />
+
       <Stack.Screen
-  name="AdminEquipment"
-  component={AdminEquipmentScreen}
-  options={{ title: 'Ekipman Yönetimi' }}
-/>
+        name="AdminEquipment"
+        component={AdminEquipmentScreen}
+        options={{ title: 'Ekipman Yönetimi' }}
+      />
+
+      <Stack.Screen
+        name="AdminLoans"
+        component={AdminLoansScreen}
+        options={{ title: 'Zimmet Yönetimi' }}
+      />
     </Stack.Navigator>
   );
 }
