@@ -91,18 +91,33 @@ export function ProfileScreen({ navigation }: Props) {
       </View>
 
       {isAdmin ? (
-        <TouchableOpacity
-          style={styles.adminButton}
-          onPress={() => navigation.navigate('AdminReservations')}
-        >
-          <Text style={styles.adminButtonText}>
-            Rezervasyon Yönetimi
-          </Text>
+        <>
+          <TouchableOpacity
+            style={styles.adminButton}
+            onPress={() => navigation.navigate('AdminReservations')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.adminButtonText}>
+              Rezervasyon Yönetimi
+            </Text>
 
-          <Text style={styles.adminButtonDescription}>
-            Kullanıcı rezervasyonlarını onayla veya reddet.
-          </Text>
-        </TouchableOpacity>
+            <Text style={styles.adminButtonDescription}>
+              Kullanıcı rezervasyonlarını onayla veya reddet.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.maintenanceButton}
+            onPress={() => navigation.navigate('AdminMaintenance')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.adminButtonText}>Bakım Yönetimi</Text>
+
+            <Text style={styles.adminButtonDescription}>
+              Ekipman bakımlarını başlat, takip et ve tamamla.
+            </Text>
+          </TouchableOpacity>
+        </>
       ) : null}
 
       <TouchableOpacity
@@ -177,14 +192,23 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
 
+  maintenanceButton: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    marginTop: spacing.md,
+  },
+
   adminButtonText: {
-    color: colors.background,
+    color: colors.white,
     fontSize: typography.body,
     fontWeight: '700',
   },
 
   adminButtonDescription: {
-    color: colors.background,
+    color: colors.white,
     fontSize: typography.caption,
     marginTop: spacing.xs,
   },

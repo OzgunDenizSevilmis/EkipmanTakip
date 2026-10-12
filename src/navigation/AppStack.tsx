@@ -1,9 +1,11 @@
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
-import { MainTabs } from './MainTabs';
-import ReservationFormScreen from '../screens/app/ReservationFormScreen';
+import { AdminMaintenanceScreen } from '../screens/admin/AdminMaintenanceScreen';
 import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
+import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
+import ReservationFormScreen from '../screens/app/ReservationFormScreen';
+import { MainTabs } from './MainTabs';
 
 export type AppStackParamList = {
   Main: undefined;
@@ -14,6 +16,7 @@ export type AppStackParamList = {
     equipmentId: string;
   };
   AdminReservations: undefined;
+  AdminMaintenance: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -32,16 +35,24 @@ export function AppStack() {
         component={EquipmentDetailScreen}
         options={{ title: 'Ekipman Detayı' }}
       />
+
       <Stack.Screen
-  name="ReservationForm"
-  component={ReservationFormScreen}
-  options={{ title: 'Rezervasyon Oluştur' }}
-/>
-<Stack.Screen
-  name="AdminReservations"
-  component={AdminReservationsScreen}
-  options={{ title: 'Rezervasyon Yönetimi' }}
-/>
+        name="ReservationForm"
+        component={ReservationFormScreen}
+        options={{ title: 'Rezervasyon Oluştur' }}
+      />
+
+      <Stack.Screen
+        name="AdminReservations"
+        component={AdminReservationsScreen}
+        options={{ title: 'Rezervasyon Yönetimi' }}
+      />
+
+      <Stack.Screen
+        name="AdminMaintenance"
+        component={AdminMaintenanceScreen}
+        options={{ title: 'Bakım Yönetimi' }}
+      />
     </Stack.Navigator>
   );
 }
