@@ -7,6 +7,18 @@ type CreateReservationInput = {
   purpose: string;
 };
 
+type DeliverEquipmentInput = {
+  reservationId: string;
+  condition: string;
+  deliveryNote?: string;
+};
+
+type ReturnEquipmentInput = {
+  reservationId: string;
+  condition: string;
+  returnNote?: string;
+};
+
 export const reservationService = {
   async getMyReservations() {
     const {
@@ -15,10 +27,7 @@ export const reservationService = {
     } = await supabase.auth.getUser();
 
     if (userError) {
-      return {
-        data: null,
-        error: userError,
-      };
+      return { data: null, error: userError };
     }
 
     if (!user) {
@@ -31,8 +40,7 @@ export const reservationService = {
     const { data: reservations, error: reservationsError } =
       await supabase
         .from('reservations')
-        .select(
-          `
+        .select(`
           id,
           equipment_id,
           user_id,
@@ -43,16 +51,12 @@ export const reservationService = {
           rejection_reason,
           version,
           created_at
-          `,
-        )
+        `)
         .eq('user_id', user.id)
         .order('start_at', { ascending: false });
 
     if (reservationsError) {
-      return {
-        data: null,
-        error: reservationsError,
-      };
+      return { data: null, error: reservationsError };
     }
 
     const equipmentIds = [
@@ -64,10 +68,7 @@ export const reservationService = {
     ];
 
     if (equipmentIds.length === 0) {
-      return {
-        data: reservations ?? [],
-        error: null,
-      };
+      return { data: reservations ?? [], error: null };
     }
 
     const { data: equipment, error: equipmentError } = await supabase
@@ -76,10 +77,7 @@ export const reservationService = {
       .in('id', equipmentIds);
 
     if (equipmentError) {
-      return {
-        data: null,
-        error: equipmentError,
-      };
+      return { data: null, error: equipmentError };
     }
 
     const reservationsWithEquipment = (reservations ?? []).map(
@@ -92,10 +90,7 @@ export const reservationService = {
       }),
     );
 
-    return {
-      data: reservationsWithEquipment,
-      error: null,
-    };
+    return { data: reservationsWithEquipment, error: null };
   },
 
   async createReservation({
@@ -110,10 +105,7 @@ export const reservationService = {
     } = await supabase.auth.getUser();
 
     if (userError) {
-      return {
-        data: null,
-        error: userError,
-      };
+      return { data: null, error: userError };
     }
 
     if (!user) {
@@ -146,24 +138,17 @@ export const reservationService = {
         };
       }
 
-      return {
-        data: null,
-        error,
-      };
+      return { data: null, error };
     }
 
-    return {
-      data,
-      error: null,
-    };
+    return { data, error: null };
   },
 
   async getAllReservations() {
     const { data: reservations, error: reservationsError } =
       await supabase
         .from('reservations')
-        .select(
-          `
+        .select(`
           id,
           equipment_id,
           user_id,
@@ -174,15 +159,11 @@ export const reservationService = {
           rejection_reason,
           version,
           created_at
-          `,
-        )
+        `)
         .order('start_at', { ascending: false });
 
     if (reservationsError) {
-      return {
-        data: null,
-        error: reservationsError,
-      };
+      return { data: null, error: reservationsError };
     }
 
     const equipmentIds = [
@@ -194,10 +175,7 @@ export const reservationService = {
     ];
 
     if (equipmentIds.length === 0) {
-      return {
-        data: reservations ?? [],
-        error: null,
-      };
+      return { data: reservations ?? [], error: null };
     }
 
     const { data: equipment, error: equipmentError } =
@@ -207,10 +185,7 @@ export const reservationService = {
         .in('id', equipmentIds);
 
     if (equipmentError) {
-      return {
-        data: null,
-        error: equipmentError,
-      };
+      return { data: null, error: equipmentError };
     }
 
     const reservationsWithEquipment = (reservations ?? []).map(
@@ -223,10 +198,7 @@ export const reservationService = {
       }),
     );
 
-    return {
-      data: reservationsWithEquipment,
-      error: null,
-    };
+    return { data: reservationsWithEquipment, error: null };
   },
 
   async approveReservation(reservationId: string) {
@@ -237,10 +209,7 @@ export const reservationService = {
       },
     );
 
-    return {
-      data,
-      error,
-    };
+    return { data, error };
   },
 
   async rejectReservation(
@@ -255,9 +224,40 @@ export const reservationService = {
       },
     );
 
-    return {
-      data,
-      error,
-    };
+    return { data, error };
+  },
+
+  async deliverEquipment({
+    reservationId,
+    condition,
+    deliveryNote,
+  }: DeliverEquipmentInput) {
+    const { data, error } = await supabase.rpc(
+      'deliver_equipment',
+      {
+        p_reservation_id: reservationId,
+        p_condition: condition,
+        p_delivery_note: deliveryNote?.trim() || null,
+      },
+    );
+
+    return { data, error };
+  },
+
+  async returnEquipment({
+    reservationId,
+    condition,
+    returnNote,
+  }: ReturnEquipmentInput) {
+    const { data, error } = await supabase.rpc(
+      'return_equipment',
+      {
+        p_reservation_id: reservationId,
+        p_condition: condition,
+        p_return_note: returnNote?.trim() || null,
+      },
+    );
+
+    return { data, error };
   },
 };
