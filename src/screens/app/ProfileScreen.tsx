@@ -42,15 +42,19 @@ export function ProfileScreen({ navigation }: Props) {
   async function handleSignOut() {
     setIsSigningOut(true);
 
-    const { error } = await authService.signOut();
+    try {
+      const { error } = await authService.signOut();
 
-    setIsSigningOut(false);
-
-    if (error) {
-      Alert.alert(
-        'Çıkış Başarısız',
-        error.message || 'Oturum kapatılamadı.',
-      );
+      if (error) {
+        Alert.alert(
+          'Çıkış Başarısız',
+          error.message || 'Oturum kapatılamadı.',
+        );
+      }
+    } catch {
+      Alert.alert('Çıkış Başarısız', 'Beklenmeyen bir hata oluştu.');
+    } finally {
+      setIsSigningOut(false);
     }
   }
 
@@ -68,7 +72,6 @@ export function ProfileScreen({ navigation }: Props) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Profil</Text>
-
         <Text style={styles.subtitle}>
           Hesap bilgilerini ve hesap işlemlerini buradan yönet.
         </Text>
@@ -76,7 +79,6 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={styles.card}>
         <Text style={styles.label}>Ad Soyad</Text>
-
         <Text style={styles.value}>
           {profile?.full_name || 'Kullanıcı'}
         </Text>
@@ -84,7 +86,6 @@ export function ProfileScreen({ navigation }: Props) {
         <View style={styles.divider} />
 
         <Text style={styles.label}>Rol</Text>
-
         <Text style={styles.value}>
           {isAdmin ? 'Yönetici' : 'Kullanıcı'}
         </Text>
@@ -100,7 +101,6 @@ export function ProfileScreen({ navigation }: Props) {
             <Text style={styles.adminButtonText}>
               Rezervasyon Yönetimi
             </Text>
-
             <Text style={styles.adminButtonDescription}>
               Kullanıcı rezervasyonlarını onayla veya reddet.
             </Text>
@@ -111,10 +111,24 @@ export function ProfileScreen({ navigation }: Props) {
             onPress={() => navigation.navigate('AdminMaintenance')}
             activeOpacity={0.8}
           >
-            <Text style={styles.adminButtonText}>Bakım Yönetimi</Text>
-
-            <Text style={styles.adminButtonDescription}>
+            <Text style={styles.outlinedButtonText}>
+              Bakım Yönetimi
+            </Text>
+            <Text style={styles.outlinedButtonDescription}>
               Ekipman bakımlarını başlat, takip et ve tamamla.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.maintenanceButton}
+            onPress={() => navigation.navigate('AdminEquipment')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.outlinedButtonText}>
+              Ekipman Yönetimi
+            </Text>
+            <Text style={styles.outlinedButtonDescription}>
+              Yeni ekipman ekle ve mevcut ekipmanları düzenle.
             </Text>
           </TouchableOpacity>
         </>
@@ -124,6 +138,7 @@ export function ProfileScreen({ navigation }: Props) {
         style={styles.logoutButton}
         onPress={handleSignOut}
         disabled={isSigningOut}
+        activeOpacity={0.8}
       >
         {isSigningOut ? (
           <ActivityIndicator color={colors.error} />
@@ -141,23 +156,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
-
   header: {
     marginBottom: spacing.lg,
   },
-
   title: {
     color: colors.text,
     fontSize: typography.heading,
     fontWeight: '700',
   },
-
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
     marginTop: spacing.xs,
   },
-
   card: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -165,33 +176,28 @@ const styles = StyleSheet.create({
     borderRadius: radii.lg,
     padding: spacing.lg,
   },
-
   label: {
     color: colors.textSecondary,
     fontSize: typography.caption,
     fontWeight: '600',
   },
-
   value: {
     color: colors.text,
     fontSize: typography.body,
     fontWeight: '600',
     marginTop: spacing.xs,
   },
-
   divider: {
     height: 1,
     backgroundColor: colors.border,
     marginVertical: spacing.md,
   },
-
   adminButton: {
     backgroundColor: colors.primary,
     borderRadius: radii.lg,
     padding: spacing.lg,
     marginTop: spacing.lg,
   },
-
   maintenanceButton: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -200,19 +206,26 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginTop: spacing.md,
   },
-
   adminButtonText: {
     color: colors.white,
     fontSize: typography.body,
     fontWeight: '700',
   },
-
   adminButtonDescription: {
     color: colors.white,
     fontSize: typography.caption,
     marginTop: spacing.xs,
   },
-
+  outlinedButtonText: {
+    color: colors.primary,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  outlinedButtonDescription: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    marginTop: spacing.xs,
+  },
   logoutButton: {
     borderWidth: 1,
     borderColor: colors.error,
@@ -221,13 +234,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.md,
   },
-
   logoutButtonText: {
     color: colors.error,
     fontSize: typography.body,
     fontWeight: '700',
   },
-
   center: {
     flex: 1,
     alignItems: 'center',

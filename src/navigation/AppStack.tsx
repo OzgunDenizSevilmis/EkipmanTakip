@@ -1,5 +1,6 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AdminEquipmentScreen } from '../screens/admin/AdminEquipmentScreen';
 
 import { AdminMaintenanceScreen } from '../screens/admin/AdminMaintenanceScreen';
 import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
@@ -17,6 +18,7 @@ export type AppStackParamList = {
   };
   AdminReservations: undefined;
   AdminMaintenance: undefined;
+  AdminEquipment: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -53,6 +55,11 @@ export function AppStack() {
         component={AdminMaintenanceScreen}
         options={{ title: 'Bakım Yönetimi' }}
       />
+      <Stack.Screen
+  name="AdminEquipment"
+  component={AdminEquipmentScreen}
+  options={{ title: 'Ekipman Yönetimi' }}
+/>
     </Stack.Navigator>
   );
 }

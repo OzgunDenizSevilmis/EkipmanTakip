@@ -93,6 +93,7 @@ export const reservationService = {
     return { data: reservationsWithEquipment, error: null };
   },
 
+  
   async createReservation({
     equipmentId,
     startAt,
@@ -115,18 +116,15 @@ export const reservationService = {
       };
     }
 
-    const { data, error } = await supabase
-      .from('reservations')
-      .insert({
-        equipment_id: equipmentId,
-        user_id: user.id,
-        start_at: startAt,
-        end_at: endAt,
-        purpose,
-        status: 'PENDING',
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc(
+      'create_reservation',
+      {
+        p_equipment_id: equipmentId,
+        p_start_at: startAt,
+        p_end_at: endAt,
+        p_purpose: purpose.trim(),
+      },
+    );
 
     if (error) {
       if (error.code === '23P01') {
@@ -138,11 +136,22 @@ export const reservationService = {
         };
       }
 
+      if (error.code === 'P0001') {
+        return {
+          data: null,
+          error: new Error(
+            error.message ||
+              'Bu ekipman için rezervasyon oluşturulamıyor.',
+          ),
+        };
+      }
+
       return { data: null, error };
     }
 
     return { data, error: null };
   },
+
 
   async getAllReservations() {
     const { data: reservations, error: reservationsError } =
