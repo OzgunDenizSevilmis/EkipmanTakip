@@ -1,5 +1,6 @@
-
+import { useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -11,8 +12,8 @@ import {
 
 import { loanService } from '../../services/loanService';
 import { reservationService } from '../../services/reservationService';
-import type { Reservation } from '../../types/reservation';
 import { colors, radii, spacing, typography } from '../../theme';
+import type { Reservation } from '../../types/reservation';
 
 type EquipmentInfo = {
   id: string;
@@ -38,6 +39,11 @@ type LoanWithEquipment = {
   equipment: EquipmentInfo | null;
 };
 
+type HighlightParams = {
+  highlightEntityType?: 'reservation' | 'loan';
+  highlightEntityId?: string;
+};
+
 function getStatusLabel(status: Reservation['status']) {
   switch (status) {
     case 'PENDING':
@@ -54,6 +60,8 @@ function getStatusLabel(status: Reservation['status']) {
       return 'Teslim Edildi';
     case 'COMPLETED':
       return 'Tamamlandı';
+    default:
+      return status;
   }
 }
 
@@ -79,11 +87,13 @@ function formatDateTime(value: string | null) {
 
 function ReservationCard({
   reservation,
+  highlighted = false,
 }: {
   reservation: ReservationWithEquipment;
+  highlighted?: boolean;
 }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, highlighted && styles.highlightedCard]}>
       <View style={styles.cardHeader}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>
@@ -139,15 +149,27 @@ function ReservationCard({
           </View>
         </>
       ) : null}
+
+      {highlighted ? (
+        <Text style={styles.highlightLabel}>
+          Bildirimden açılan kayıt
+        </Text>
+      ) : null}
     </View>
   );
 }
 
-function LoanCard({ loan }: { loan: LoanWithEquipment }) {
+function LoanCard({
+  loan,
+  highlighted = false,
+}: {
+  loan: LoanWithEquipment;
+  highlighted?: boolean;
+}) {
   const isReturned = loan.returned_at !== null;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, highlighted && styles.highlightedCard]}>
       <View style={styles.cardHeader}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>
@@ -228,11 +250,39 @@ function LoanCard({ loan }: { loan: LoanWithEquipment }) {
           </View>
         </>
       ) : null}
+
+      {highlighted ? (
+        <Text style={styles.highlightLabel}>
+          Bildirimden açılan kayıt
+        </Text>
+      ) : null}
     </View>
   );
 }
 
 export function MyActionsScreen() {
+  const scrollViewRef = useRef<ScrollView>(null);
+  const cardPositions = useRef<Record<string, number>>({});
+
+  const route = useRoute();
+
+  const highlightedEntity = useMemo(() => {
+    const params = route.params as HighlightParams | undefined;
+
+    if (!params?.highlightEntityType || !params.highlightEntityId) {
+      return null;
+    }
+
+    return {
+      highlightEntityType: params.highlightEntityType,
+      highlightEntityId: params.highlightEntityId,
+    };
+  }, [route.params]);
+
+  const targetKey = highlightedEntity
+    ? `${highlightedEntity.highlightEntityType}:${highlightedEntity.highlightEntityId}`
+    : null;
+
   const {
     data: reservations = [],
     isLoading: reservationsLoading,
@@ -242,8 +292,7 @@ export function MyActionsScreen() {
   } = useQuery<ReservationWithEquipment[]>({
     queryKey: ['my-reservations'],
     queryFn: async () => {
-      const { data, error } =
-        await reservationService.getMyReservations();
+      const { data, error } = await reservationService.getMyReservations();
 
       if (error) {
         throw error;
@@ -275,6 +324,36 @@ export function MyActionsScreen() {
   const isLoading = reservationsLoading || loansLoading;
   const isRefetching = reservationsRefetching || loansRefetching;
 
+  function scrollToHighlightedRecord(key: string, y: number) {
+    cardPositions.current[key] = y;
+
+    if (key !== targetKey) {
+      return;
+    }
+
+    scrollViewRef.current?.scrollTo({
+      y: Math.max(0, y - spacing.lg),
+      animated: true,
+    });
+  }
+
+  useEffect(() => {
+    if (!targetKey) {
+      return;
+    }
+
+    const y = cardPositions.current[targetKey];
+
+    if (y === undefined) {
+      return;
+    }
+
+    scrollViewRef.current?.scrollTo({
+      y: Math.max(0, y - spacing.lg),
+      animated: true,
+    });
+  }, [targetKey, reservations, loans]);
+
   async function handleRefresh() {
     await Promise.all([refetchReservations(), refetchLoans()]);
   }
@@ -283,7 +362,6 @@ export function MyActionsScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-
         <Text style={styles.loadingText}>
           İşlemlerin yükleniyor...
         </Text>
@@ -294,6 +372,7 @@ export function MyActionsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView
+        ref={scrollViewRef}
         contentContainerStyle={styles.listContent}
         refreshControl={
           <RefreshControl
@@ -306,7 +385,6 @@ export function MyActionsScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.screenTitle}>İşlemlerim</Text>
-
           <Text style={styles.subtitle}>
             Rezervasyonlarını ve zimmet durumlarını takip et.
           </Text>
@@ -323,12 +401,30 @@ export function MyActionsScreen() {
             Henüz rezervasyonun yok.
           </Text>
         ) : (
-          reservations.map((reservation) => (
-            <ReservationCard
-              key={reservation.id}
-              reservation={reservation}
-            />
-          ))
+          reservations.map((reservation) => {
+            const highlighted =
+              highlightedEntity?.highlightEntityType === 'reservation' &&
+              highlightedEntity.highlightEntityId === reservation.id;
+
+            const key = `reservation:${reservation.id}`;
+
+            return (
+              <View
+                key={reservation.id}
+                onLayout={(event) =>
+                  scrollToHighlightedRecord(
+                    key,
+                    event.nativeEvent.layout.y,
+                  )
+                }
+              >
+                <ReservationCard
+                  reservation={reservation}
+                  highlighted={highlighted}
+                />
+              </View>
+            );
+          })
         )}
 
         <Text style={styles.sectionTitle}>Zimmet Geçmişim</Text>
@@ -342,7 +438,27 @@ export function MyActionsScreen() {
             Henüz teslim aldığın bir ekipman bulunmuyor.
           </Text>
         ) : (
-          loans.map((loan) => <LoanCard key={loan.id} loan={loan} />)
+          loans.map((loan) => {
+            const highlighted =
+              highlightedEntity?.highlightEntityType === 'loan' &&
+              highlightedEntity.highlightEntityId === loan.reservation_id;
+
+            const key = `loan:${loan.reservation_id}`;
+
+            return (
+              <View
+                key={loan.id}
+                onLayout={(event) =>
+                  scrollToHighlightedRecord(
+                    key,
+                    event.nativeEvent.layout.y,
+                  )
+                }
+              >
+                <LoanCard loan={loan} highlighted={highlighted} />
+              </View>
+            );
+          })
         )}
       </ScrollView>
     </View>
@@ -354,24 +470,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-
   header: {
     paddingTop: spacing.lg,
     paddingBottom: spacing.md,
   },
-
   screenTitle: {
     color: colors.text,
     fontSize: typography.heading,
     fontWeight: '700',
   },
-
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
     marginTop: spacing.xs,
   },
-
   sectionTitle: {
     color: colors.text,
     fontSize: typography.body,
@@ -379,12 +491,10 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     marginBottom: spacing.md,
   },
-
   listContent: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
   },
-
   card: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -393,7 +503,16 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.md,
   },
-
+  highlightedCard: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+  highlightLabel: {
+    color: colors.primary,
+    fontSize: typography.caption,
+    fontWeight: '700',
+    marginTop: spacing.md,
+  },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -401,72 +520,59 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginBottom: spacing.lg,
   },
-
   titleContainer: {
     flex: 1,
   },
-
   title: {
     color: colors.text,
     fontSize: typography.body,
     fontWeight: '700',
   },
-
   equipmentCode: {
     color: colors.textSecondary,
     fontSize: typography.caption,
     marginTop: spacing.xs,
   },
-
   statusBadge: {
     backgroundColor: colors.primarySoft,
     borderRadius: radii.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
   },
-
   activeBadge: {
     backgroundColor: colors.primarySoft,
   },
-
   returnedBadge: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
-
   statusText: {
     color: colors.primary,
     fontSize: typography.caption,
     fontWeight: '700',
   },
-
   infoRow: {
     gap: spacing.xs,
   },
-
   label: {
     color: colors.textSecondary,
     fontSize: typography.caption,
     fontWeight: '600',
   },
-
   value: {
     color: colors.text,
     fontSize: typography.body,
   },
-
   rejectionReason: {
     color: colors.error,
     fontSize: typography.body,
   },
-
   divider: {
     height: 1,
     backgroundColor: colors.border,
     marginVertical: spacing.md,
   },
-
   center: {
     flex: 1,
     alignItems: 'center',
@@ -474,19 +580,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: spacing.xl,
   },
-
   loadingText: {
     color: colors.textSecondary,
     fontSize: typography.body,
     marginTop: spacing.md,
   },
-
   error: {
     color: colors.error,
     fontSize: typography.body,
     marginBottom: spacing.md,
   },
-
   emptyText: {
     color: colors.textSecondary,
     fontSize: typography.body,

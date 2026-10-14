@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -69,7 +70,11 @@ export function ProfileScreen({ navigation }: Props) {
   const isAdmin = profile?.role === 'ADMIN';
 
   return (
-    <View style={styles.container}>
+  <ScrollView
+    style={styles.container}
+    contentContainerStyle={styles.scrollContent}
+    showsVerticalScrollIndicator={false}
+  >
       <View style={styles.header}>
         <Text style={styles.title}>Profil</Text>
         <Text style={styles.subtitle}>
@@ -161,8 +166,20 @@ export function ProfileScreen({ navigation }: Props) {
           <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
         )}
       </TouchableOpacity>
-    </View>
-  );
+<TouchableOpacity
+  style={styles.maintenanceButton}
+  onPress={() => navigation.navigate('Notifications')}
+  activeOpacity={0.8}
+>
+  <Text style={styles.outlinedButtonText}>Bildirimler</Text>
+  <Text style={styles.outlinedButtonDescription}>
+    Rezervasyon ve zimmet bildirimlerini görüntüle.
+  </Text>
+</TouchableOpacity>
+
+
+  </ScrollView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -260,4 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.background,
   },
+  scrollContent: {
+  paddingBottom: spacing.xl,
+},
 });

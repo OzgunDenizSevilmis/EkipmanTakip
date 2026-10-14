@@ -8,6 +8,9 @@ import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
 import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
 import ReservationFormScreen from '../screens/app/ReservationFormScreen';
 import { MainTabs } from './MainTabs';
+import NotificationsScreen from '../screens/app/AppNotificationsScreen';
+
+
 
 export type AppStackParamList = {
   Main: undefined;
@@ -21,6 +24,7 @@ export type AppStackParamList = {
   AdminMaintenance: undefined;
   AdminEquipment: undefined;
   AdminLoans: undefined;
+  Notifications: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -69,6 +73,12 @@ export function AppStack() {
         component={AdminLoansScreen}
         options={{ title: 'Zimmet Yönetimi' }}
       />
+<Stack.Screen
+  name="Notifications"
+  component={NotificationsScreen}
+  options={{ title: 'Bildirimler' }}
+/>
+
     </Stack.Navigator>
   );
 }
