@@ -1,5 +1,6 @@
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useEffect, useMemo, useRef } from 'react';
 import {
   ActivityIndicator,
@@ -7,9 +8,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
+import type { AppStackParamList } from '../../navigation/AppStack';
+import { authService } from '../../services/authService';
 import { loanService } from '../../services/loanService';
 import { reservationService } from '../../services/reservationService';
 import { colors, radii, spacing, typography } from '../../theme';
@@ -43,6 +47,30 @@ type HighlightParams = {
   highlightEntityType?: 'reservation' | 'loan';
   highlightEntityId?: string;
 };
+
+type AdminActionButtonProps = {
+  title: string;
+  description: string;
+  onPress: () => void;
+};
+
+function AdminActionButton({
+  title,
+  description,
+  onPress,
+}: AdminActionButtonProps) {
+  return (
+    <TouchableOpacity
+      style={styles.adminActionButton}
+      onPress={onPress}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+    >
+      <Text style={styles.adminActionTitle}>{title}</Text>
+      <Text style={styles.adminActionDescription}>{description}</Text>
+    </TouchableOpacity>
+  );
+}
 
 function getStatusLabel(status: Reservation['status']) {
   switch (status) {
@@ -125,9 +153,7 @@ function ReservationCard({
 
       <View style={styles.infoRow}>
         <Text style={styles.label}>Bitiş</Text>
-        <Text style={styles.value}>
-          {formatDateTime(reservation.end_at)}
-        </Text>
+        <Text style={styles.value}>{formatDateTime(reservation.end_at)}</Text>
       </View>
 
       <View style={styles.divider} />
@@ -151,9 +177,7 @@ function ReservationCard({
       ) : null}
 
       {highlighted ? (
-        <Text style={styles.highlightLabel}>
-          Bildirimden açılan kayıt
-        </Text>
+        <Text style={styles.highlightLabel}>Bildirimden açılan kayıt</Text>
       ) : null}
     </View>
   );
@@ -177,9 +201,7 @@ function LoanCard({
           </Text>
 
           {loan.equipment?.code ? (
-            <Text style={styles.equipmentCode}>
-              {loan.equipment.code}
-            </Text>
+            <Text style={styles.equipmentCode}>{loan.equipment.code}</Text>
           ) : null}
         </View>
 
@@ -197,9 +219,7 @@ function LoanCard({
 
       <View style={styles.infoRow}>
         <Text style={styles.label}>Teslim Alınma</Text>
-        <Text style={styles.value}>
-          {formatDateTime(loan.checked_out_at)}
-        </Text>
+        <Text style={styles.value}>{formatDateTime(loan.checked_out_at)}</Text>
       </View>
 
       <View style={styles.divider} />
@@ -252,9 +272,7 @@ function LoanCard({
       ) : null}
 
       {highlighted ? (
-        <Text style={styles.highlightLabel}>
-          Bildirimden açılan kayıt
-        </Text>
+        <Text style={styles.highlightLabel}>Bildirimden açılan kayıt</Text>
       ) : null}
     </View>
   );
@@ -265,6 +283,24 @@ export function MyActionsScreen() {
   const cardPositions = useRef<Record<string, number>>({});
 
   const route = useRoute();
+
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+
+  const { data: profile } = useQuery({
+    queryKey: ['current-profile'],
+    queryFn: async () => {
+      const { data, error } = await authService.getCurrentProfile();
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  const isAdmin = profile?.role === 'ADMIN';
 
   const highlightedEntity = useMemo(() => {
     const params = route.params as HighlightParams | undefined;
@@ -362,9 +398,7 @@ export function MyActionsScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-        <Text style={styles.loadingText}>
-          İşlemlerin yükleniyor...
-        </Text>
+        <Text style={styles.loadingText}>İşlemlerin yükleniyor...</Text>
       </View>
     );
   }
@@ -390,6 +424,42 @@ export function MyActionsScreen() {
           </Text>
         </View>
 
+        {isAdmin ? (
+          <View style={styles.adminSection}>
+            <Text style={styles.sectionTitle}>Yönetim İşlemleri</Text>
+
+            <AdminActionButton
+              title="Rezervasyon Yönetimi"
+              description="Rezervasyonları onayla veya reddet."
+              onPress={() => navigation.navigate('AdminReservations')}
+            />
+
+            <AdminActionButton
+              title="Bakım Yönetimi"
+              description="Ekipman bakımlarını takip et."
+              onPress={() => navigation.navigate('AdminMaintenance')}
+            />
+
+            <AdminActionButton
+              title="Ekipman Yönetimi"
+              description="Ekipman ekle ve mevcut kayıtları düzenle."
+              onPress={() => navigation.navigate('AdminEquipment')}
+            />
+
+            <AdminActionButton
+              title="Zimmet Yönetimi"
+              description="Zimmet ve iade durumlarını yönet."
+              onPress={() => navigation.navigate('AdminLoans')}
+            />
+
+            <AdminActionButton
+              title="Kategori Yönetimi"
+              description="Kategorileri ekle, düzenle ve aktiflik durumlarını yönet."
+              onPress={() => navigation.navigate('AdminCategories')}
+            />
+          </View>
+        ) : null}
+
         <Text style={styles.sectionTitle}>Rezervasyonlarım</Text>
 
         {reservationsError ? (
@@ -397,9 +467,7 @@ export function MyActionsScreen() {
             Rezervasyonlar yüklenemedi. Ekranı aşağı çekerek tekrar dene.
           </Text>
         ) : reservations.length === 0 ? (
-          <Text style={styles.emptyText}>
-            Henüz rezervasyonun yok.
-          </Text>
+          <Text style={styles.emptyText}>Henüz rezervasyonun yok.</Text>
         ) : (
           reservations.map((reservation) => {
             const highlighted =
@@ -494,6 +562,27 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xxxl,
+  },
+  adminSection: {
+    marginBottom: spacing.lg,
+  },
+  adminActionButton: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  adminActionTitle: {
+    color: colors.primary,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  adminActionDescription: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    marginTop: spacing.xs,
   },
   card: {
     backgroundColor: colors.surface,

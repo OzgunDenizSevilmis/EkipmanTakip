@@ -1,5 +1,6 @@
+import { useCallback, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   ActivityIndicator,
   Alert,
@@ -16,16 +17,25 @@ import {
 import { reservationService } from '../../services/reservationService';
 import type { Reservation } from '../../types/reservation';
 import { colors, radii, spacing, typography } from '../../theme';
+import type { AppStackParamList } from '../../navigation/AppStack';
+
+type AdminReservationsScreenProps = NativeStackScreenProps<
+  AppStackParamList,
+  'AdminReservations'
+>;
+
+type LoanAction = 'DELIVERY' | 'RETURN';
+
+type EquipmentLifecycleStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
 
 type ReservationWithEquipment = Reservation & {
   equipment?: {
     id: string;
     name: string;
     code: string;
+    lifecycle_status: EquipmentLifecycleStatus;
   } | null;
 };
-
-type LoanAction = 'DELIVERY' | 'RETURN';
 
 function getStatusLabel(status: Reservation['status']) {
   switch (status) {
@@ -58,12 +68,16 @@ function formatDateTime(value: string) {
   });
 }
 
-export default function AdminReservationsScreen() {
+export default function AdminReservationsScreen({
+  route,
+}: AdminReservationsScreenProps) {
   const queryClient = useQueryClient();
+  const equipmentId = route.params?.equipmentId;
 
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
-  const [selectedReservationId, setSelectedReservationId] =
-    useState<string | null>(null);
+  const [selectedReservationId, setSelectedReservationId] = useState<
+    string | null
+  >(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
 
@@ -95,7 +109,11 @@ export default function AdminReservationsScreen() {
     },
   });
 
-  async function refreshReservationQueries() {
+  const filteredReservations = equipmentId
+    ? reservations.filter((item) => item.equipment_id === equipmentId)
+    : reservations;
+
+  const refreshReservationQueries = useCallback(async () => {
     await Promise.all([
       queryClient.invalidateQueries({
         queryKey: ['admin-reservations'],
@@ -107,23 +125,103 @@ export default function AdminReservationsScreen() {
         queryKey: ['home'],
       }),
     ]);
-  }
+  }, [queryClient]);
 
-  async function handleApprove(reservationId: string) {
-    const { error: approveError } =
-      await reservationService.approveReservation(reservationId);
+  const openLoanModal = useCallback(
+    (reservation: ReservationWithEquipment, action: LoanAction) => {
+      setLoanReservation(reservation);
+      setLoanAction(action);
+      setCondition('İyi durumda');
+      setLoanNote('');
+      setLoanModalVisible(true);
+    },
+    [],
+  );
 
-    if (approveError) {
+  const handleQrEquipment = useCallback(() => {
+    if (!equipmentId) {
+      return;
+    }
+
+    const equipmentReservations = reservations.filter(
+      (item) => item.equipment_id === equipmentId,
+    );
+
+    const deliveredReservations = equipmentReservations.filter(
+      (item) => item.status === 'DELIVERED',
+    );
+
+    const approvedReservations = equipmentReservations.filter(
+      (item) => item.status === 'APPROVED',
+    );
+
+    // Aktif zimmet varsa iade akışını aç.
+    if (deliveredReservations.length === 1) {
+      openLoanModal(deliveredReservations[0], 'RETURN');
+      return;
+    }
+
+    if (deliveredReservations.length > 1) {
       Alert.alert(
-        'Onaylama Başarısız',
-        approveError.message || 'Rezervasyon onaylanamadı.',
+        'Birden Fazla Aktif Kayıt',
+        'Bu ekipmana ait birden fazla teslim edilmiş rezervasyon var. Lütfen kayıtları kontrol edin.',
       );
       return;
     }
 
-    await refreshReservationQueries();
-    Alert.alert('Başarılı', 'Rezervasyon onaylandı.');
-  }
+    // Aktif zimmet yoksa onaylı rezervasyonu kontrol et.
+    if (approvedReservations.length === 1) {
+      const reservation = approvedReservations[0];
+      const lifecycleStatus = reservation.equipment?.lifecycle_status;
+
+      if (lifecycleStatus !== 'ACTIVE') {
+        const message =
+          lifecycleStatus === 'MAINTENANCE'
+            ? 'Bu ekipman bakımda olduğu için teslim edilemez.'
+            : lifecycleStatus === 'INACTIVE'
+              ? 'Kullanım dışı ekipman teslim edilemez.'
+              : 'Ekipmanın güncel durumu doğrulanamadığı için teslim başlatılamadı.';
+
+        Alert.alert('Teslim İşlemi Yapılamıyor', message);
+        return;
+      }
+
+      openLoanModal(reservation, 'DELIVERY');
+      return;
+    }
+
+    if (approvedReservations.length > 1) {
+      Alert.alert(
+        'Birden Fazla Onaylı Rezervasyon',
+        'Bu ekipman için birden fazla onaylı rezervasyon bulundu. İşlem yapmadan önce kayıtları kontrol edin.',
+      );
+      return;
+    }
+
+    Alert.alert(
+      'İşlem Bulunamadı',
+      'Bu ekipman için teslim veya iade yapılabilecek uygun bir rezervasyon bulunamadı. Rezervasyon durumunu kontrol edin.',
+    );
+  }, [equipmentId, reservations, openLoanModal]);
+
+  const handleApprove = useCallback(
+    async (reservationId: string) => {
+      const { error: approveError } =
+        await reservationService.approveReservation(reservationId);
+
+      if (approveError) {
+        Alert.alert(
+          'Onaylama Başarısız',
+          approveError.message || 'Rezervasyon onaylanamadı.',
+        );
+        return;
+      }
+
+      await refreshReservationQueries();
+      Alert.alert('Başarılı', 'Rezervasyon onaylandı.');
+    },
+    [refreshReservationQueries],
+  );
 
   function confirmApprove(reservationId: string) {
     Alert.alert(
@@ -133,7 +231,9 @@ export default function AdminReservationsScreen() {
         { text: 'Vazgeç', style: 'cancel' },
         {
           text: 'Onayla',
-          onPress: () => handleApprove(reservationId),
+          onPress: () => {
+            void handleApprove(reservationId);
+          },
         },
       ],
     );
@@ -178,6 +278,11 @@ export default function AdminReservationsScreen() {
 
       await refreshReservationQueries();
       Alert.alert('Başarılı', 'Rezervasyon reddedildi.');
+    } catch {
+      Alert.alert(
+        'İşlem Başarısız',
+        'Rezervasyon reddedilirken beklenmeyen bir hata oluştu.',
+      );
     } finally {
       setIsRejecting(false);
     }
@@ -191,17 +296,6 @@ export default function AdminReservationsScreen() {
     setRejectModalVisible(false);
     setSelectedReservationId(null);
     setRejectionReason('');
-  }
-
-  function openLoanModal(
-    reservation: ReservationWithEquipment,
-    action: LoanAction,
-  ) {
-    setLoanReservation(reservation);
-    setLoanAction(action);
-    setCondition('İyi durumda');
-    setLoanNote('');
-    setLoanModalVisible(true);
   }
 
   function closeLoanModal() {
@@ -221,10 +315,7 @@ export default function AdminReservationsScreen() {
     }
 
     if (!condition.trim()) {
-      Alert.alert(
-        'Eksik Bilgi',
-        'Lütfen ekipmanın durumunu belirt.',
-      );
+      Alert.alert('Eksik Bilgi', 'Lütfen ekipmanın durumunu belirt.');
       return;
     }
 
@@ -282,9 +373,7 @@ export default function AdminReservationsScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator color={colors.primary} />
-        <Text style={styles.loadingText}>
-          Rezervasyonlar yükleniyor...
-        </Text>
+        <Text style={styles.loadingText}>Rezervasyonlar yükleniyor...</Text>
       </View>
     );
   }
@@ -297,7 +386,9 @@ export default function AdminReservationsScreen() {
         </Text>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => refetch()}
+          onPress={() => {
+            void refetch();
+          }}
         >
           <Text style={styles.buttonText}>Tekrar Dene</Text>
         </TouchableOpacity>
@@ -308,16 +399,29 @@ export default function AdminReservationsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.screenTitle}>
-          Rezervasyon Yönetimi
-        </Text>
+        <Text style={styles.screenTitle}>Rezervasyon Yönetimi</Text>
         <Text style={styles.subtitle}>
-          Rezervasyon, teslim ve iade işlemlerini yönet.
+          {equipmentId
+            ? 'QR ile seçilen ekipmanın rezervasyon, teslim ve iade işlemleri.'
+            : 'Rezervasyon, teslim ve iade işlemlerini yönet.'}
         </Text>
       </View>
 
+      {equipmentId ? (
+        <View style={styles.qrActionContainer}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleQrEquipment}
+          >
+            <Text style={styles.buttonText}>
+              Teslim / İade İşlemini Aç
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+
       <FlatList
-        data={reservations}
+        data={filteredReservations}
         keyExtractor={(item) => item.id}
         refreshControl={
           <RefreshControl
@@ -328,7 +432,7 @@ export default function AdminReservationsScreen() {
         }
         contentContainerStyle={[
           styles.listContent,
-          reservations.length === 0 && styles.emptyList,
+          filteredReservations.length === 0 && styles.emptyList,
         ]}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -363,9 +467,7 @@ export default function AdminReservationsScreen() {
 
             <View style={styles.infoRow}>
               <Text style={styles.label}>Bitiş</Text>
-              <Text style={styles.value}>
-                {formatDateTime(item.end_at)}
-              </Text>
+              <Text style={styles.value}>{formatDateTime(item.end_at)}</Text>
             </View>
 
             <View style={styles.divider} />
@@ -400,9 +502,7 @@ export default function AdminReservationsScreen() {
                   style={styles.rejectButton}
                   onPress={() => openRejectModal(item.id)}
                 >
-                  <Text style={styles.rejectButtonText}>
-                    Reddet
-                  </Text>
+                  <Text style={styles.rejectButtonText}>Reddet</Text>
                 </TouchableOpacity>
               </View>
             ) : null}
@@ -433,11 +533,14 @@ export default function AdminReservationsScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>
-              Rezervasyon bulunamadı
+              {equipmentId
+                ? 'Bu ekipman için rezervasyon bulunamadı'
+                : 'Rezervasyon bulunamadı'}
             </Text>
             <Text style={styles.emptyText}>
-              Kullanıcıların oluşturduğu rezervasyonlar burada
-              görüntülenecek.
+              {equipmentId
+                ? 'Bu ekipmana ait kayıtlı rezervasyon bulunmuyor.'
+                : 'Kullanıcıların oluşturduğu rezervasyonlar burada görüntülenecek.'}
             </Text>
           </View>
         }
@@ -451,9 +554,7 @@ export default function AdminReservationsScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              Rezervasyonu Reddet
-            </Text>
+            <Text style={styles.modalTitle}>Rezervasyonu Reddet</Text>
             <Text style={styles.modalDescription}>
               Lütfen rezervasyonu neden reddettiğini belirt.
             </Text>
@@ -466,6 +567,7 @@ export default function AdminReservationsScreen() {
               multiline
               style={styles.reasonInput}
               editable={!isRejecting}
+              maxLength={1000}
             />
 
             <View style={styles.modalActions}>
@@ -474,22 +576,20 @@ export default function AdminReservationsScreen() {
                 onPress={closeRejectModal}
                 disabled={isRejecting}
               >
-                <Text style={styles.cancelButtonText}>
-                  Vazgeç
-                </Text>
+                <Text style={styles.cancelButtonText}>Vazgeç</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.confirmRejectButton}
-                onPress={handleReject}
+                onPress={() => {
+                  void handleReject();
+                }}
                 disabled={isRejecting}
               >
                 {isRejecting ? (
                   <ActivityIndicator color={colors.background} />
                 ) : (
-                  <Text style={styles.confirmRejectText}>
-                    Reddet
-                  </Text>
+                  <Text style={styles.confirmRejectText}>Reddet</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -506,9 +606,7 @@ export default function AdminReservationsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
-              {loanAction === 'DELIVERY'
-                ? 'Ekipman Teslimi'
-                : 'Ekipman İadesi'}
+              {loanAction === 'DELIVERY' ? 'Ekipman Teslimi' : 'Ekipman İadesi'}
             </Text>
 
             <Text style={styles.modalDescription}>
@@ -519,9 +617,7 @@ export default function AdminReservationsScreen() {
                 : 'İade alınan ekipmanın son durumunu belirt.'}
             </Text>
 
-            <Text style={styles.inputLabel}>
-              Ekipmanın Durumu *
-            </Text>
+            <Text style={styles.inputLabel}>Ekipmanın Durumu *</Text>
             <TextInput
               value={condition}
               onChangeText={setCondition}
@@ -554,14 +650,14 @@ export default function AdminReservationsScreen() {
                 onPress={closeLoanModal}
                 disabled={isProcessingLoan}
               >
-                <Text style={styles.cancelButtonText}>
-                  Vazgeç
-                </Text>
+                <Text style={styles.cancelButtonText}>Vazgeç</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.approveButton}
-                onPress={handleLoanAction}
+                onPress={() => {
+                  void handleLoanAction();
+                }}
                 disabled={isProcessingLoan}
               >
                 {isProcessingLoan ? (
@@ -601,6 +697,10 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: typography.body,
     marginTop: spacing.xs,
+  },
+  qrActionContainer: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
   },
   listContent: {
     paddingHorizontal: spacing.lg,
@@ -689,6 +789,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
     marginTop: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rejectButton: {
     flex: 1,

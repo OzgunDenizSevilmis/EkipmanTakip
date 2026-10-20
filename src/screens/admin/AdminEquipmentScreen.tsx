@@ -37,14 +37,12 @@ import {
 import { equipmentService } from '../../services/equipmentService';
 
 import type {
-
   Equipment,
-
   EquipmentCategory,
+} from '../../types/equipment';
+import type { EquipmentInput } from '../../services/equipmentService';
 
-  EquipmentInput,
 
-} from '../../services/equipmentService';
 
 import { colors, radii, spacing, typography } from '../../theme';
 
@@ -269,7 +267,6 @@ export function AdminEquipmentScreen() {
     setSaving(true);
 
     try {
-
       const result = editingEquipment
 
         ? await equipmentService.updateEquipment(

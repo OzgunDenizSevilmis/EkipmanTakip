@@ -1,5 +1,24 @@
-
+import type {
+  Equipment,
+  EquipmentCategory,
+} from '../types/equipment';
 import { supabase } from './supabase';
+
+
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_PAGE_SIZE = 100;
+
+const EQUIPMENT_SELECT = `
+  id,
+  code,
+  name,
+  category_id,
+  location,
+  description,
+  image_path,
+  lifecycle_status,
+  created_at
+`;
 
 export type EquipmentInput = {
   code: string;
@@ -9,108 +28,147 @@ export type EquipmentInput = {
   description?: string;
 };
 
-export type Equipment = {
-  id: string;
-  code: string;
-  name: string;
-  category_id: string;
-  location: string;
-  description: string | null;
-  image_path: string | null;
-  lifecycle_status: 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
-  created_at: string;
-  categories: {
-    id: string;
-    name: string;
-  }[];
-};
 
-export type EquipmentCategory = {
-  id: string;
-  name: string;
+
+export type GetEquipmentParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  categoryId?: string;
+  startAt?: string;
+  endAt?: string;
+  availableOnly?: boolean;
 };
 
 export const equipmentService = {
-  async getEquipment() {
-    const { data: equipment, error: equipmentError } = await supabase
-      .from('equipment')
-      .select(
-        `
-          id,
-          code,
-          name,
-          category_id,
-          location,
-          description,
-          image_path,
-          lifecycle_status,
-          created_at
-        `,
-      )
-      .order('created_at', { ascending: false });
+  async getEquipment({
+    page = 1,
+    pageSize = DEFAULT_PAGE_SIZE,
+    search = '',
+    categoryId,
+    startAt,
+    endAt,
+    availableOnly = false,
+  }: GetEquipmentParams = {}) {
+    const normalizedPage = Number.isFinite(page)
+      ? Math.max(1, Math.floor(page))
+      : 1;
 
-    if (equipmentError) {
-      return { data: null, error: equipmentError };
-    }
+    const normalizedPageSize = Number.isFinite(pageSize)
+      ? Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(pageSize)))
+      : DEFAULT_PAGE_SIZE;
 
-    const categoryIds = [
-      ...new Set(
-        (equipment ?? [])
-          .map((item) => item.category_id)
-          .filter(Boolean),
-      ),
-    ];
-
-    if (categoryIds.length === 0) {
+    if ((startAt == null) !== (endAt == null)) {
       return {
-        data: (equipment ?? []).map((item) => ({
-          ...item,
-          categories: [] as EquipmentCategory[],
-        })),
-        error: null,
+        data: null,
+        count: null,
+        error: new Error(
+          'Müsaitlik kontrolü için başlangıç ve bitiş zamanı birlikte seçilmelidir.',
+        ),
       };
     }
 
-    const { data: categories, error: categoriesError } = await supabase
-      .from('categories')
-      .select('id, name')
-      .in('id', categoryIds);
-
-    if (categoriesError) {
-      return { data: null, error: categoriesError };
+    if (startAt && endAt && startAt >= endAt) {
+      return {
+        data: null,
+        count: null,
+        error: new Error(
+          'Başlangıç zamanı bitiş zamanından önce olmalıdır.',
+        ),
+      };
     }
 
-    const equipmentWithCategories = (equipment ?? []).map((item) => ({
-      ...item,
-      categories: (categories ?? []).filter(
-        (category) => category.id === item.category_id,
-      ),
+    if (availableOnly && (!startAt || !endAt)) {
+      return {
+        data: null,
+        count: null,
+        error: new Error(
+          'Müsaitlik filtresi için başlangıç ve bitiş zamanı seçin.',
+        ),
+      };
+    }
+
+    const { data, error } = await supabase.rpc(
+      'get_equipment_catalog',
+      {
+        p_page: normalizedPage,
+        p_page_size: normalizedPageSize,
+        p_search: search.trim(),
+        p_category_id: categoryId?.trim() || null,
+        p_start_at: startAt ?? null,
+        p_end_at: endAt ?? null,
+        p_available_only: availableOnly,
+      },
+    );
+
+    if (error) {
+      return {
+        data: null,
+        count: null,
+        error,
+      };
+    }
+
+  
+    type EquipmentCatalogRow = {
+      id: string;
+      code: string;
+      name: string;
+      category_id: string;
+      location: string;
+      description: string | null;
+      image_path: string | null;
+      lifecycle_status: Equipment['lifecycle_status'];
+      created_at: string;
+      category_name: string | null;
+      is_available: boolean;
+      total_count: number;
+    };
+
+    const rows = (data ?? []) as EquipmentCatalogRow[];
+    const count = Number(rows[0]?.total_count ?? 0);
+
+    const equipment: Equipment[] = rows.map((item) => ({
+      id: item.id,
+      code: item.code,
+      name: item.name,
+      category_id: item.category_id,
+      location: item.location,
+      description: item.description,
+      image_path: item.image_path,
+      lifecycle_status: item.lifecycle_status,
+      created_at: item.created_at,
+      categories: item.category_name
+        ? [
+            {
+              id: item.category_id,
+              name: item.category_name,
+            },
+          ]
+        : [],
+      is_available: item.is_available,
     }));
 
-    return { data: equipmentWithCategories, error: null };
+
+    return {
+      data: equipment,
+      count,
+      error: null,
+    };
   },
 
   async getEquipmentDetail(equipmentId: string) {
     const { data: equipment, error: equipmentError } = await supabase
       .from('equipment')
-      .select(
-        `
-          id,
-          code,
-          name,
-          category_id,
-          location,
-          description,
-          image_path,
-          lifecycle_status,
-          created_at
-        `,
-      )
+      .select(EQUIPMENT_SELECT)
       .eq('id', equipmentId)
       .single();
 
     if (equipmentError) {
-      return { data: null, error: equipmentError };
+      return {
+        data: null,
+        error: equipmentError,
+      };
     }
 
     const { data: category, error: categoryError } = await supabase
@@ -120,7 +178,10 @@ export const equipmentService = {
       .maybeSingle();
 
     if (categoryError) {
-      return { data: null, error: categoryError };
+      return {
+        data: null,
+        error: categoryError,
+      };
     }
 
     return {
@@ -132,6 +193,28 @@ export const equipmentService = {
     };
   },
 
+  async getEquipmentByCode(code: string) {
+    const normalizedCode = code.trim();
+
+    if (!normalizedCode) {
+      return {
+        data: null,
+        error: new Error('Lütfen geçerli bir ekipman kodu girin.'),
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('equipment')
+      .select('id, code, name, lifecycle_status')
+      .eq('code', normalizedCode)
+      .maybeSingle();
+
+    return {
+      data,
+      error,
+    };
+  },
+
   async getActiveCategories() {
     const { data, error } = await supabase
       .from('categories')
@@ -139,7 +222,10 @@ export const equipmentService = {
       .eq('is_active', true)
       .order('name', { ascending: true });
 
-    return { data, error };
+    return {
+      data,
+      error,
+    };
   },
 
   async createEquipment(input: EquipmentInput) {
@@ -170,7 +256,10 @@ export const equipmentService = {
       .select()
       .single();
 
-    return { data, error };
+    return {
+      data,
+      error,
+    };
   },
 
   async updateEquipment(
@@ -204,7 +293,10 @@ export const equipmentService = {
       .select()
       .single();
 
-    return { data, error };
+    return {
+      data,
+      error,
+    };
   },
 
   async deactivateEquipment(equipmentId: string) {
@@ -220,9 +312,15 @@ export const equipmentService = {
     });
 
     if (error) {
-      return { data: null, error };
+      return {
+        data: null,
+        error,
+      };
     }
 
-    return { data: true, error: null };
+    return {
+      data: true,
+      error: null,
+    };
   },
 };

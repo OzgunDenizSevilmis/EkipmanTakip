@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -17,6 +18,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MainTabParamList } from '../../navigation/MainTabs';
 import type { AppStackParamList } from '../../navigation/AppStack';
 import { authService } from '../../services/authService';
+import { notificationService } from '../../services/notificationService';
 import { colors, radii, spacing, typography } from '../../theme';
 
 type Props = CompositeScreenProps<
@@ -39,6 +41,24 @@ export function ProfileScreen({ navigation }: Props) {
       return data;
     },
   });
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['my-notifications'],
+    queryFn: async () => {
+      const { data, error } =
+        await notificationService.getMyNotifications();
+
+      if (error) {
+        throw error;
+      }
+
+      return data ?? [];
+    },
+  });
+
+  const hasUnreadNotifications = notifications.some(
+    (notification) => !notification.read_at,
+  );
 
   async function handleSignOut() {
     setIsSigningOut(true);
@@ -70,16 +90,40 @@ export function ProfileScreen({ navigation }: Props) {
   const isAdmin = profile?.role === 'ADMIN';
 
   return (
-  <ScrollView
-    style={styles.container}
-    contentContainerStyle={styles.scrollContent}
-    showsVerticalScrollIndicator={false}
-  >
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.header}>
-        <Text style={styles.title}>Profil</Text>
-        <Text style={styles.subtitle}>
-          Hesap bilgilerini ve hesap işlemlerini buradan yönet.
-        </Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Profil</Text>
+          <Text style={styles.subtitle}>
+            Hesap bilgilerini ve hesap işlemlerini buradan yönet.
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.notificationButton}
+          onPress={() => navigation.navigate('Notifications')}
+          activeOpacity={0.75}
+          accessibilityRole="button"
+          accessibilityLabel={
+            hasUnreadNotifications
+              ? 'Okunmamış bildirimler var'
+              : 'Bildirimleri aç'
+          }
+        >
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={colors.primary}
+          />
+
+          {hasUnreadNotifications ? (
+            <View style={styles.notificationDot} />
+          ) : null}
+        </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
@@ -96,69 +140,12 @@ export function ProfileScreen({ navigation }: Props) {
         </Text>
       </View>
 
-      {isAdmin ? (
-        <>
-          <TouchableOpacity
-            style={styles.adminButton}
-            onPress={() => navigation.navigate('AdminReservations')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.adminButtonText}>
-              Rezervasyon Yönetimi
-            </Text>
-            <Text style={styles.adminButtonDescription}>
-              Kullanıcı rezervasyonlarını onayla veya reddet.
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.maintenanceButton}
-            onPress={() => navigation.navigate('AdminMaintenance')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.outlinedButtonText}>
-              Bakım Yönetimi
-            </Text>
-            <Text style={styles.outlinedButtonDescription}>
-              Ekipman bakımlarını başlat, takip et ve tamamla.
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.maintenanceButton}
-            onPress={() => navigation.navigate('AdminEquipment')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.outlinedButtonText}>
-              Ekipman Yönetimi
-            </Text>
-            <Text style={styles.outlinedButtonDescription}>
-              Yeni ekipman ekle ve mevcut ekipmanları düzenle.
-            </Text>
-          </TouchableOpacity>
-
-<TouchableOpacity
-  style={styles.maintenanceButton}
-  onPress={() => navigation.navigate('AdminLoans')}
-  activeOpacity={0.8}
->
-  <Text style={styles.outlinedButtonText}>
-    Zimmet Yönetimi
-  </Text>
-  <Text style={styles.outlinedButtonDescription}>
-    Tüm zimmetleri ve iade durumlarını görüntüle.
-  </Text>
-</TouchableOpacity>
-
-
-        </>
-      ) : null}
-
       <TouchableOpacity
         style={styles.logoutButton}
         onPress={handleSignOut}
         disabled={isSigningOut}
         activeOpacity={0.8}
+        accessibilityRole="button"
       >
         {isSigningOut ? (
           <ActivityIndicator color={colors.error} />
@@ -166,20 +153,8 @@ export function ProfileScreen({ navigation }: Props) {
           <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
         )}
       </TouchableOpacity>
-<TouchableOpacity
-  style={styles.maintenanceButton}
-  onPress={() => navigation.navigate('Notifications')}
-  activeOpacity={0.8}
->
-  <Text style={styles.outlinedButtonText}>Bildirimler</Text>
-  <Text style={styles.outlinedButtonDescription}>
-    Rezervasyon ve zimmet bildirimlerini görüntüle.
-  </Text>
-</TouchableOpacity>
-
-
-  </ScrollView>
-);
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -188,8 +163,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     padding: spacing.lg,
   },
+  scrollContent: {
+    paddingBottom: spacing.xl,
+  },
   header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  headerText: {
+    flex: 1,
   },
   title: {
     color: colors.text,
@@ -200,6 +185,28 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: typography.body,
     marginTop: spacing.xs,
+  },
+  notificationButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radii.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    position: 'relative',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 9,
+    right: 9,
+    width: 9,
+    height: 9,
+    borderRadius: 5,
+    backgroundColor: '#3B82F6',
+    borderWidth: 1,
+    borderColor: colors.surface,
   },
   card: {
     backgroundColor: colors.surface,
@@ -224,40 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
     marginVertical: spacing.md,
   },
-  adminButton: {
-    backgroundColor: colors.primary,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    marginTop: spacing.lg,
-  },
-  maintenanceButton: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    marginTop: spacing.md,
-  },
-  adminButtonText: {
-    color: colors.white,
-    fontSize: typography.body,
-    fontWeight: '700',
-  },
-  adminButtonDescription: {
-    color: colors.white,
-    fontSize: typography.caption,
-    marginTop: spacing.xs,
-  },
-  outlinedButtonText: {
-    color: colors.primary,
-    fontSize: typography.body,
-    fontWeight: '700',
-  },
-  outlinedButtonDescription: {
-    color: colors.textSecondary,
-    fontSize: typography.caption,
-    marginTop: spacing.xs,
-  },
   logoutButton: {
     borderWidth: 1,
     borderColor: colors.error,
@@ -277,7 +250,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.background,
   },
-  scrollContent: {
-  paddingBottom: spacing.xl,
-},
 });

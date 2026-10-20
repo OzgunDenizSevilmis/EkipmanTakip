@@ -73,7 +73,7 @@ export const reservationService = {
 
     const { data: equipment, error: equipmentError } = await supabase
       .from('equipment')
-      .select('id, name, code')
+      .select('id, name, code, lifecycle_status')
       .in('id', equipmentIds);
 
     if (equipmentError) {
@@ -187,12 +187,12 @@ export const reservationService = {
       return { data: reservations ?? [], error: null };
     }
 
-    const { data: equipment, error: equipmentError } =
-      await supabase
-        .from('equipment')
-        .select('id, name, code')
-        .in('id', equipmentIds);
-
+const { data: equipment, error: equipmentError } =
+  await supabase
+    .from('equipment')
+    .select('id, name, code, lifecycle_status')
+    .in('id', equipmentIds);
+    
     if (equipmentError) {
       return { data: null, error: equipmentError };
     }
