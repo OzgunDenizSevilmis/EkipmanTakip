@@ -1,5 +1,5 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { AppStackParamList } from '../../navigation/AppStack';
+import { useQuery } from '@tanstack/react-query';
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,8 +16,9 @@ import {
   useCameraPermissions,
   type BarcodeScanningResult,
 } from 'expo-camera';
-import { useQuery } from '@tanstack/react-query';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+import type { AppStackParamList } from '../../navigation/AppStack';
 import { equipmentService } from '../../services/equipmentService';
 import { colors, radii, spacing, typography } from '../../theme';
 
@@ -25,18 +26,34 @@ type QRScannerScreenProps = NativeStackScreenProps<
   AppStackParamList,
   'QRScanner'
 >;
+
 type EquipmentStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
 
-function getEquipmentStatusLabel(status: EquipmentStatus) {
+function getEquipmentStatus(status: EquipmentStatus) {
   switch (status) {
     case 'ACTIVE':
-      return 'Kullanıma Uygun';
+      return {
+        label: 'Kullanıma Uygun',
+        icon: 'checkmark-circle-outline' as const,
+        backgroundColor: '#153A34',
+        textColor: '#53D6B0',
+      };
+
     case 'MAINTENANCE':
-      return 'Bakımda';
+      return {
+        label: 'Bakımda',
+        icon: 'construct-outline' as const,
+        backgroundColor: colors.errorBackground,
+        textColor: colors.error,
+      };
+
     case 'INACTIVE':
-      return 'Kullanım Dışı';
-    default:
-      return status;
+      return {
+        label: 'Kullanım Dışı',
+        icon: 'pause-circle-outline' as const,
+        backgroundColor: colors.surfaceElevated,
+        textColor: colors.textSecondary,
+      };
   }
 }
 
@@ -81,6 +98,11 @@ export default function QRScannerScreen({
       return;
     }
 
+    if (isSearching) {
+      return;
+    }
+
+    setIsSearching(true);
     setManualCode(normalizedCode);
     setScannedCode(normalizedCode);
   }
@@ -90,7 +112,6 @@ export default function QRScannerScreen({
       return;
     }
 
-    setIsSearching(true);
     handleCode(result.data);
   }
 
@@ -103,8 +124,11 @@ export default function QRScannerScreen({
   if (!permission) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>
+        <View style={styles.loadingIcon}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+        <Text style={styles.stateTitle}>Kamera hazırlanıyor</Text>
+        <Text style={styles.stateDescription}>
           Kamera erişimi kontrol ediliyor...
         </Text>
       </View>
@@ -113,20 +137,27 @@ export default function QRScannerScreen({
 
   const hasPermission = permission.granted;
 
-return (
-  <ScrollView
-    style={styles.container}
-    contentContainerStyle={styles.scrollContent}
-    keyboardShouldPersistTaps="handled"
-    showsVerticalScrollIndicator={false}
-  >
-    
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>EKİPMAN YÖNETİMİ</Text>
-        <Text style={styles.title}>QR Kod Okutma</Text>
+        <View style={styles.headerIcon}>
+          <Ionicons
+            name="qr-code-outline"
+            size={30}
+            color={colors.primary}
+          />
+        </View>
+
+        <Text style={styles.eyebrow}>HIZLI ERİŞİM</Text>
+        <Text style={styles.title}>QR Kod Tarayıcı</Text>
         <Text style={styles.subtitle}>
-          Ekipman bilgilerine hızlıca ulaşmak için QR kodu okutun
-          veya ekipman kodunu manuel olarak girin.
+          Ekipmanın QR kodunu okutarak bilgilerine ulaşabilir veya üzerindeki
+          ekipman kodunu manuel olarak arayabilirsin.
         </Text>
       </View>
 
@@ -134,13 +165,23 @@ return (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionIcon}>
-              <Text style={styles.sectionIconText}>01</Text>
+              <Ionicons
+                name="camera-outline"
+                size={22}
+                color={colors.primary}
+              />
             </View>
+
             <View style={styles.sectionHeading}>
-              <Text style={styles.sectionTitle}>Kamerayla Tara</Text>
+              <Text style={styles.sectionTitle}>Kamerayla tara</Text>
               <Text style={styles.sectionDescription}>
-                QR kodu kamera görüntüsünün içine hizalayın.
+                QR kodu çerçevenin içine hizala.
               </Text>
+            </View>
+
+            <View style={styles.liveBadge}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>CANLI</Text>
             </View>
           </View>
 
@@ -152,7 +193,9 @@ return (
                 barcodeTypes: ['qr'],
               }}
               onBarcodeScanned={
-                scannedCode ? undefined : handleBarcodeScanned
+                scannedCode || isSearching
+                  ? undefined
+                  : handleBarcodeScanned
               }
             />
 
@@ -162,37 +205,73 @@ return (
                 <View style={[styles.corner, styles.topRight]} />
                 <View style={[styles.corner, styles.bottomLeft]} />
                 <View style={[styles.corner, styles.bottomRight]} />
+
+                <View style={styles.scanCenter}>
+                  <Ionicons
+                    name="qr-code-outline"
+                    size={36}
+                    color="rgba(255,255,255,0.8)"
+                  />
+                </View>
               </View>
             </View>
 
             <View style={styles.cameraHint}>
+              <Ionicons
+                name="scan-outline"
+                size={16}
+                color={colors.white}
+              />
               <Text style={styles.cameraHintText}>
-                QR kodu çerçevenin içine getirin
+                QR kodu çerçevenin içine getir
               </Text>
             </View>
+
+            {isSearching ? (
+              <View style={styles.cameraSearching}>
+                <ActivityIndicator color={colors.white} />
+                <Text style={styles.cameraSearchingText}>
+                  Kod kontrol ediliyor...
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          <View style={styles.tipRow}>
+            <Ionicons
+              name="information-circle-outline"
+              size={18}
+              color={colors.textSecondary}
+            />
+            <Text style={styles.tipText}>
+              Daha iyi sonuç için QR kodu aydınlık bir ortamda okut.
+            </Text>
           </View>
         </View>
       ) : (
         <View style={styles.permissionCard}>
           <View style={styles.permissionIcon}>
-            <Text style={styles.permissionIconText}>!</Text>
+            <Ionicons
+              name="camera-outline"
+              size={30}
+              color={colors.primary}
+            />
           </View>
+
           <Text style={styles.sectionTitle}>Kamera erişimi gerekli</Text>
           <Text style={styles.sectionDescription}>
-            QR kod tarama özelliğini kullanmak için kamera izni
-            vermeniz gerekir. İzin vermeden de ekipman kodunu
-            manuel olarak arayabilirsiniz.
+            QR kod taramak için kamera izni vermelisin. İzin vermeden de
+            ekipman kodunu aşağıdaki alana girerek arama yapabilirsin.
           </Text>
+
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => {
-              void requestPermission();
-            }}
+            onPress={() => void requestPermission()}
             activeOpacity={0.8}
+            accessibilityRole="button"
           >
-            <Text style={styles.primaryButtonText}>
-              Kamera İznini Ver
-            </Text>
+            <Ionicons name="camera-outline" size={19} color={colors.white} />
+            <Text style={styles.primaryButtonText}>Kamera iznini ver</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -200,43 +279,104 @@ return (
       <View style={styles.manualCard}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionIcon}>
-            <Text style={styles.sectionIconText}>02</Text>
+            <Ionicons
+              name="keypad-outline"
+              size={22}
+              color={colors.primary}
+            />
           </View>
+
           <View style={styles.sectionHeading}>
-            <Text style={styles.sectionTitle}>Kod ile Ara</Text>
+            <Text style={styles.sectionTitle}>Kod ile ara</Text>
             <Text style={styles.sectionDescription}>
-              Ekipmanın üzerindeki kodu girerek kaydı bulun.
+              Ekipman kodunu manuel olarak gir.
             </Text>
           </View>
         </View>
 
-        <Text style={styles.inputLabel}>Ekipman Kodu</Text>
-        <TextInput
-          style={styles.input}
-          value={manualCode}
-          onChangeText={setManualCode}
-          placeholder="Örn. KAM001"
-          placeholderTextColor={colors.textSecondary}
-          autoCapitalize="characters"
-          autoCorrect={false}
-          maxLength={100}
-          returnKeyType="search"
-          accessibilityLabel="Ekipman kodu"
-          onSubmitEditing={() => handleCode(manualCode)}
-        />
+        <Text style={styles.inputLabel}>EKİPMAN KODU</Text>
+
+        <View style={styles.inputContainer}>
+          <Ionicons
+            name="barcode-outline"
+            size={21}
+            color={colors.textSecondary}
+          />
+
+          <TextInput
+            style={styles.input}
+            value={manualCode}
+            onChangeText={setManualCode}
+            placeholder="Örn. KAM001"
+            placeholderTextColor={colors.placeholder}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            maxLength={100}
+            returnKeyType="search"
+            accessibilityLabel="Ekipman kodu"
+            editable={!isSearching}
+            onSubmitEditing={() => handleCode(manualCode)}
+          />
+
+          {manualCode.length > 0 ? (
+            <TouchableOpacity
+              onPress={() => setManualCode('')}
+              accessibilityRole="button"
+              accessibilityLabel="Kodu temizle"
+              disabled={isSearching}
+            >
+              <Ionicons
+                name="close-circle"
+                size={20}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
 
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={[
+            styles.primaryButton,
+            isSearching && styles.disabledButton,
+          ]}
           onPress={() => handleCode(manualCode)}
           activeOpacity={0.8}
+          disabled={isSearching}
+          accessibilityRole="button"
         >
-          <Text style={styles.primaryButtonText}>Ekipmanı Ara</Text>
+          {isSearching ? (
+            <ActivityIndicator color={colors.white} />
+          ) : (
+            <>
+              <Ionicons
+                name="search-outline"
+                size={19}
+                color={colors.white}
+              />
+              <Text style={styles.primaryButtonText}>Ekipmanı ara</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
 
       {scannedCode ? (
         <View style={styles.resultCard}>
-          <Text style={styles.resultEyebrow}>ARAMA SONUCU</Text>
+          <View style={styles.resultHeader}>
+            <View style={styles.resultHeaderIcon}>
+              <Ionicons
+                name="clipboard-outline"
+                size={22}
+                color={colors.primary}
+              />
+            </View>
+
+            <View style={styles.resultHeaderText}>
+              <Text style={styles.resultEyebrow}>ARAMA SONUCU</Text>
+              <Text style={styles.resultCode}>{scannedCode}</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
 
           {equipmentQuery.isLoading ? (
             <View style={styles.resultLoading}>
@@ -246,10 +386,16 @@ return (
               </Text>
             </View>
           ) : equipmentQuery.isError ? (
-            <>
-              <Text style={styles.errorTitle}>
-                Ekipman bulunamadı
-              </Text>
+            <View style={styles.resultError}>
+              <View style={styles.errorIcon}>
+                <Ionicons
+                  name="alert-circle-outline"
+                  size={25}
+                  color={colors.error}
+                />
+              </View>
+
+              <Text style={styles.errorTitle}>Ekipman bulunamadı</Text>
               <Text style={styles.sectionDescription}>
                 {equipmentQuery.error instanceof Error
                   ? equipmentQuery.error.message
@@ -260,32 +406,104 @@ return (
                 style={styles.primaryButton}
                 onPress={resetScanner}
                 activeOpacity={0.8}
+                accessibilityRole="button"
               >
-                <Text style={styles.primaryButtonText}>
-                  Yeniden Ara
-                </Text>
+                <Ionicons
+                  name="refresh-outline"
+                  size={19}
+                  color={colors.white}
+                />
+                <Text style={styles.primaryButtonText}>Yeniden ara</Text>
               </TouchableOpacity>
-            </>
+            </View>
           ) : equipmentQuery.data ? (
             <>
-              <Text style={styles.equipmentName}>
-                {equipmentQuery.data.name}
-              </Text>
+              <View style={styles.equipmentHeading}>
+                <View style={styles.equipmentIcon}>
+                  <Ionicons
+                    name="cube-outline"
+                    size={27}
+                    color={colors.primary}
+                  />
+                </View>
 
-              <View style={styles.equipmentInfoRow}>
-                <Text style={styles.infoLabel}>Ekipman Kodu</Text>
-                <Text style={styles.infoValue}>
-                  {equipmentQuery.data.code}
-                </Text>
+                <View style={styles.equipmentHeadingText}>
+                  <Text style={styles.equipmentName}>
+                    {equipmentQuery.data.name}
+                  </Text>
+                  <Text style={styles.equipmentCode}>
+                    {equipmentQuery.data.code}
+                  </Text>
+                </View>
               </View>
 
               <View style={styles.equipmentInfoRow}>
-                <Text style={styles.infoLabel}>Kullanım Durumu</Text>
-                <Text style={styles.infoValue}>
-                  {getEquipmentStatusLabel(
-                    equipmentQuery.data.lifecycle_status as EquipmentStatus,
-                  )}
-                </Text>
+                <View style={styles.infoIcon}>
+                  <Ionicons
+                    name="barcode-outline"
+                    size={18}
+                    color={colors.primary}
+                  />
+                </View>
+
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Ekipman kodu</Text>
+                  <Text style={styles.infoValue}>
+                    {equipmentQuery.data.code}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.equipmentInfoRow}>
+                <View style={styles.infoIcon}>
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={18}
+                    color={colors.primary}
+                  />
+                </View>
+
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Kullanım durumu</Text>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: getEquipmentStatus(
+                          equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                        ).backgroundColor,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={
+                        getEquipmentStatus(
+                          equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                        ).icon
+                      }
+                      size={15}
+                      color={
+                        getEquipmentStatus(
+                          equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                        ).textColor
+                      }
+                    />
+                    <Text
+                      style={[
+                        styles.statusText,
+                        {
+                          color: getEquipmentStatus(
+                            equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                          ).textColor,
+                        },
+                      ]}
+                    >
+                      {getEquipmentStatus(
+                        equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                      ).label}
+                    </Text>
+                  </View>
+                </View>
               </View>
 
               <TouchableOpacity
@@ -296,35 +514,50 @@ return (
                   })
                 }
                 activeOpacity={0.8}
+                accessibilityRole="button"
               >
+                <Ionicons
+                  name="open-outline"
+                  size={19}
+                  color={colors.white}
+                />
                 <Text style={styles.primaryButtonText}>
-                  Ekipman Detaylarını Görüntüle
+                  Ekipman detaylarını görüntüle
                 </Text>
               </TouchableOpacity>
 
-<TouchableOpacity
-  style={styles.secondaryButton}
-  onPress={() =>
-    navigation.navigate('AdminReservations', {
-      equipmentId: equipmentQuery.data.id,
-    })
-  }
-  activeOpacity={0.8}
->
-  <Text style={styles.secondaryButtonText}>
-    Teslim / İade İşlemlerine Git
-  </Text>
-</TouchableOpacity>
-
-
               <TouchableOpacity
                 style={styles.secondaryButton}
+                onPress={() =>
+                  navigation.navigate('AdminReservations', {
+                    equipmentId: equipmentQuery.data.id,
+                  })
+                }
+                activeOpacity={0.8}
+                accessibilityRole="button"
+              >
+                <Ionicons
+                  name="swap-horizontal-outline"
+                  size={19}
+                  color={colors.primary}
+                />
+                <Text style={styles.secondaryButtonText}>
+                  Teslim / iade işlemlerine git
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.textButton}
                 onPress={resetScanner}
                 activeOpacity={0.8}
+                accessibilityRole="button"
               >
-                <Text style={styles.secondaryButtonText}>
-                  Başka Ekipman Ara
-                </Text>
+                <Ionicons
+                  name="scan-outline"
+                  size={18}
+                  color={colors.textSecondary}
+                />
+                <Text style={styles.textButtonLabel}>Başka ekipman ara</Text>
               </TouchableOpacity>
             </>
           ) : null}
@@ -336,25 +569,33 @@ return (
 
 const styles = StyleSheet.create({
   container: {
-  flex: 1,
-  backgroundColor: colors.background,
-},
-scrollContent: {
-  paddingHorizontal: spacing.lg,
-  paddingTop: spacing.lg,
-  paddingBottom: spacing.xl,
-  flexGrow: 1,
-},
-
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xxxl,
+  },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.background,
     padding: spacing.xl,
-    gap: spacing.md,
   },
   header: {
+    marginBottom: spacing.xl,
+  },
+  headerIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: radii.lg,
+    backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.lg,
   },
   eyebrow: {
@@ -366,17 +607,17 @@ scrollContent: {
   },
   title: {
     color: colors.text,
-    fontSize: typography.heading,
+    fontSize: typography.title,
     fontWeight: '700',
   },
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
-    lineHeight: 22,
+    lineHeight: 23,
     marginTop: spacing.sm,
   },
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -385,17 +626,12 @@ scrollContent: {
     marginBottom: spacing.md,
   },
   sectionIcon: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     borderRadius: radii.md,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  sectionIconText: {
-    color: colors.primary,
-    fontSize: typography.caption,
-    fontWeight: '700',
   },
   sectionHeading: {
     flex: 1,
@@ -409,13 +645,35 @@ scrollContent: {
   sectionDescription: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    lineHeight: 19,
+    lineHeight: 20,
+  },
+  liveBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.pill,
+    backgroundColor: '#153A34',
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: radii.pill,
+    backgroundColor: '#53D6B0',
+  },
+  liveText: {
+    color: '#53D6B0',
+    fontSize: 10,
+    fontWeight: '700',
   },
   cameraContainer: {
-    height: 245,
-    borderRadius: radii.lg,
+    height: 290,
+    borderRadius: radii.xl,
     overflow: 'hidden',
     backgroundColor: '#101828',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   camera: {
     flex: 1,
@@ -426,80 +684,112 @@ scrollContent: {
     justifyContent: 'center',
   },
   scanFrame: {
-    width: 190,
-    height: 150,
+    width: 210,
+    height: 175,
     position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanCenter: {
+    width: 64,
+    height: 64,
+    borderRadius: radii.md,
+    backgroundColor: 'rgba(11,18,32,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   corner: {
     position: 'absolute',
-    width: 28,
-    height: 28,
-    borderColor: '#FFFFFF',
+    width: 30,
+    height: 30,
+    borderColor: colors.primary,
   },
   topLeft: {
     top: 0,
     left: 0,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
     borderTopLeftRadius: radii.md,
   },
   topRight: {
     top: 0,
     right: 0,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
+    borderTopWidth: 4,
+    borderRightWidth: 4,
     borderTopRightRadius: radii.md,
   },
   bottomLeft: {
     bottom: 0,
     left: 0,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
     borderBottomLeftRadius: radii.md,
   },
   bottomRight: {
     bottom: 0,
     right: 0,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
     borderBottomRightRadius: radii.md,
   },
   cameraHint: {
     position: 'absolute',
     bottom: spacing.md,
     alignSelf: 'center',
-    backgroundColor: 'rgba(16, 24, 40, 0.82)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: 'rgba(11,18,32,0.88)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radii.md,
+    borderRadius: radii.pill,
   },
   cameraHintText: {
-    color: '#FFFFFF',
+    color: colors.white,
     fontSize: typography.caption,
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  cameraSearching: {
+   ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    backgroundColor: 'rgba(11,18,32,0.82)',
+  },
+  cameraSearchingText: {
+    color: colors.white,
+    fontSize: typography.body,
+    fontWeight: '600',
+  },
+  tipRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  tipText: {
+    flex: 1,
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    lineHeight: 19,
   },
   permissionCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.lg,
-    padding: spacing.lg,
-    gap: spacing.sm,
-    marginBottom: spacing.lg,
+    padding: spacing.xl,
+    gap: spacing.md,
+    marginBottom: spacing.xl,
   },
   permissionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radii.md,
+    width: 56,
+    height: 56,
+    borderRadius: radii.lg,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xs,
-  },
-  permissionIconText: {
-    color: colors.primary,
-    fontSize: typography.heading,
-    fontWeight: '700',
   },
   manualCard: {
     backgroundColor: colors.surface,
@@ -509,23 +799,34 @@ scrollContent: {
     padding: spacing.lg,
   },
   inputLabel: {
-    color: colors.text,
+    color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
+    fontWeight: '700',
+    letterSpacing: 0.7,
+    marginBottom: spacing.sm,
   },
-  input: {
-    minHeight: 48,
+  inputContainer: {
+    minHeight: 54,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
-    color: colors.text,
     backgroundColor: colors.background,
+  },
+  input: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 50,
+    color: colors.text,
     fontSize: typography.body,
   },
   primaryButton: {
-    minHeight: 48,
+    minHeight: 50,
+    flexDirection: 'row',
+    gap: spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
@@ -539,20 +840,41 @@ scrollContent: {
     fontSize: typography.body,
     fontWeight: '700',
     textAlign: 'center',
+    flexShrink: 1,
+  },
+  disabledButton: {
+    opacity: 0.65,
   },
   secondaryButton: {
-    minHeight: 46,
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
     padding: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: spacing.sm,
   },
   secondaryButtonText: {
     color: colors.primary,
     fontSize: typography.body,
+    fontWeight: '600',
+    textAlign: 'center',
+    flexShrink: 1,
+  },
+  textButton: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  textButtonLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
     fontWeight: '600',
   },
   resultCard: {
@@ -561,31 +883,111 @@ scrollContent: {
     borderColor: colors.border,
     borderRadius: radii.lg,
     padding: spacing.lg,
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
+  },
+  resultHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  resultHeaderIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resultHeaderText: {
+    flex: 1,
+    gap: spacing.xs,
   },
   resultEyebrow: {
     color: colors.primary,
     fontSize: typography.caption,
     fontWeight: '700',
     letterSpacing: 1,
-    marginBottom: spacing.sm,
+  },
+  resultCode: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginBottom: spacing.md,
   },
   resultLoading: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  resultError: {
+    alignItems: 'flex-start',
     paddingVertical: spacing.sm,
+  },
+  errorIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: radii.md,
+    backgroundColor: colors.errorBackground,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  errorTitle: {
+    color: colors.error,
+    fontSize: typography.body,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
+  },
+  equipmentHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  equipmentIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  equipmentHeadingText: {
+    flex: 1,
+    gap: spacing.xs,
   },
   equipmentName: {
     color: colors.text,
     fontSize: typography.heading,
     fontWeight: '700',
-    marginBottom: spacing.md,
+  },
+  equipmentCode: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
   },
   equipmentInfoRow: {
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  infoIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoContent: {
+    flex: 1,
     gap: spacing.xs,
   },
   infoLabel: {
@@ -597,15 +999,40 @@ scrollContent: {
     fontSize: typography.body,
     fontWeight: '600',
   },
-  errorTitle: {
-    color: colors.error,
-    fontSize: typography.body,
-    fontWeight: '700',
-    marginBottom: spacing.xs,
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.pill,
+    marginTop: spacing.xs,
   },
-  loadingText: {
+  statusText: {
+    fontSize: typography.caption,
+    fontWeight: '700',
+  },
+  loadingIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: radii.lg,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  stateTitle: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  stateDescription: {
     color: colors.textSecondary,
     fontSize: typography.body,
     textAlign: 'center',
+    lineHeight: 22,
+    marginTop: spacing.sm,
   },
 });

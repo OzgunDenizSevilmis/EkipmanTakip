@@ -80,14 +80,11 @@ export default function RegisterScreen({
         result.data.fullName,
       );
 
-   if (signUpError) {
-  console.log('REGISTER ERROR:', signUpError);
-
-  setError(signUpError.message);
-
-  return;
-}
-
+      if (signUpError) {
+        console.log('REGISTER ERROR:', signUpError);
+        setError(signUpError.message);
+        return;
+      }
 
       if (!data.session) {
         setSuccessMessage(
@@ -96,7 +93,9 @@ export default function RegisterScreen({
         return;
       }
 
-      setSuccessMessage('Hesabın başarıyla oluşturuldu. Giriş yapabilirsin.');
+      setSuccessMessage(
+        'Hesabın başarıyla oluşturuldu. Giriş yapabilirsin.',
+      );
     } catch {
       setError(
         'Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.',
@@ -104,6 +103,11 @@ export default function RegisterScreen({
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const clearMessages = () => {
+    setError(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -117,35 +121,33 @@ export default function RegisterScreen({
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.container}>
-          <View style={styles.logo}>
-            <View style={styles.logoVertical} />
-            <View style={styles.logoHorizontal} />
-          </View>
+          <View style={styles.header}>
+            <View style={styles.logo}>
+              <View style={styles.logoVertical} />
+              <View style={styles.logoHorizontal} />
+            </View>
 
-          <View style={styles.intro}>
-            <Text style={styles.eyebrow}>YENİ HESAP</Text>
-
-            <Text style={styles.title}>Hesabını oluştur.</Text>
-
-            <Text style={styles.subtitle}>
-              Ekipman rezervasyonlarını ve işlemlerini yönetmek için hesabını
-              oluştur.
-            </Text>
+            <View style={styles.intro}>
+              <Text style={styles.eyebrow}>EKİPMANTAKİP</Text>
+              <Text style={styles.title}>Hesabını oluştur.</Text>
+              <Text style={styles.subtitle}>
+                Ekipman rezervasyonlarını ve işlemlerini tek bir yerden
+                yönetmeye başla.
+              </Text>
+            </View>
           </View>
 
           <View style={styles.form}>
             <View style={styles.field}>
               <Text style={styles.label}>Ad Soyad</Text>
-
               <TextInput
                 style={styles.input}
-                placeholder="Ad Soyad"
+                placeholder="Adını ve soyadını gir"
                 placeholderTextColor={colors.placeholder}
                 value={fullName}
                 onChangeText={(value) => {
                   setFullName(value);
-                  setError(null);
-                  setSuccessMessage(null);
+                  clearMessages();
                 }}
                 autoCapitalize="words"
                 autoCorrect={false}
@@ -153,12 +155,12 @@ export default function RegisterScreen({
                 textContentType="name"
                 editable={!isSubmitting}
                 returnKeyType="next"
+                accessibilityLabel="Ad Soyad"
               />
             </View>
 
             <View style={styles.field}>
               <Text style={styles.label}>E-posta adresi</Text>
-
               <TextInput
                 style={styles.input}
                 placeholder="ornek@firma.com"
@@ -166,8 +168,7 @@ export default function RegisterScreen({
                 value={email}
                 onChangeText={(value) => {
                   setEmail(value);
-                  setError(null);
-                  setSuccessMessage(null);
+                  clearMessages();
                 }}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -176,12 +177,12 @@ export default function RegisterScreen({
                 textContentType="emailAddress"
                 editable={!isSubmitting}
                 returnKeyType="next"
+                accessibilityLabel="E-posta adresi"
               />
             </View>
 
             <View style={styles.field}>
               <Text style={styles.label}>Parola</Text>
-
               <TextInput
                 style={styles.input}
                 placeholder="En az 6 karakter"
@@ -189,8 +190,7 @@ export default function RegisterScreen({
                 value={password}
                 onChangeText={(value) => {
                   setPassword(value);
-                  setError(null);
-                  setSuccessMessage(null);
+                  clearMessages();
                 }}
                 secureTextEntry
                 autoCapitalize="none"
@@ -199,12 +199,15 @@ export default function RegisterScreen({
                 textContentType="newPassword"
                 editable={!isSubmitting}
                 returnKeyType="next"
+                accessibilityLabel="Parola"
               />
+              <Text style={styles.helperText}>
+                Parolan en az 6 karakterden oluşmalı.
+              </Text>
             </View>
 
             <View style={styles.field}>
               <Text style={styles.label}>Parola Tekrarı</Text>
-
               <TextInput
                 style={styles.input}
                 placeholder="Parolanı tekrar gir"
@@ -212,8 +215,7 @@ export default function RegisterScreen({
                 value={confirmPassword}
                 onChangeText={(value) => {
                   setConfirmPassword(value);
-                  setError(null);
-                  setSuccessMessage(null);
+                  clearMessages();
                 }}
                 secureTextEntry
                 autoCapitalize="none"
@@ -223,28 +225,38 @@ export default function RegisterScreen({
                 editable={!isSubmitting}
                 returnKeyType="done"
                 onSubmitEditing={handleSubmit}
+                accessibilityLabel="Parola tekrarı"
               />
             </View>
 
             {error && (
-              <Text accessibilityRole="alert" style={styles.error}>
-                {error}
-              </Text>
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorTitle}>İşlem tamamlanamadı</Text>
+                <Text accessibilityRole="alert" style={styles.error}>
+                  {error}
+                </Text>
+              </View>
             )}
 
             {successMessage && (
-              <Text accessibilityRole="alert" style={styles.success}>
-                {successMessage}
-              </Text>
+              <View style={styles.successContainer}>
+                <Text style={styles.successTitle}>Bilgilendirme</Text>
+                <Text accessibilityRole="alert" style={styles.success}>
+                  {successMessage}
+                </Text>
+              </View>
             )}
 
             <Pressable
-              style={[
+              style={({ pressed }) => [
                 styles.submitButton,
+                pressed && !isSubmitting && styles.submitButtonPressed,
                 isSubmitting && styles.disabledButton,
               ]}
               onPress={handleSubmit}
               disabled={isSubmitting}
+              accessibilityRole="button"
+              accessibilityLabel="Hesap oluştur"
             >
               {isSubmitting ? (
                 <ActivityIndicator color={colors.white} />
@@ -253,20 +265,25 @@ export default function RegisterScreen({
               )}
             </Pressable>
 
-            <Pressable
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-              disabled={isSubmitting}
-            >
-              <Text style={styles.backButtonText}>
-                Zaten hesabın var mı? Giriş yap
-              </Text>
-            </Pressable>
+            <View style={styles.loginRow}>
+              <Text style={styles.loginPrompt}>Zaten hesabın var mı?</Text>
+              <Pressable
+                onPress={() => navigation.goBack()}
+                disabled={isSubmitting}
+                hitSlop={8}
+                accessibilityRole="button"
+              >
+                <Text style={styles.loginLink}>Giriş yap</Text>
+              </Pressable>
+            </View>
           </View>
 
-          <Text style={styles.footer}>
-            Ekipman yönetimi, tek bir yerde.
-          </Text>
+          <View style={styles.footerContainer}>
+            <View style={styles.footerLine} />
+            <Text style={styles.footer}>
+              Ekipman yönetimi, tek bir yerde.
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -291,46 +308,52 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
 
+  header: {
+    marginBottom: spacing.xxl,
+  },
+
   logo: {
-    width: 42,
-    height: 42,
-    borderRadius: radii.md,
+    width: 48,
+    height: 48,
+    borderRadius: radii.lg,
     backgroundColor: colors.navyLight,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    marginBottom: spacing.xxxl,
+    marginBottom: spacing.xl,
   },
 
   logoVertical: {
     position: 'absolute',
     width: 6,
-    height: 23,
-    left: 12,
+    height: 25,
+    left: 13,
     borderRadius: radii.sm,
     backgroundColor: colors.white,
   },
 
   logoHorizontal: {
     position: 'absolute',
-    width: 17,
+    width: 19,
     height: 6,
     right: 7,
-    top: 11,
+    top: 12,
     borderRadius: radii.sm,
     backgroundColor: colors.primary,
   },
 
   intro: {
-    marginBottom: spacing.xxl,
+    gap: spacing.sm,
   },
 
   eyebrow: {
     color: colors.primary,
     fontSize: typography.caption,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: spacing.md,
+    fontWeight: '800',
+    letterSpacing: 2,
+    marginBottom: spacing.xs,
   },
 
   title: {
@@ -338,15 +361,15 @@ const styles = StyleSheet.create({
     fontSize: typography.title,
     lineHeight: 38,
     fontWeight: '800',
-    letterSpacing: -0.9,
-    marginBottom: spacing.md,
+    letterSpacing: -0.8,
   },
 
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
-    lineHeight: 24,
-    maxWidth: 340,
+    lineHeight: 23,
+    marginTop: spacing.xs,
+    maxWidth: 350,
   },
 
   form: {
@@ -374,20 +397,50 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 
-  error: {
-    color: colors.error,
+  helperText: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    lineHeight: 17,
+  },
+
+  errorContainer: {
     backgroundColor: colors.errorBackground,
+    borderWidth: 1,
+    borderColor: colors.error,
     borderRadius: radii.md,
     padding: spacing.md,
+    gap: spacing.xs,
+  },
+
+  errorTitle: {
+    color: colors.error,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+
+  error: {
+    color: colors.text,
     fontSize: typography.label,
     lineHeight: 20,
   },
 
-  success: {
-    color: colors.primary,
+  successContainer: {
     backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.primary,
     borderRadius: radii.md,
     padding: spacing.md,
+    gap: spacing.xs,
+  },
+
+  successTitle: {
+    color: colors.primary,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+
+  success: {
+    color: colors.text,
     fontSize: typography.label,
     lineHeight: 20,
   },
@@ -401,6 +454,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
 
+  submitButtonPressed: {
+    backgroundColor: colors.primaryPressed,
+    opacity: 0.92,
+  },
+
   disabledButton: {
     opacity: 0.65,
   },
@@ -411,21 +469,41 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  backButton: {
+  loginRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
     paddingVertical: spacing.sm,
   },
 
-  backButtonText: {
+  loginPrompt: {
+    color: colors.textSecondary,
+    fontSize: typography.label,
+  },
+
+  loginLink: {
     color: colors.primary,
     fontSize: typography.label,
     fontWeight: '700',
+  },
+
+  footerContainer: {
+    alignItems: 'center',
+    marginTop: spacing.xxl,
+    gap: spacing.md,
+  },
+
+  footerLine: {
+    height: 1,
+    width: 44,
+    backgroundColor: colors.border,
   },
 
   footer: {
     textAlign: 'center',
     color: colors.textSecondary,
     fontSize: typography.caption,
-    marginTop: spacing.xxxl,
   },
 });

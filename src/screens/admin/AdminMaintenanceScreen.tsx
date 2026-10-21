@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   Alert,
@@ -27,7 +27,6 @@ type EquipmentOption = {
   lifecycle_status: 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
 };
 
-
 function formatDateTime(value: string) {
   const date = new Date(value);
 
@@ -44,6 +43,30 @@ function formatDateTime(value: string) {
   });
 }
 
+function SummaryCard({
+  icon,
+  label,
+  count,
+  accent,
+  iconBackground,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  label: string;
+  count: number;
+  accent: string;
+  iconBackground: string;
+}) {
+  return (
+    <View style={styles.summaryCard}>
+      <View style={[styles.summaryIcon, { backgroundColor: iconBackground }]}>
+        <Ionicons name={icon} size={20} color={accent} />
+      </View>
+      <Text style={styles.summaryCount}>{count}</Text>
+      <Text style={styles.summaryLabel}>{label}</Text>
+    </View>
+  );
+}
+
 function MaintenanceCard({
   maintenance,
   isProcessing,
@@ -56,63 +79,105 @@ function MaintenanceCard({
   const isCompleted = maintenance.closed_at !== null;
 
   return (
-    <View style={styles.card}>
+    <View style={styles.maintenanceCard}>
       <View style={styles.cardHeader}>
+        <View style={styles.equipmentIcon}>
+          <Ionicons
+            name="construct-outline"
+            size={23}
+            color={colors.primary}
+          />
+        </View>
+
         <View style={styles.titleContainer}>
-          <Text style={styles.cardTitle}>
+          <Text style={styles.cardTitle} numberOfLines={2}>
             {maintenance.equipment?.name ?? 'Ekipman'}
           </Text>
 
           {maintenance.equipment?.code ? (
             <Text style={styles.secondaryText}>
-              {maintenance.equipment.code}
+              Kod: {maintenance.equipment.code}
             </Text>
           ) : null}
         </View>
+      </View>
 
-        <View
+      <View
+        style={[
+          styles.statusBadge,
+          isCompleted ? styles.completedBadge : styles.activeBadge,
+        ]}
+      >
+        <Ionicons
+          name={isCompleted ? 'checkmark-circle-outline' : 'time-outline'}
+          size={15}
+          color={isCompleted ? '#63D8B4' : '#F4C66A'}
+        />
+        <Text
           style={[
-            styles.statusBadge,
-            isCompleted ? styles.completedBadge : styles.activeBadge,
+            styles.statusText,
+            { color: isCompleted ? '#63D8B4' : '#F4C66A' },
           ]}
         >
-          <Text style={styles.statusText}>
-            {isCompleted ? 'Tamamlandı' : 'Devam Ediyor'}
+          {isCompleted ? 'Tamamlandı' : 'Devam Ediyor'}
+        </Text>
+      </View>
+
+      <View style={styles.cardDivider} />
+
+      <Text style={styles.label}>Bakım açıklaması</Text>
+      <Text style={styles.description}>{maintenance.description}</Text>
+
+      <View style={styles.infoRow}>
+        <Ionicons
+          name="calendar-outline"
+          size={17}
+          color={colors.textSecondary}
+        />
+        <View style={styles.infoContent}>
+          <Text style={styles.infoLabel}>Başlangıç tarihi</Text>
+          <Text style={styles.value}>
+            {formatDateTime(maintenance.opened_at)}
           </Text>
         </View>
       </View>
 
-      <Text style={styles.label}>Bakım Açıklaması</Text>
-      <Text style={styles.description}>{maintenance.description}</Text>
-
-      <View style={styles.divider} />
-
-      <Text style={styles.label}>Başlangıç</Text>
-      <Text style={styles.value}>
-        {formatDateTime(maintenance.opened_at)}
-      </Text>
-
       {maintenance.closed_at ? (
-        <>
-          <View style={styles.divider} />
-          <Text style={styles.label}>Tamamlanma</Text>
-          <Text style={styles.value}>
-            {formatDateTime(maintenance.closed_at)}
-          </Text>
-        </>
+        <View style={styles.infoRow}>
+          <Ionicons
+            name="checkmark-done-outline"
+            size={17}
+            color="#63D8B4"
+          />
+          <View style={styles.infoContent}>
+            <Text style={styles.infoLabel}>Tamamlanma tarihi</Text>
+            <Text style={styles.value}>
+              {formatDateTime(maintenance.closed_at)}
+            </Text>
+          </View>
+        </View>
       ) : null}
 
       {!isCompleted ? (
         <TouchableOpacity
           style={[
-            styles.primaryButton,
+            styles.completeButton,
             isProcessing && styles.disabledButton,
           ]}
           onPress={() => onComplete(maintenance)}
           disabled={isProcessing}
           activeOpacity={0.8}
         >
-          <Text style={styles.primaryButtonText}>
+          {isProcessing ? (
+            <ActivityIndicator color={colors.white} size="small" />
+          ) : (
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={19}
+              color={colors.white}
+            />
+          )}
+          <Text style={styles.buttonText}>
             {isProcessing ? 'İşleniyor...' : 'Bakımı Tamamla'}
           </Text>
         </TouchableOpacity>
@@ -123,6 +188,7 @@ function MaintenanceCard({
 
 export function AdminMaintenanceScreen() {
   const queryClient = useQueryClient();
+
   const [selectedEquipmentId, setSelectedEquipmentId] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -200,10 +266,7 @@ export function AdminMaintenanceScreen() {
     }
 
     if (!description.trim()) {
-      Alert.alert(
-        'Açıklama gerekli',
-        'Lütfen bakım açıklamasını gir.',
-      );
+      Alert.alert('Açıklama gerekli', 'Lütfen bakım açıklamasını gir.');
       return;
     }
 
@@ -271,9 +334,7 @@ export function AdminMaintenanceScreen() {
     } catch (error) {
       Alert.alert(
         'İşlem başarısız',
-        error instanceof Error
-          ? error.message
-          : 'Bakım tamamlanamadı.',
+        error instanceof Error ? error.message : 'Bakım tamamlanamadı.',
       );
     } finally {
       setProcessingMaintenanceId(null);
@@ -286,9 +347,12 @@ export function AdminMaintenanceScreen() {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.secondaryText}>
-          Bakım bilgileri yükleniyor...
+        <View style={styles.loadingIcon}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+        <Text style={styles.stateTitle}>Bakım kayıtları yükleniyor</Text>
+        <Text style={styles.stateDescription}>
+          Ekipman ve bakım bilgileri hazırlanıyor.
         </Text>
       </View>
     );
@@ -297,16 +361,25 @@ export function AdminMaintenanceScreen() {
   if (equipmentError && maintenanceError) {
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>
-          Bakım bilgileri yüklenemedi.
+        <View style={styles.errorIcon}>
+          <Ionicons
+            name="cloud-offline-outline"
+            size={30}
+            color={colors.error}
+          />
+        </View>
+        <Text style={styles.stateTitle}>Veriler yüklenemedi</Text>
+        <Text style={styles.stateDescription}>
+          Bakım bilgileri alınırken bir sorun oluştu. Lütfen tekrar dene.
         </Text>
-
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => {
             void refreshData();
           }}
+          activeOpacity={0.8}
         >
+          <Ionicons name="refresh-outline" size={19} color={colors.white} />
           <Text style={styles.primaryButtonText}>Tekrar Dene</Text>
         </TouchableOpacity>
       </View>
@@ -320,31 +393,95 @@ export function AdminMaintenanceScreen() {
       refreshControl={
         <RefreshControl
           refreshing={isRefetching}
-          onRefresh={refreshData}
+          onRefresh={() => {
+            void refreshData();
+          }}
           tintColor={colors.primary}
+          colors={[colors.primary]}
         />
       }
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.screenTitle}>Bakım Yönetimi</Text>
-      <Text style={styles.subtitle}>
-        Ekipmanların bakım süreçlerini yönet.
-      </Text>
+      <View style={styles.header}>
+        <View style={styles.headerIcon}>
+          <Ionicons
+            name="construct-outline"
+            size={27}
+            color={colors.primary}
+          />
+        </View>
+        <View style={styles.headerText}>
+          <Text style={styles.screenTitle}>Bakım Yönetimi</Text>
+          <Text style={styles.subtitle}>
+            Ekipmanların bakım süreçlerini takip et ve yönet.
+          </Text>
+        </View>
+      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Yeni Bakım Başlat</Text>
+      <View style={styles.summaryRow}>
+        <SummaryCard
+          icon="time-outline"
+          label="Devam Eden"
+          count={activeMaintenance.length}
+          accent="#F4C66A"
+          iconBackground="#3B301B"
+        />
+        <SummaryCard
+          icon="checkmark-circle-outline"
+          label="Tamamlanan"
+          count={completedMaintenance.length}
+          accent="#63D8B4"
+          iconBackground="#173A32"
+        />
+        <SummaryCard
+          icon="desktop-outline"
+          label="Uygun Ekipman"
+          count={equipmentError ? 0 : availableEquipment.length}
+          accent="#8CB5FF"
+          iconBackground="#1C3154"
+        />
+      </View>
 
-        <Text style={styles.label}>Ekipman Seç</Text>
+      <View style={styles.formCard}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionIcon}>
+            <Ionicons
+              name="add-circle-outline"
+              size={22}
+              color={colors.primary}
+            />
+          </View>
+          <View style={styles.sectionHeaderText}>
+            <Text style={styles.sectionTitle}>Yeni Bakım Başlat</Text>
+            <Text style={styles.sectionSubtitle}>
+              Bakım kaydı oluşturmak için bilgileri gir.
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.label}>Ekipman seçimi *</Text>
 
         {equipmentError ? (
-          <Text style={styles.errorText}>
-            Ekipman listesi yüklenemedi.
-          </Text>
+          <View style={styles.inlineError}>
+            <Ionicons
+              name="alert-circle-outline"
+              size={18}
+              color={colors.error}
+            />
+            <Text style={styles.errorText}>Ekipman listesi yüklenemedi.</Text>
+          </View>
         ) : availableEquipment.length === 0 ? (
-          <Text style={styles.emptyText}>
-            Bakım başlatılabilecek aktif ekipman bulunmuyor.
-          </Text>
+          <View style={styles.emptyInline}>
+            <Ionicons
+              name="information-circle-outline"
+              size={20}
+              color={colors.textSecondary}
+            />
+            <Text style={styles.emptyText}>
+              Bakım başlatılabilecek aktif ekipman bulunmuyor.
+            </Text>
+          </View>
         ) : (
           <View style={styles.equipmentList}>
             {availableEquipment.map((item) => {
@@ -358,68 +495,137 @@ export function AdminMaintenanceScreen() {
                     isSelected && styles.selectedEquipmentOption,
                   ]}
                   onPress={() => setSelectedEquipmentId(item.id)}
+                  disabled={isSubmitting}
                   activeOpacity={0.8}
                 >
-                  <View style={styles.titleContainer}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.secondaryText}>{item.code}</Text>
-                  </View>
-
-                  <Text
+                  <View
                     style={[
-                      styles.optionStatus,
-                      isSelected && styles.selectedOptionStatus,
+                      styles.optionIcon,
+                      isSelected && styles.selectedOptionIcon,
                     ]}
                   >
-                    {isSelected ? 'Seçildi' : 'Seç'}
-                  </Text>
+                    <Ionicons
+                      name="desktop-outline"
+                      size={21}
+                      color={isSelected ? colors.primary : colors.textSecondary}
+                    />
+                  </View>
+
+                  <View style={styles.titleContainer}>
+                    <Text style={styles.cardTitle} numberOfLines={2}>
+                      {item.name}
+                    </Text>
+                    <Text style={styles.secondaryText}>
+                      Kod: {item.code}
+                    </Text>
+                  </View>
+
+                  <Ionicons
+                    name={
+                      isSelected
+                        ? 'checkmark-circle'
+                        : 'ellipse-outline'
+                    }
+                    size={22}
+                    color={
+                      isSelected ? colors.primary : colors.textSecondary
+                    }
+                  />
                 </TouchableOpacity>
               );
             })}
           </View>
         )}
 
-        <Text style={styles.label}>Bakım Açıklaması</Text>
-
+        <Text style={styles.label}>Bakım açıklaması *</Text>
         <TextInput
           style={styles.textInput}
           value={description}
           onChangeText={setDescription}
           placeholder="Bakım nedenini ve yapılacak işlemi yaz..."
-          placeholderTextColor={colors.textSecondary}
+          placeholderTextColor={colors.placeholder}
           multiline
           textAlignVertical="top"
           maxLength={1000}
+          editable={!isSubmitting}
         />
+        <Text style={styles.characterCount}>
+          {description.length}/1000 karakter
+        </Text>
 
         <TouchableOpacity
           style={[
             styles.primaryButton,
-            (isSubmitting || availableEquipment.length === 0) &&
+            (isSubmitting ||
+              equipmentError ||
+              availableEquipment.length === 0) &&
               styles.disabledButton,
           ]}
           onPress={() => {
             void handleStartMaintenance();
           }}
-          disabled={isSubmitting || availableEquipment.length === 0}
+          disabled={
+            isSubmitting ||
+            equipmentError ||
+            availableEquipment.length === 0
+          }
           activeOpacity={0.8}
         >
+          {isSubmitting ? (
+            <ActivityIndicator color={colors.white} size="small" />
+          ) : (
+            <Ionicons
+              name="construct-outline"
+              size={19}
+              color={colors.white}
+            />
+          )}
           <Text style={styles.primaryButtonText}>
             {isSubmitting ? 'Bakım Başlatılıyor...' : 'Bakımı Başlat'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Devam Eden Bakımlar</Text>
+      <View style={styles.listSectionHeader}>
+        <View style={styles.listSectionIcon}>
+          <Ionicons name="time-outline" size={22} color="#F4C66A" />
+        </View>
+        <View style={styles.sectionHeaderText}>
+          <Text style={styles.sectionTitle}>Devam Eden Bakımlar</Text>
+          <Text style={styles.sectionSubtitle}>
+            {activeMaintenance.length} aktif bakım kaydı
+          </Text>
+        </View>
+        <View style={styles.countBadge}>
+          <Text style={styles.countBadgeText}>
+            {activeMaintenance.length}
+          </Text>
+        </View>
+      </View>
 
       {maintenanceError ? (
-        <Text style={styles.errorText}>
-          Bakım kayıtları yüklenemedi.
-        </Text>
+        <View style={styles.emptyCard}>
+          <Ionicons
+            name="alert-circle-outline"
+            size={23}
+            color={colors.error}
+          />
+          <Text style={styles.errorText}>Bakım kayıtları yüklenemedi.</Text>
+        </View>
       ) : activeMaintenance.length === 0 ? (
-        <Text style={styles.emptyText}>
-          Devam eden bakım kaydı bulunmuyor.
-        </Text>
+        <View style={styles.emptyCard}>
+          <View style={styles.emptyIcon}>
+            <Ionicons
+              name="checkmark-done-outline"
+              size={26}
+              color="#63D8B4"
+            />
+          </View>
+          <Text style={styles.emptyTitle}>Aktif bakım yok</Text>
+          <Text style={styles.emptyText}>
+            Şu anda devam eden bir bakım kaydı bulunmuyor.
+          </Text>
+        </View>
       ) : (
         activeMaintenance.map((item) => (
           <MaintenanceCard
@@ -431,12 +637,41 @@ export function AdminMaintenanceScreen() {
         ))
       )}
 
-      <Text style={styles.sectionTitle}>Tamamlanan Bakımlar</Text>
+      <View style={[styles.listSectionHeader, styles.completedSectionHeader]}>
+        <View style={styles.listSectionIconCompleted}>
+          <Ionicons
+            name="checkmark-done-outline"
+            size={22}
+            color="#63D8B4"
+          />
+        </View>
+        <View style={styles.sectionHeaderText}>
+          <Text style={styles.sectionTitle}>Tamamlanan Bakımlar</Text>
+          <Text style={styles.sectionSubtitle}>
+            Geçmiş bakım kayıtları
+          </Text>
+        </View>
+        <View style={styles.countBadge}>
+          <Text style={styles.countBadgeText}>
+            {completedMaintenance.length}
+          </Text>
+        </View>
+      </View>
 
       {maintenanceError ? null : completedMaintenance.length === 0 ? (
-        <Text style={styles.emptyText}>
-          Tamamlanmış bakım kaydı bulunmuyor.
-        </Text>
+        <View style={styles.emptyCard}>
+          <View style={styles.emptyIcon}>
+            <Ionicons
+              name="file-tray-outline"
+              size={26}
+              color={colors.textSecondary}
+            />
+          </View>
+          <Text style={styles.emptyTitle}>Geçmiş kayıt yok</Text>
+          <Text style={styles.emptyText}>
+            Tamamlanan bakım kayıtları burada görüntülenecek.
+          </Text>
+        </View>
       ) : (
         completedMaintenance.map((item) => (
           <MaintenanceCard
@@ -460,36 +695,107 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     paddingBottom: spacing.xxxl,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingTop: spacing.xs,
+    marginBottom: spacing.xl,
+  },
+  headerIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: radii.lg,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerText: {
+    flex: 1,
+  },
   screenTitle: {
     color: colors.text,
     fontSize: typography.heading,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   subtitle: {
     color: colors.textSecondary,
-    fontSize: typography.body,
+    fontSize: typography.caption,
+    lineHeight: 19,
     marginTop: spacing.xs,
-    marginBottom: spacing.lg,
   },
-  section: {
+  summaryRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  summaryCard: {
+    flex: 1,
+    minWidth: 0,
     backgroundColor: colors.surface,
-    borderRadius: radii.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.md,
+  },
+  summaryIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: radii.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  summaryCount: {
+    color: colors.text,
+    fontSize: 23,
+    fontWeight: '800',
+  },
+  summaryLabel: {
+    color: colors.textSecondary,
+    fontSize: 11,
+    marginTop: spacing.xs,
+  },
+  formCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.xl,
     padding: spacing.lg,
+    marginBottom: spacing.xxl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  sectionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionHeaderText: {
+    flex: 1,
   },
   sectionTitle: {
     color: colors.text,
     fontSize: typography.body,
-    fontWeight: '700',
-    marginTop: spacing.lg,
-    marginBottom: spacing.md,
+    fontWeight: '800',
   },
-  label: {
+  sectionSubtitle: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: '600',
+    marginTop: spacing.xs,
+    lineHeight: 18,
+  },
+  label: {
+    color: colors.text,
+    fontSize: typography.label,
+    fontWeight: '700',
     marginBottom: spacing.sm,
     marginTop: spacing.md,
   },
@@ -499,7 +805,6 @@ const styles = StyleSheet.create({
   equipmentOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
@@ -511,23 +816,19 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.primarySoft,
   },
+  optionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radii.md,
+    backgroundColor: colors.surfaceElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedOptionIcon: {
+    backgroundColor: colors.background,
+  },
   titleContainer: {
     flex: 1,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-    marginBottom: spacing.md,
   },
   cardTitle: {
     color: colors.text,
@@ -539,62 +840,33 @@ const styles = StyleSheet.create({
     fontSize: typography.caption,
     marginTop: spacing.xs,
   },
-  optionStatus: {
+  textInput: {
+    minHeight: 112,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    color: colors.text,
+    backgroundColor: colors.background,
+    fontSize: typography.body,
+    lineHeight: 21,
+  },
+  characterCount: {
     color: colors.textSecondary,
     fontSize: typography.caption,
-    fontWeight: '700',
-  },
-  selectedOptionStatus: {
-    color: colors.primary,
-  },
-  statusBadge: {
-    borderRadius: radii.pill,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    backgroundColor: colors.primarySoft,
-  },
-  activeBadge: {
-    backgroundColor: colors.primarySoft,
-  },
-  completedBadge: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  statusText: {
-    color: colors.primary,
-    fontSize: typography.caption,
-    fontWeight: '700',
-  },
-  description: {
-    color: colors.text,
-    fontSize: typography.body,
-  },
-  value: {
-    color: colors.text,
-    fontSize: typography.body,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.md,
-  },
-  textInput: {
-    minHeight: 100,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radii.md,
-    padding: spacing.md,
-    color: colors.text,
-    backgroundColor: colors.background,
-    fontSize: typography.body,
+    textAlign: 'right',
+    marginTop: spacing.xs,
   },
   primaryButton: {
-    backgroundColor: colors.primary,
-    borderRadius: radii.md,
-    padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    minHeight: 49,
     marginTop: spacing.lg,
   },
   primaryButtonText: {
@@ -605,6 +877,188 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.55,
   },
+  listSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  completedSectionHeader: {
+    marginTop: spacing.xl,
+  },
+  listSectionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: radii.md,
+    backgroundColor: '#3B301B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  listSectionIconCompleted: {
+    width: 42,
+    height: 42,
+    borderRadius: radii.md,
+    backgroundColor: '#173A32',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  countBadge: {
+    minWidth: 32,
+    height: 32,
+    borderRadius: radii.pill,
+    backgroundColor: colors.surfaceElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+  },
+  countBadgeText: {
+    color: colors.text,
+    fontSize: typography.caption,
+    fontWeight: '800',
+  },
+  maintenanceCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.xl,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  equipmentIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    borderRadius: radii.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.md,
+  },
+  activeBadge: {
+    backgroundColor: '#3B301B',
+  },
+  completedBadge: {
+    backgroundColor: '#173A32',
+  },
+  statusText: {
+    fontSize: typography.caption,
+    fontWeight: '700',
+  },
+  cardDivider: {
+    height: 1,
+    backgroundColor: colors.border,
+    marginVertical: spacing.lg,
+  },
+  description: {
+    color: colors.text,
+    fontSize: typography.body,
+    lineHeight: 22,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.md,
+    marginTop: spacing.lg,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    marginBottom: spacing.xs,
+  },
+  value: {
+    color: colors.text,
+    fontSize: typography.body,
+    lineHeight: 21,
+  },
+  completeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    minHeight: 48,
+    marginTop: spacing.xl,
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  emptyCard: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  emptyIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: radii.lg,
+    backgroundColor: colors.surfaceElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  emptyTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  emptyText: {
+    color: colors.textSecondary,
+    fontSize: typography.body,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+  inlineError: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.errorBackground,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
+  errorText: {
+    flex: 1,
+    color: colors.error,
+    fontSize: typography.body,
+    lineHeight: 21,
+  },
+  emptyInline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -613,14 +1067,34 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     gap: spacing.md,
   },
-  errorText: {
-    color: colors.error,
-    fontSize: typography.body,
-    marginBottom: spacing.md,
+  loadingIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: radii.xl,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  emptyText: {
+  errorIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: radii.xl,
+    backgroundColor: colors.errorBackground,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stateTitle: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  stateDescription: {
     color: colors.textSecondary,
     fontSize: typography.body,
-    marginBottom: spacing.md,
+    lineHeight: 22,
+    textAlign: 'center',
   },
 });

@@ -19,7 +19,10 @@ import { authService } from '../../services/authService';
 import type { AuthStackParamList } from '../../navigation/AuthStack';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type LoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Login'
+>;
 
 const loginSchema = z.object({
   email: z.string().trim().email('Geçerli bir e-posta adresi gir.'),
@@ -80,16 +83,28 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
             <View style={styles.logo}>
               <View style={styles.logoVertical} />
               <View style={styles.logoHorizontal} />
+              <View style={styles.logoAccent} />
             </View>
-            <Text style={styles.brandName}>EkipmanTakip</Text>
+
+            <View>
+              <Text style={styles.brandName}>EkipmanTakip</Text>
+              <Text style={styles.brandCaption}>
+                ENVANTER YÖNETİM SİSTEMİ
+              </Text>
+            </View>
           </View>
 
           <View style={styles.intro}>
-            <Text style={styles.eyebrow}>HESAP ERİŞİMİ</Text>
+            <View style={styles.eyebrow}>
+              <View style={styles.eyebrowDot} />
+              <Text style={styles.eyebrowText}>HESAP ERİŞİMİ</Text>
+            </View>
+
             <Text style={styles.title}>Tekrar hoş geldin.</Text>
+
             <Text style={styles.subtitle}>
-              Ekipmanlarını ve rezervasyonlarını yönetmek için hesabına giriş
-              yap.
+              Ekipmanlarını, rezervasyonlarını ve zimmet kayıtlarını
+              yönetmek için hesabına giriş yap.
             </Text>
           </View>
 
@@ -102,7 +117,10 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    style={[styles.input, errors.email && styles.inputError]}
+                    style={[
+                      styles.input,
+                      errors.email && styles.inputError,
+                    ]}
                     placeholder="ornek@firma.com"
                     placeholderTextColor={colors.placeholder}
                     value={value}
@@ -123,9 +141,11 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 )}
               />
 
-              {errors.email && (
-                <Text style={styles.fieldError}>{errors.email.message}</Text>
-              )}
+              {errors.email ? (
+                <Text style={styles.fieldError}>
+                  {errors.email.message}
+                </Text>
+              ) : null}
             </View>
 
             <View style={styles.field}>
@@ -172,6 +192,8 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                     isPasswordVisible ? 'Parolayı gizle' : 'Parolayı göster'
                   }
                   hitSlop={8}
+                  disabled={isSubmitting}
+                  style={styles.passwordToggleButton}
                 >
                   <Text style={styles.passwordToggle}>
                     {isPasswordVisible ? 'Gizle' : 'Göster'}
@@ -179,11 +201,11 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 </Pressable>
               </View>
 
-              {errors.password && (
+              {errors.password ? (
                 <Text style={styles.fieldError}>
                   {errors.password.message}
                 </Text>
-              )}
+              ) : null}
 
               <Pressable
                 style={styles.forgotPassword}
@@ -195,15 +217,21 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
               </Pressable>
             </View>
 
-            {serverError && (
-              <Text accessibilityRole="alert" style={styles.serverError}>
-                {serverError}
-              </Text>
-            )}
+            {serverError ? (
+              <View style={styles.serverErrorContainer}>
+                <Text
+                  accessibilityRole="alert"
+                  style={styles.serverError}
+                >
+                  {serverError}
+                </Text>
+              </View>
+            ) : null}
 
             <Pressable
-              style={[
+              style={({ pressed }) => [
                 styles.submitButton,
+                pressed && !isSubmitting && styles.pressedButton,
                 isSubmitting && styles.disabledButton,
               ]}
               onPress={handleSubmit(onSubmit)}
@@ -213,26 +241,37 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
               {isSubmitting ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                <Text style={styles.submitButtonText}>Giriş Yap</Text>
+                <>
+                  <Text style={styles.submitButtonText}>Giriş Yap</Text>
+                  <Text style={styles.submitButtonArrow}>→</Text>
+                </>
               )}
             </Pressable>
 
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Henüz hesabın yok mu?</Text>
+              <Text style={styles.registerText}>
+                Henüz hesabın yok mu?
+              </Text>
               <Pressable
                 onPress={() => navigation.navigate('Register')}
                 disabled={isSubmitting}
                 accessibilityRole="button"
                 hitSlop={8}
               >
-                <Text style={styles.linkText}> Kayıt Ol</Text>
+                <Text style={styles.linkText}>Kayıt ol</Text>
               </Pressable>
             </View>
           </View>
 
-          <Text style={styles.footer}>
-            Ekipman yönetimi, tek bir yerde.
-          </Text>
+          <View style={styles.footerContainer}>
+            <View style={styles.footerDivider} />
+            <Text style={styles.footer}>
+              Ekipman yönetimi, tek bir yerde.
+            </Text>
+            <Text style={styles.footerVersion}>
+              EKİPMANTAKİP · GÜVENLİ ERİŞİM
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -261,10 +300,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxxl,
   },
   logo: {
-    width: 42,
-    height: 42,
-    borderRadius: radii.md,
-    backgroundColor: colors.navy,
+    width: 48,
+    height: 48,
+    borderRadius: radii.lg,
+    backgroundColor: colors.surfaceElevated,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -272,52 +313,89 @@ const styles = StyleSheet.create({
   logoVertical: {
     position: 'absolute',
     width: 6,
-    height: 23,
-    left: 12,
+    height: 25,
+    left: 13,
     borderRadius: radii.sm,
     backgroundColor: colors.white,
   },
   logoHorizontal: {
     position: 'absolute',
-    width: 17,
+    width: 19,
     height: 6,
     right: 7,
-    top: 11,
+    top: 12,
+    borderRadius: radii.sm,
+    backgroundColor: colors.primary,
+  },
+  logoAccent: {
+    position: 'absolute',
+    width: 6,
+    height: 12,
+    right: 7,
+    bottom: 8,
     borderRadius: radii.sm,
     backgroundColor: colors.primary,
   },
   brandName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.navy,
+    fontSize: 19,
+    fontWeight: '800',
+    color: colors.text,
     letterSpacing: -0.4,
+  },
+  brandCaption: {
+    color: colors.textSecondary,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginTop: spacing.xs,
   },
   intro: {
     marginBottom: spacing.xxl,
   },
   eyebrow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radii.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  eyebrowDot: {
+    width: 6,
+    height: 6,
+    borderRadius: radii.pill,
+    backgroundColor: colors.primary,
+  },
+  eyebrowText: {
     color: colors.primary,
     fontSize: typography.caption,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: spacing.md,
+    fontWeight: '800',
+    letterSpacing: 1.2,
   },
   title: {
-    color: colors.navy,
+    color: colors.text,
     fontSize: typography.title,
-    lineHeight: 38,
+    lineHeight: 39,
     fontWeight: '800',
-    letterSpacing: -0.9,
+    letterSpacing: -0.8,
     marginBottom: spacing.md,
   },
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
     lineHeight: 24,
-    maxWidth: 340,
+    maxWidth: 360,
   },
   form: {
     gap: spacing.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.xl,
+    padding: spacing.lg,
   },
   field: {
     gap: spacing.sm,
@@ -325,14 +403,14 @@ const styles = StyleSheet.create({
   label: {
     color: colors.text,
     fontSize: typography.label,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   input: {
     minHeight: 54,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
     fontSize: typography.body,
     color: colors.text,
@@ -347,7 +425,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.md,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
   },
   passwordInput: {
@@ -357,41 +435,55 @@ const styles = StyleSheet.create({
     fontSize: typography.body,
     color: colors.text,
   },
+  passwordToggleButton: {
+    paddingLeft: spacing.sm,
+    paddingVertical: spacing.sm,
+  },
   passwordToggle: {
     color: colors.primary,
     fontSize: typography.label,
-    fontWeight: '700',
-    paddingLeft: spacing.sm,
-    paddingVertical: spacing.sm,
+    fontWeight: '800',
   },
   fieldError: {
     color: colors.error,
     fontSize: typography.caption,
+    lineHeight: 18,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
     paddingTop: spacing.xs,
+    paddingVertical: spacing.xs,
   },
   linkText: {
     color: colors.primary,
     fontSize: typography.label,
-    fontWeight: '700',
+    fontWeight: '800',
+  },
+  serverErrorContainer: {
+    backgroundColor: colors.errorBackground,
+    borderWidth: 1,
+    borderColor: colors.error,
+    borderRadius: radii.md,
+    padding: spacing.md,
   },
   serverError: {
     color: colors.error,
-    backgroundColor: colors.errorBackground,
-    borderRadius: radii.md,
-    padding: spacing.md,
     fontSize: typography.label,
-    lineHeight: 20,
+    lineHeight: 21,
   },
   submitButton: {
     minHeight: 54,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
     backgroundColor: colors.primary,
     borderRadius: radii.md,
     marginTop: spacing.xs,
+    paddingHorizontal: spacing.lg,
+  },
+  pressedButton: {
+    opacity: 0.8,
   },
   disabledButton: {
     opacity: 0.65,
@@ -399,23 +491,47 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: colors.white,
     fontSize: typography.body,
-    fontWeight: '700',
+    fontWeight: '800',
+  },
+  submitButtonArrow: {
+    color: colors.white,
+    fontSize: 22,
+    fontWeight: '600',
   },
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     flexWrap: 'wrap',
+    gap: spacing.xs,
     marginTop: spacing.sm,
   },
   registerText: {
     color: colors.textSecondary,
     fontSize: typography.label,
   },
+  footerContainer: {
+    alignItems: 'center',
+    marginTop: spacing.xxxl,
+  },
+  footerDivider: {
+    width: 44,
+    height: 3,
+    borderRadius: radii.pill,
+    backgroundColor: colors.border,
+    marginBottom: spacing.md,
+  },
   footer: {
     textAlign: 'center',
     color: colors.textSecondary,
     fontSize: typography.caption,
-    marginTop: spacing.xxxl,
+  },
+  footerVersion: {
+    textAlign: 'center',
+    color: colors.placeholder,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginTop: spacing.md,
   },
 });

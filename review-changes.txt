@@ -1,0 +1,4184 @@
+=== TRACKED FILE DIFF ===
+diff --git a/package-lock.json b/package-lock.json
+index 14dc1f8..cb304d8 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -8,6 +8,7 @@
+       "name": "ekipmantakip",
+       "version": "1.0.0",
+       "dependencies": {
++        "@expo/vector-icons": "^15.0.2",
+         "@hookform/resolvers": "^5.9.1",
+         "@react-native-async-storage/async-storage": "2.2.0",
+         "@react-native-community/datetimepicker": "9.1.0",
+@@ -18,6 +19,7 @@
+         "@tanstack/react-query": "^5.104.1",
+         "aes-js": "^3.1.2",
+         "expo": "~57.0.26",
++        "expo-camera": "~57.0.6",
+         "expo-linking": "~57.0.11",
+         "expo-secure-store": "~57.0.4",
+         "expo-status-bar": "~57.0.1",
+@@ -1670,6 +1672,17 @@
+       "integrity": "sha512-HHQigo3rQWKMDzYDLkubN5WQOYXJJE2eNqIQC2axC2iO3mHdwnIR7FgZVvHWtBwAdzBgAP0ECp8KqS8TiMKvgw==",
+       "license": "MIT"
+     },
++    "node_modules/@expo/vector-icons": {
++      "version": "15.1.1",
++      "resolved": "https://registry.npmjs.org/@expo/vector-icons/-/vector-icons-15.1.1.tgz",
++      "integrity": "sha512-Iu2VkcoI5vygbtYngm7jb4ifxElNVXQYdDrYkT7UCEIiKLeWnQY0wf2ZhHZ+Wro6Sc5TaumpKUOqDRpLi5rkvw==",
++      "license": "MIT",
++      "peerDependencies": {
++        "expo-font": ">=14.0.4",
++        "react": "*",
++        "react-native": "*"
++      }
++    },
+     "node_modules/@expo/xcpretty": {
+       "version": "4.4.6",
+       "resolved": "https://registry.npmjs.org/@expo/xcpretty/-/xcpretty-4.4.6.tgz",
+@@ -2466,6 +2479,12 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/@types/emscripten": {
++      "version": "1.41.6",
++      "resolved": "https://registry.npmjs.org/@types/emscripten/-/emscripten-1.41.6.tgz",
++      "integrity": "sha512-uN+9i8bFT5CUcZfyIEYDrSueACEyKGbUs5kC/72DGlZZoinh84sJfVV0i8UOJD1asdzkvLPBRrKs41kZ8MdEXg==",
++      "license": "MIT"
++    },
+     "node_modules/@types/estree": {
+       "version": "1.0.9",
+       "resolved": "https://registry.npmjs.org/@types/estree/-/estree-1.0.9.tgz",
+@@ -3574,6 +3593,15 @@
+         "node": "18 || 20 || >=22"
+       }
+     },
++    "node_modules/barcode-detector": {
++      "version": "3.2.2",
++      "resolved": "https://registry.npmjs.org/barcode-detector/-/barcode-detector-3.2.2.tgz",
++      "integrity": "sha512-/4QOrrNrCRmDSBWiiP4aC72dnkuXUEdcFRidHgbPRXUpy82XcCMvJssI6fEs6JT42LS7DvBVZO70qasJbYKyrA==",
++      "license": "MIT",
++      "dependencies": {
++        "zxing-wasm": "3.1.3"
++      }
++    },
+     "node_modules/base64-js": {
+       "version": "1.5.1",
+       "resolved": "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz",
+@@ -5388,6 +5416,40 @@
+         }
+       }
+     },
++    "node_modules/expo-camera": {
++      "version": "57.0.6",
++      "resolved": "https://registry.npmjs.org/expo-camera/-/expo-camera-57.0.6.tgz",
++      "integrity": "sha512-eswB77bOzQ2OEvll/hV5VnzywaICFnYF21HIwcyokebFcSTSMfGQk8+VW06DRec9JnWuRExs0QXlfxyMPjS6KQ==",
++      "license": "MIT",
++      "dependencies": {
++        "barcode-detector": "^3.0.0"
++      },
++      "peerDependencies": {
++        "expo": "*",
++        "react": "*",
++        "react-native": "*",
++        "react-native-web": "*"
++      },
++      "peerDependenciesMeta": {
++        "react-native-web": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/expo-font": {
++      "version": "57.0.4",
++      "resolved": "https://registry.npmjs.org/expo-font/-/expo-font-57.0.4.tgz",
++      "integrity": "sha512-7WOMC2oA6xCfOm8bbofqWn2bIqyWFm7YLEnpc/gA1MJH0Ll0TfT/3+CqRkoW2eNRWMS8sxrz5WukUmSvmNquHA==",
++      "license": "MIT",
++      "dependencies": {
++        "fontfaceobserver": "^2.1.0"
++      },
++      "peerDependencies": {
++        "expo": "*",
++        "react": "*",
++        "react-native": "*"
++      }
++    },
+     "node_modules/expo-linking": {
+       "version": "57.0.11",
+       "resolved": "https://registry.npmjs.org/expo-linking/-/expo-linking-57.0.11.tgz",
+@@ -5815,20 +5877,6 @@
+         "react-native": "*"
+       }
+     },
+-    "node_modules/expo/node_modules/expo-font": {
+-      "version": "57.0.4",
+-      "resolved": "https://registry.npmjs.org/expo-font/-/expo-font-57.0.4.tgz",
+-      "integrity": "sha512-7WOMC2oA6xCfOm8bbofqWn2bIqyWFm7YLEnpc/gA1MJH0Ll0TfT/3+CqRkoW2eNRWMS8sxrz5WukUmSvmNquHA==",
+-      "license": "MIT",
+-      "dependencies": {
+-        "fontfaceobserver": "^2.1.0"
+-      },
+-      "peerDependencies": {
+-        "expo": "*",
+-        "react": "*",
+-        "react-native": "*"
+-      }
+-    },
+     "node_modules/expo/node_modules/expo-keep-awake": {
+       "version": "57.0.2",
+       "resolved": "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-57.0.2.tgz",
+@@ -10142,6 +10190,18 @@
+         "url": "https://github.com/sponsors/ljharb"
+       }
+     },
++    "node_modules/tagged-tag": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/tagged-tag/-/tagged-tag-1.0.0.tgz",
++      "integrity": "sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=20"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/sindresorhus"
++      }
++    },
+     "node_modules/terminal-link": {
+       "version": "2.1.1",
+       "resolved": "https://registry.npmjs.org/terminal-link/-/terminal-link-2.1.1.tgz",
+@@ -10960,6 +11020,34 @@
+       "peerDependencies": {
+         "zod": "^3.25.0 || ^4.0.0"
+       }
++    },
++    "node_modules/zxing-wasm": {
++      "version": "3.1.3",
++      "resolved": "https://registry.npmjs.org/zxing-wasm/-/zxing-wasm-3.1.3.tgz",
++      "integrity": "sha512-3lC9BJk4fR5ZJxcGjb0hVnDFOW7KpLXHIebiBmVd4FDRQZVeObztoTKxRUPxlWwSgxrMRONK0u50hBD1aTYEKg==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/emscripten": "^1.41.5",
++        "type-fest": "^5.8.0"
++      },
++      "peerDependencies": {
++        "@types/emscripten": ">=1.39.6"
++      }
++    },
++    "node_modules/zxing-wasm/node_modules/type-fest": {
++      "version": "5.10.0",
++      "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-5.10.0.tgz",
++      "integrity": "sha512-NoSdpq/WEiAg5sjmBkmV/hfxv6HJH4NqPNrqjtSO5CwRmpsDfaf4begxW34KdJykH/l1yHtwBWQkCRdoXO8mPA==",
++      "license": "(MIT OR CC0-1.0)",
++      "dependencies": {
++        "tagged-tag": "^1.0.0"
++      },
++      "engines": {
++        "node": ">=20"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/sindresorhus"
++      }
+     }
+   }
+ }
+diff --git a/package.json b/package.json
+index 7551770..c5888e5 100644
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,7 @@
+   "version": "1.0.0",
+   "main": "index.ts",
+   "dependencies": {
++    "@expo/vector-icons": "^15.0.2",
+     "@hookform/resolvers": "^5.9.1",
+     "@react-native-async-storage/async-storage": "2.2.0",
+     "@react-native-community/datetimepicker": "9.1.0",
+@@ -13,6 +14,7 @@
+     "@tanstack/react-query": "^5.104.1",
+     "aes-js": "^3.1.2",
+     "expo": "~57.0.26",
++    "expo-camera": "~57.0.6",
+     "expo-linking": "~57.0.11",
+     "expo-secure-store": "~57.0.4",
+     "expo-status-bar": "~57.0.1",
+diff --git a/src/navigation/AppStack.tsx b/src/navigation/AppStack.tsx
+index 10b97bf..d365123 100644
+--- a/src/navigation/AppStack.tsx
++++ b/src/navigation/AppStack.tsx
+@@ -1,29 +1,26 @@
+-
+ import { createNativeStackNavigator } from '@react-navigation/native-stack';
+ 
+ import { AdminEquipmentScreen } from '../screens/admin/AdminEquipmentScreen';
++import AdminCategoriesScreen from '../screens/admin/AdminCategoriesScreen';
+ import AdminLoansScreen from '../screens/admin/AdminLoansScreen';
+ import { AdminMaintenanceScreen } from '../screens/admin/AdminMaintenanceScreen';
+ import AdminReservationsScreen from '../screens/admin/AdminReservationsScreen';
+ import EquipmentDetailScreen from '../screens/app/EquipmentDetailScreen';
+ import ReservationFormScreen from '../screens/app/ReservationFormScreen';
+-import { MainTabs } from './MainTabs';
++import QRScannerScreen from '../screens/app/QRScannerScreen';
+ import NotificationsScreen from '../screens/app/AppNotificationsScreen';
+-
+-
++import { MainTabs } from './MainTabs';
+ 
+ export type AppStackParamList = {
+   Main: undefined;
+-  EquipmentDetail: {
+-    equipmentId: string;
+-  };
+-  ReservationForm: {
+-    equipmentId: string;
+-  };
+-  AdminReservations: undefined;
++  EquipmentDetail: { equipmentId: string };
++  ReservationForm: { equipmentId: string };
++  QRScanner: undefined;
++  AdminReservations: { equipmentId?: string } | undefined;
+   AdminMaintenance: undefined;
+   AdminEquipment: undefined;
+   AdminLoans: undefined;
++  AdminCategories: undefined;
+   Notifications: undefined;
+ };
+ 
+@@ -50,6 +47,12 @@ export function AppStack() {
+         options={{ title: 'Rezervasyon Olu+þtur' }}
+       />
+ 
++      <Stack.Screen
++        name="QRScanner"
++        component={QRScannerScreen}
++        options={{ title: 'QR Kod Okut' }}
++      />
++
+       <Stack.Screen
+         name="AdminReservations"
+         component={AdminReservationsScreen}
+@@ -73,12 +76,18 @@ export function AppStack() {
+         component={AdminLoansScreen}
+         options={{ title: 'Zimmet Y+Ânetimi' }}
+       />
+-<Stack.Screen
+-  name="Notifications"
+-  component={NotificationsScreen}
+-  options={{ title: 'Bildirimler' }}
+-/>
+ 
++      <Stack.Screen
++        name="AdminCategories"
++        component={AdminCategoriesScreen}
++        options={{ title: 'Kategori Y+Ânetimi' }}
++      />
++
++      <Stack.Screen
++        name="Notifications"
++        component={NotificationsScreen}
++        options={{ title: 'Bildirimler' }}
++      />
+     </Stack.Navigator>
+   );
+-}
++}
+\ No newline at end of file
+diff --git a/src/screens/admin/AdminEquipmentScreen.tsx b/src/screens/admin/AdminEquipmentScreen.tsx
+index 9212b3f..520a97f 100644
+--- a/src/screens/admin/AdminEquipmentScreen.tsx
++++ b/src/screens/admin/AdminEquipmentScreen.tsx
+@@ -37,14 +37,12 @@ import {
+ import { equipmentService } from '../../services/equipmentService';
+ 
+ import type {
+-
+   Equipment,
+-
+   EquipmentCategory,
++} from '../../types/equipment';
++import type { EquipmentInput } from '../../services/equipmentService';
+ 
+-  EquipmentInput,
+ 
+-} from '../../services/equipmentService';
+ 
+ import { colors, radii, spacing, typography } from '../../theme';
+ 
+@@ -269,7 +267,6 @@ export function AdminEquipmentScreen() {
+     setSaving(true);
+ 
+     try {
+-
+       const result = editingEquipment
+ 
+         ? await equipmentService.updateEquipment(
+diff --git a/src/screens/admin/AdminReservationsScreen.tsx b/src/screens/admin/AdminReservationsScreen.tsx
+index 606b60e..afa0cf1 100644
+--- a/src/screens/admin/AdminReservationsScreen.tsx
++++ b/src/screens/admin/AdminReservationsScreen.tsx
+@@ -1,5 +1,6 @@
++import { useCallback, useState } from 'react';
+ import { useQuery, useQueryClient } from '@tanstack/react-query';
+-import { useState } from 'react';
++import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+ import {
+   ActivityIndicator,
+   Alert,
+@@ -16,17 +17,26 @@ import {
+ import { reservationService } from '../../services/reservationService';
+ import type { Reservation } from '../../types/reservation';
+ import { colors, radii, spacing, typography } from '../../theme';
++import type { AppStackParamList } from '../../navigation/AppStack';
++
++type AdminReservationsScreenProps = NativeStackScreenProps<
++  AppStackParamList,
++  'AdminReservations'
++>;
++
++type LoanAction = 'DELIVERY' | 'RETURN';
++
++type EquipmentLifecycleStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
+ 
+ type ReservationWithEquipment = Reservation & {
+   equipment?: {
+     id: string;
+     name: string;
+     code: string;
++    lifecycle_status: EquipmentLifecycleStatus;
+   } | null;
+ };
+ 
+-type LoanAction = 'DELIVERY' | 'RETURN';
+-
+ function getStatusLabel(status: Reservation['status']) {
+   switch (status) {
+     case 'PENDING':
+@@ -58,12 +68,16 @@ function formatDateTime(value: string) {
+   });
+ }
+ 
+-export default function AdminReservationsScreen() {
++export default function AdminReservationsScreen({
++  route,
++}: AdminReservationsScreenProps) {
+   const queryClient = useQueryClient();
++  const equipmentId = route.params?.equipmentId;
+ 
+   const [rejectModalVisible, setRejectModalVisible] = useState(false);
+-  const [selectedReservationId, setSelectedReservationId] =
+-    useState<string | null>(null);
++  const [selectedReservationId, setSelectedReservationId] = useState<
++    string | null
++  >(null);
+   const [rejectionReason, setRejectionReason] = useState('');
+   const [isRejecting, setIsRejecting] = useState(false);
+ 
+@@ -95,7 +109,11 @@ export default function AdminReservationsScreen() {
+     },
+   });
+ 
+-  async function refreshReservationQueries() {
++  const filteredReservations = equipmentId
++    ? reservations.filter((item) => item.equipment_id === equipmentId)
++    : reservations;
++
++  const refreshReservationQueries = useCallback(async () => {
+     await Promise.all([
+       queryClient.invalidateQueries({
+         queryKey: ['admin-reservations'],
+@@ -107,23 +125,103 @@ export default function AdminReservationsScreen() {
+         queryKey: ['home'],
+       }),
+     ]);
+-  }
++  }, [queryClient]);
+ 
+-  async function handleApprove(reservationId: string) {
+-    const { error: approveError } =
+-      await reservationService.approveReservation(reservationId);
++  const openLoanModal = useCallback(
++    (reservation: ReservationWithEquipment, action: LoanAction) => {
++      setLoanReservation(reservation);
++      setLoanAction(action);
++      setCondition('¦-yi durumda');
++      setLoanNote('');
++      setLoanModalVisible(true);
++    },
++    [],
++  );
++
++  const handleQrEquipment = useCallback(() => {
++    if (!equipmentId) {
++      return;
++    }
++
++    const equipmentReservations = reservations.filter(
++      (item) => item.equipment_id === equipmentId,
++    );
++
++    const deliveredReservations = equipmentReservations.filter(
++      (item) => item.status === 'DELIVERED',
++    );
++
++    const approvedReservations = equipmentReservations.filter(
++      (item) => item.status === 'APPROVED',
++    );
+ 
+-    if (approveError) {
++    // Aktif zimmet varsa iade ak¦-+þ¦-n¦- a+ð.
++    if (deliveredReservations.length === 1) {
++      openLoanModal(deliveredReservations[0], 'RETURN');
++      return;
++    }
++
++    if (deliveredReservations.length > 1) {
+       Alert.alert(
+-        'Onaylama Ba+þar¦-s¦-z',
+-        approveError.message || 'Rezervasyon onaylanamad¦-.',
++        'Birden Fazla Aktif Kay¦-t',
++        'Bu ekipmana ait birden fazla teslim edilmi+þ rezervasyon var. L+-tfen kay¦-tlar¦- kontrol edin.',
+       );
+       return;
+     }
+ 
+-    await refreshReservationQueries();
+-    Alert.alert('Ba+þar¦-l¦-', 'Rezervasyon onayland¦-.');
+-  }
++    // Aktif zimmet yoksa onayl¦- rezervasyonu kontrol et.
++    if (approvedReservations.length === 1) {
++      const reservation = approvedReservations[0];
++      const lifecycleStatus = reservation.equipment?.lifecycle_status;
++
++      if (lifecycleStatus !== 'ACTIVE') {
++        const message =
++          lifecycleStatus === 'MAINTENANCE'
++            ? 'Bu ekipman bak¦-mda oldu¦þu i+ðin teslim edilemez.'
++            : lifecycleStatus === 'INACTIVE'
++              ? 'Kullan¦-m d¦-+þ¦- ekipman teslim edilemez.'
++              : 'Ekipman¦-n g+-ncel durumu do¦þrulanamad¦-¦þ¦- i+ðin teslim ba+þlat¦-lamad¦-.';
++
++        Alert.alert('Teslim ¦-+þlemi Yap¦-lam¦-yor', message);
++        return;
++      }
++
++      openLoanModal(reservation, 'DELIVERY');
++      return;
++    }
++
++    if (approvedReservations.length > 1) {
++      Alert.alert(
++        'Birden Fazla Onayl¦- Rezervasyon',
++        'Bu ekipman i+ðin birden fazla onayl¦- rezervasyon bulundu. ¦-+þlem yapmadan +Ânce kay¦-tlar¦- kontrol edin.',
++      );
++      return;
++    }
++
++    Alert.alert(
++      '¦-+þlem Bulunamad¦-',
++      'Bu ekipman i+ðin teslim veya iade yap¦-labilecek uygun bir rezervasyon bulunamad¦-. Rezervasyon durumunu kontrol edin.',
++    );
++  }, [equipmentId, reservations, openLoanModal]);
++
++  const handleApprove = useCallback(
++    async (reservationId: string) => {
++      const { error: approveError } =
++        await reservationService.approveReservation(reservationId);
++
++      if (approveError) {
++        Alert.alert(
++          'Onaylama Ba+þar¦-s¦-z',
++          approveError.message || 'Rezervasyon onaylanamad¦-.',
++        );
++        return;
++      }
++
++      await refreshReservationQueries();
++      Alert.alert('Ba+þar¦-l¦-', 'Rezervasyon onayland¦-.');
++    },
++    [refreshReservationQueries],
++  );
+ 
+   function confirmApprove(reservationId: string) {
+     Alert.alert(
+@@ -133,7 +231,9 @@ export default function AdminReservationsScreen() {
+         { text: 'Vazge+ð', style: 'cancel' },
+         {
+           text: 'Onayla',
+-          onPress: () => handleApprove(reservationId),
++          onPress: () => {
++            void handleApprove(reservationId);
++          },
+         },
+       ],
+     );
+@@ -178,6 +278,11 @@ export default function AdminReservationsScreen() {
+ 
+       await refreshReservationQueries();
+       Alert.alert('Ba+þar¦-l¦-', 'Rezervasyon reddedildi.');
++    } catch {
++      Alert.alert(
++        '¦-+þlem Ba+þar¦-s¦-z',
++        'Rezervasyon reddedilirken beklenmeyen bir hata olu+þtu.',
++      );
+     } finally {
+       setIsRejecting(false);
+     }
+@@ -193,17 +298,6 @@ export default function AdminReservationsScreen() {
+     setRejectionReason('');
+   }
+ 
+-  function openLoanModal(
+-    reservation: ReservationWithEquipment,
+-    action: LoanAction,
+-  ) {
+-    setLoanReservation(reservation);
+-    setLoanAction(action);
+-    setCondition('¦-yi durumda');
+-    setLoanNote('');
+-    setLoanModalVisible(true);
+-  }
+-
+   function closeLoanModal() {
+     if (isProcessingLoan) {
+       return;
+@@ -221,10 +315,7 @@ export default function AdminReservationsScreen() {
+     }
+ 
+     if (!condition.trim()) {
+-      Alert.alert(
+-        'Eksik Bilgi',
+-        'L+-tfen ekipman¦-n durumunu belirt.',
+-      );
++      Alert.alert('Eksik Bilgi', 'L+-tfen ekipman¦-n durumunu belirt.');
+       return;
+     }
+ 
+@@ -282,9 +373,7 @@ export default function AdminReservationsScreen() {
+     return (
+       <View style={styles.center}>
+         <ActivityIndicator color={colors.primary} />
+-        <Text style={styles.loadingText}>
+-          Rezervasyonlar y+-kleniyor...
+-        </Text>
++        <Text style={styles.loadingText}>Rezervasyonlar y+-kleniyor...</Text>
+       </View>
+     );
+   }
+@@ -297,7 +386,9 @@ export default function AdminReservationsScreen() {
+         </Text>
+         <TouchableOpacity
+           style={styles.primaryButton}
+-          onPress={() => refetch()}
++          onPress={() => {
++            void refetch();
++          }}
+         >
+           <Text style={styles.buttonText}>Tekrar Dene</Text>
+         </TouchableOpacity>
+@@ -308,16 +399,29 @@ export default function AdminReservationsScreen() {
+   return (
+     <View style={styles.container}>
+       <View style={styles.header}>
+-        <Text style={styles.screenTitle}>
+-          Rezervasyon Y+Ânetimi
+-        </Text>
++        <Text style={styles.screenTitle}>Rezervasyon Y+Ânetimi</Text>
+         <Text style={styles.subtitle}>
+-          Rezervasyon, teslim ve iade i+þlemlerini y+Ânet.
++          {equipmentId
++            ? 'QR ile se+ðilen ekipman¦-n rezervasyon, teslim ve iade i+þlemleri.'
++            : 'Rezervasyon, teslim ve iade i+þlemlerini y+Ânet.'}
+         </Text>
+       </View>
+ 
++      {equipmentId ? (
++        <View style={styles.qrActionContainer}>
++          <TouchableOpacity
++            style={styles.primaryButton}
++            onPress={handleQrEquipment}
++          >
++            <Text style={styles.buttonText}>
++              Teslim / ¦-ade ¦-+þlemini A+ð
++            </Text>
++          </TouchableOpacity>
++        </View>
++      ) : null}
++
+       <FlatList
+-        data={reservations}
++        data={filteredReservations}
+         keyExtractor={(item) => item.id}
+         refreshControl={
+           <RefreshControl
+@@ -328,7 +432,7 @@ export default function AdminReservationsScreen() {
+         }
+         contentContainerStyle={[
+           styles.listContent,
+-          reservations.length === 0 && styles.emptyList,
++          filteredReservations.length === 0 && styles.emptyList,
+         ]}
+         showsVerticalScrollIndicator={false}
+         renderItem={({ item }) => (
+@@ -363,9 +467,7 @@ export default function AdminReservationsScreen() {
+ 
+             <View style={styles.infoRow}>
+               <Text style={styles.label}>Biti+þ</Text>
+-              <Text style={styles.value}>
+-                {formatDateTime(item.end_at)}
+-              </Text>
++              <Text style={styles.value}>{formatDateTime(item.end_at)}</Text>
+             </View>
+ 
+             <View style={styles.divider} />
+@@ -400,9 +502,7 @@ export default function AdminReservationsScreen() {
+                   style={styles.rejectButton}
+                   onPress={() => openRejectModal(item.id)}
+                 >
+-                  <Text style={styles.rejectButtonText}>
+-                    Reddet
+-                  </Text>
++                  <Text style={styles.rejectButtonText}>Reddet</Text>
+                 </TouchableOpacity>
+               </View>
+             ) : null}
+@@ -433,11 +533,14 @@ export default function AdminReservationsScreen() {
+         ListEmptyComponent={
+           <View style={styles.empty}>
+             <Text style={styles.emptyTitle}>
+-              Rezervasyon bulunamad¦-
++              {equipmentId
++                ? 'Bu ekipman i+ðin rezervasyon bulunamad¦-'
++                : 'Rezervasyon bulunamad¦-'}
+             </Text>
+             <Text style={styles.emptyText}>
+-              Kullan¦-c¦-lar¦-n olu+þturdu¦þu rezervasyonlar burada
+-              g+Âr+-nt+-lenecek.
++              {equipmentId
++                ? 'Bu ekipmana ait kay¦-tl¦- rezervasyon bulunmuyor.'
++                : 'Kullan¦-c¦-lar¦-n olu+þturdu¦þu rezervasyonlar burada g+Âr+-nt+-lenecek.'}
+             </Text>
+           </View>
+         }
+@@ -451,9 +554,7 @@ export default function AdminReservationsScreen() {
+       >
+         <View style={styles.modalOverlay}>
+           <View style={styles.modalContent}>
+-            <Text style={styles.modalTitle}>
+-              Rezervasyonu Reddet
+-            </Text>
++            <Text style={styles.modalTitle}>Rezervasyonu Reddet</Text>
+             <Text style={styles.modalDescription}>
+               L+-tfen rezervasyonu neden reddetti¦þini belirt.
+             </Text>
+@@ -466,6 +567,7 @@ export default function AdminReservationsScreen() {
+               multiline
+               style={styles.reasonInput}
+               editable={!isRejecting}
++              maxLength={1000}
+             />
+ 
+             <View style={styles.modalActions}>
+@@ -474,22 +576,20 @@ export default function AdminReservationsScreen() {
+                 onPress={closeRejectModal}
+                 disabled={isRejecting}
+               >
+-                <Text style={styles.cancelButtonText}>
+-                  Vazge+ð
+-                </Text>
++                <Text style={styles.cancelButtonText}>Vazge+ð</Text>
+               </TouchableOpacity>
+ 
+               <TouchableOpacity
+                 style={styles.confirmRejectButton}
+-                onPress={handleReject}
++                onPress={() => {
++                  void handleReject();
++                }}
+                 disabled={isRejecting}
+               >
+                 {isRejecting ? (
+                   <ActivityIndicator color={colors.background} />
+                 ) : (
+-                  <Text style={styles.confirmRejectText}>
+-                    Reddet
+-                  </Text>
++                  <Text style={styles.confirmRejectText}>Reddet</Text>
+                 )}
+               </TouchableOpacity>
+             </View>
+@@ -506,9 +606,7 @@ export default function AdminReservationsScreen() {
+         <View style={styles.modalOverlay}>
+           <View style={styles.modalContent}>
+             <Text style={styles.modalTitle}>
+-              {loanAction === 'DELIVERY'
+-                ? 'Ekipman Teslimi'
+-                : 'Ekipman ¦-adesi'}
++              {loanAction === 'DELIVERY' ? 'Ekipman Teslimi' : 'Ekipman ¦-adesi'}
+             </Text>
+ 
+             <Text style={styles.modalDescription}>
+@@ -519,9 +617,7 @@ export default function AdminReservationsScreen() {
+                 : '¦-ade al¦-nan ekipman¦-n son durumunu belirt.'}
+             </Text>
+ 
+-            <Text style={styles.inputLabel}>
+-              Ekipman¦-n Durumu *
+-            </Text>
++            <Text style={styles.inputLabel}>Ekipman¦-n Durumu *</Text>
+             <TextInput
+               value={condition}
+               onChangeText={setCondition}
+@@ -554,14 +650,14 @@ export default function AdminReservationsScreen() {
+                 onPress={closeLoanModal}
+                 disabled={isProcessingLoan}
+               >
+-                <Text style={styles.cancelButtonText}>
+-                  Vazge+ð
+-                </Text>
++                <Text style={styles.cancelButtonText}>Vazge+ð</Text>
+               </TouchableOpacity>
+ 
+               <TouchableOpacity
+                 style={styles.approveButton}
+-                onPress={handleLoanAction}
++                onPress={() => {
++                  void handleLoanAction();
++                }}
+                 disabled={isProcessingLoan}
+               >
+                 {isProcessingLoan ? (
+@@ -602,6 +698,10 @@ const styles = StyleSheet.create({
+     fontSize: typography.body,
+     marginTop: spacing.xs,
+   },
++  qrActionContainer: {
++    paddingHorizontal: spacing.lg,
++    paddingBottom: spacing.md,
++  },
+   listContent: {
+     paddingHorizontal: spacing.lg,
+     paddingBottom: spacing.xxxl,
+@@ -689,6 +789,8 @@ const styles = StyleSheet.create({
+     paddingVertical: spacing.md,
+     paddingHorizontal: spacing.xl,
+     marginTop: spacing.md,
++    alignItems: 'center',
++    justifyContent: 'center',
+   },
+   rejectButton: {
+     flex: 1,
+diff --git a/src/screens/app/EquipmentScreen.tsx b/src/screens/app/EquipmentScreen.tsx
+index 5584120..c9e6610 100644
+--- a/src/screens/app/EquipmentScreen.tsx
++++ b/src/screens/app/EquipmentScreen.tsx
+@@ -1,93 +1,599 @@
+-import { useQuery } from '@tanstack/react-query';
++import { useEffect, useState } from 'react';
+ import {
+   ActivityIndicator,
+   FlatList,
++  Modal,
++  Platform,
+   RefreshControl,
+   StyleSheet,
+   Text,
++  TextInput,
++  TouchableOpacity,
+   View,
+ } from 'react-native';
++import DateTimePicker from '@react-native-community/datetimepicker';
++import { useNavigation } from '@react-navigation/native';
++import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
++import { useQuery } from '@tanstack/react-query';
+ 
+ import { EquipmentCard } from '../../components/EquipmentCard';
+ import { equipmentService } from '../../services/equipmentService';
+-import { colors, spacing, typography } from '../../theme';
+-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+-import { useNavigation } from '@react-navigation/native';
+-
+ import type { AppStackParamList } from '../../navigation/AppStack';
++import { colors, radii, spacing, typography } from '../../theme';
++
++const PAGE_SIZE = 20;
++const SEARCH_DEBOUNCE_MS = 350;
++
++type DatePickerTarget = 'start' | 'end';
+ 
++function formatDate(date: Date | null): string {
++  if (!date) {
++    return '';
++  }
++
++  const day = String(date.getDate()).padStart(2, '0');
++  const month = String(date.getMonth() + 1).padStart(2, '0');
++  const year = date.getFullYear();
++
++  return `${day}.${month}.${year}`;
++}
++
++function startOfLocalDay(date: Date): Date {
++  const result = new Date(date);
++  result.setHours(0, 0, 0, 0);
++  return result;
++}
++
++function endOfLocalDay(date: Date): Date {
++  const result = new Date(date);
++  result.setHours(23, 59, 59, 999);
++  return result;
++}
+ 
+ export function EquipmentScreen() {
+   const navigation =
+     useNavigation<NativeStackNavigationProp<AppStackParamList>>();
++
++  const [searchInput, setSearchInput] = useState('');
++  const [search, setSearch] = useState('');
++  const [selectedCategoryId, setSelectedCategoryId] = useState('');
++  const [currentPage, setCurrentPage] = useState(1);
++
++  const [startDateSelection, setStartDateSelection] = useState<Date | null>(
++    null,
++  );
++  const [endDateSelection, setEndDateSelection] = useState<Date | null>(null);
++  const [appliedStartDate, setAppliedStartDate] = useState('');
++  const [appliedEndDate, setAppliedEndDate] = useState('');
++  const [availableOnly, setAvailableOnly] = useState(false);
++
++  const [datePickerTarget, setDatePickerTarget] =
++    useState<DatePickerTarget | null>(null);
++  const [pickerDraftDate, setPickerDraftDate] = useState(new Date());
++  const [dateError, setDateError] = useState('');
++
++  useEffect(() => {
++    const timeout = setTimeout(() => {
++      setSearch(searchInput.trim());
++      setCurrentPage(1);
++    }, SEARCH_DEBOUNCE_MS);
++
++    return () => clearTimeout(timeout);
++  }, [searchInput]);
++
++  const {
++    data: categories = [],
++    isLoading: isLoadingCategories,
++    error: categoriesError,
++    refetch: refetchCategories,
++  } = useQuery({
++    queryKey: ['equipment', 'active-categories'],
++    queryFn: async () => {
++      const { data, error } = await equipmentService.getActiveCategories();
++
++      if (error) {
++        throw error;
++      }
++
++      return data ?? [];
++    },
++  });
++
+   const {
+-    data: equipment = [],
++    data: result,
+     isLoading,
+     isRefetching,
+     error,
+     refetch,
+   } = useQuery({
+-    queryKey: ['equipment'],
++    queryKey: [
++      'equipment',
++      'catalog',
++      {
++        page: currentPage,
++        pageSize: PAGE_SIZE,
++        search,
++        categoryId: selectedCategoryId,
++        startAt: appliedStartDate,
++        endAt: appliedEndDate,
++        availableOnly,
++      },
++    ],
+     queryFn: async () => {
+-      const { data, error: equipmentError } =
+-        await equipmentService.getEquipment();
++      const { data, count, error: requestError } =
++        await equipmentService.getEquipment({
++          page: currentPage,
++          pageSize: PAGE_SIZE,
++          search,
++          categoryId: selectedCategoryId || undefined,
++          startAt: appliedStartDate || undefined,
++          endAt: appliedEndDate || undefined,
++          availableOnly,
++        });
+ 
+-      if (equipmentError) {
+-        throw equipmentError;
++      if (requestError) {
++        throw requestError;
+       }
+ 
+-      return data ?? [];
++      return {
++        equipment: data ?? [],
++        count: count ?? 0,
++      };
+     },
+   });
+ 
+-  if (isLoading) {
++  const equipment = result?.equipment ?? [];
++  const totalCount = result?.count ?? 0;
++  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
++  const page = Math.min(currentPage, totalPages);
++  const isInitialLoading = (isLoading || isLoadingCategories) && !result;
++
++  const openDatePicker = (target: DatePickerTarget) => {
++    const selectedDate =
++      target === 'start' ? startDateSelection : endDateSelection;
++
++    const fallbackDate =
++      target === 'end' && startDateSelection
++        ? startDateSelection
++        : new Date();
++
++    setPickerDraftDate(selectedDate ?? fallbackDate);
++    setDatePickerTarget(target);
++    setDateError('');
++  };
++
++  const handleDateChange = (_event: unknown, selectedDate?: Date) => {
++    if (selectedDate) {
++      setPickerDraftDate(selectedDate);
++    }
++
++    // Android's native calendar is closed with the system confirmation
++    // or dismissal action. iOS uses the modal's explicit buttons.
++    if (Platform.OS === 'android') {
++      if (selectedDate && datePickerTarget === 'start') {
++        setStartDateSelection(selectedDate);
++
++        if (
++          endDateSelection &&
++          startOfLocalDay(endDateSelection).getTime() <
++            startOfLocalDay(selectedDate).getTime()
++        ) {
++          setEndDateSelection(null);
++        }
++      } else if (selectedDate && datePickerTarget === 'end') {
++        if (
++          startDateSelection &&
++          startOfLocalDay(selectedDate).getTime() <
++            startOfLocalDay(startDateSelection).getTime()
++        ) {
++          setDateError('Biti+þ tarihi ba+þlang¦-+ð tarihinden +Ânce olamaz.');
++        } else {
++          setEndDateSelection(selectedDate);
++          setDateError('');
++        }
++      }
++
++      setDatePickerTarget(null);
++    }
++  };
++
++  const confirmDateSelection = () => {
++    if (datePickerTarget === 'start') {
++      setStartDateSelection(pickerDraftDate);
++
++      if (
++        endDateSelection &&
++        startOfLocalDay(endDateSelection).getTime() <
++          startOfLocalDay(pickerDraftDate).getTime()
++      ) {
++        setEndDateSelection(null);
++      }
++    } else if (datePickerTarget === 'end') {
++      if (
++        startDateSelection &&
++        startOfLocalDay(pickerDraftDate).getTime() <
++          startOfLocalDay(startDateSelection).getTime()
++      ) {
++        setDateError('Biti+þ tarihi ba+þlang¦-+ð tarihinden +Ânce olamaz.');
++        return;
++      }
++
++      setEndDateSelection(pickerDraftDate);
++    }
++
++    setDateError('');
++    setDatePickerTarget(null);
++  };
++
++  const applyAvailabilityFilters = () => {
++    if (Boolean(startDateSelection) !== Boolean(endDateSelection)) {
++      setDateError('L+-tfen hem ba+þlang¦-+ð hem de biti+þ tarihini se+ð.');
++      return;
++    }
++
++    if (availableOnly && (!startDateSelection || !endDateSelection)) {
++      setDateError(
++        'Yaln¦-zca m+-sait ekipmanlar¦- filtrelemek i+ðin tarih aral¦-¦þ¦- se+ð.',
++      );
++      return;
++    }
++
++    if (startDateSelection && endDateSelection) {
++      const normalizedStart = startOfLocalDay(startDateSelection);
++      const normalizedEnd = endOfLocalDay(endDateSelection);
++
++      if (normalizedEnd.getTime() < normalizedStart.getTime()) {
++        setDateError('Biti+þ tarihi ba+þlang¦-+ð tarihinden +Ânce olamaz.');
++        return;
++      }
++
++      setAppliedStartDate(normalizedStart.toISOString());
++      setAppliedEndDate(normalizedEnd.toISOString());
++    } else {
++      setAppliedStartDate('');
++      setAppliedEndDate('');
++    }
++
++    setDateError('');
++    setCurrentPage(1);
++  };
++
++  const clearAvailabilityFilters = () => {
++    setStartDateSelection(null);
++    setEndDateSelection(null);
++    setAppliedStartDate('');
++    setAppliedEndDate('');
++    setAvailableOnly(false);
++    setDateError('');
++    setCurrentPage(1);
++    setDatePickerTarget(null);
++  };
++
++  const toggleAvailableOnly = () => {
++    if (availableOnly) {
++      setAvailableOnly(false);
++      setCurrentPage(1);
++      setDateError('');
++      return;
++    }
++
++    if (!appliedStartDate || !appliedEndDate) {
++      setDateError(
++        '+ûnce ba+þlang¦-+ð ve biti+þ tarihlerini se+ðip "Filtreyi Uygula" butonuna bas.',
++      );
++      return;
++    }
++
++    setAvailableOnly(true);
++    setCurrentPage(1);
++    setDateError('');
++  };
++
++  const headerContent = (
++    <View>
++      <View style={styles.header}>
++        <View style={styles.headerText}>
++          <Text style={styles.title}>Ekipmanlar</Text>
++          <Text style={styles.subtitle}>
++            Ekipmanlar¦- ara, kategorilere ve m+-saitlik durumuna g+Âre filtrele.
++          </Text>
++        </View>
++
++        <TouchableOpacity
++          style={styles.qrButton}
++          onPress={() => navigation.navigate('QRScanner')}
++          activeOpacity={0.8}
++          accessibilityRole="button"
++          accessibilityLabel="QR kod okut"
++        >
++          <Text style={styles.qrButtonText}>QR Kod Okut</Text>
++        </TouchableOpacity>
++      </View>
++
++      <TextInput
++        style={styles.searchInput}
++        value={searchInput}
++        onChangeText={setSearchInput}
++        placeholder="Ekipman ad¦- veya kodu ara..."
++        placeholderTextColor={colors.textSecondary}
++        autoCapitalize="none"
++        autoCorrect={false}
++        returnKeyType="search"
++        accessibilityLabel="Ekipman ara"
++      />
++
++      <View style={styles.filterSection}>
++        <Text style={styles.filterLabel}>Kategori</Text>
++
++        <FlatList
++          horizontal
++          data={[{ id: '', name: 'T+-m+-' }, ...categories]}
++          keyExtractor={(item) => item.id || 'all-categories'}
++          showsHorizontalScrollIndicator={false}
++          contentContainerStyle={styles.categoryList}
++          renderItem={({ item }) => {
++            const isSelected = selectedCategoryId === item.id;
++
++            return (
++              <TouchableOpacity
++                style={[
++                  styles.categoryChip,
++                  isSelected && styles.categoryChipSelected,
++                ]}
++                onPress={() => {
++                  setSelectedCategoryId(item.id);
++                  setCurrentPage(1);
++                }}
++                accessibilityRole="button"
++                accessibilityState={{ selected: isSelected }}
++              >
++                <Text
++                  style={[
++                    styles.categoryChipText,
++                    isSelected && styles.categoryChipTextSelected,
++                  ]}
++                >
++                  {item.name}
++                </Text>
++              </TouchableOpacity>
++            );
++          }}
++        />
++      </View>
++
++      {categoriesError ? (
++        <View style={styles.categoryErrorContainer}>
++          <Text style={styles.inlineError}>
++            Kategoriler y+-klenemedi. Tekrar deneyebilirsin.
++          </Text>
++          <TouchableOpacity
++            style={styles.smallButton}
++            onPress={() => void refetchCategories()}
++            accessibilityRole="button"
++          >
++            <Text style={styles.smallButtonText}>Kategorileri yenile</Text>
++          </TouchableOpacity>
++        </View>
++      ) : null}
++
++      <View style={styles.availabilitySection}>
++        <Text style={styles.filterLabel}>M+-saitlik tarih aral¦-¦þ¦-</Text>
++        <Text style={styles.dateHint}>
++          Tarih se+ðmek i+ðin alanlara dokun. ¦-ki tarihi de se+ðtikten sonra
++          filtreyi uygula.
++        </Text>
++
++        <TouchableOpacity
++          style={styles.dateButton}
++          onPress={() => openDatePicker('start')}
++          accessibilityRole="button"
++          accessibilityLabel="Ba+þlang¦-+ð tarihi se+ð"
++        >
++          <View style={styles.dateButtonTextContainer}>
++            <Text style={styles.dateButtonLabel}>Ba+þlang¦-+ð tarihi</Text>
++            <Text
++              style={[
++                styles.dateButtonValue,
++                !startDateSelection && styles.datePlaceholder,
++              ]}
++            >
++              {startDateSelection
++                ? formatDate(startDateSelection)
++                : 'Tarih se+ð'}
++            </Text>
++          </View>
++          <Text style={styles.calendarIcon}>ÔûÐ</Text>
++        </TouchableOpacity>
++
++        <TouchableOpacity
++          style={styles.dateButton}
++          onPress={() => openDatePicker('end')}
++          accessibilityRole="button"
++          accessibilityLabel="Biti+þ tarihi se+ð"
++        >
++          <View style={styles.dateButtonTextContainer}>
++            <Text style={styles.dateButtonLabel}>Biti+þ tarihi</Text>
++            <Text
++              style={[
++                styles.dateButtonValue,
++                !endDateSelection && styles.datePlaceholder,
++              ]}
++            >
++              {endDateSelection ? formatDate(endDateSelection) : 'Tarih se+ð'}
++            </Text>
++          </View>
++          <Text style={styles.calendarIcon}>ÔûÐ</Text>
++        </TouchableOpacity>
++
++        <TouchableOpacity
++          style={styles.availabilityToggle}
++          onPress={toggleAvailableOnly}
++          accessibilityRole="checkbox"
++          accessibilityState={{ checked: availableOnly }}
++        >
++          <View
++            style={[
++              styles.checkbox,
++              availableOnly && styles.checkboxSelected,
++            ]}
++          >
++            {availableOnly ? (
++              <Text style={styles.checkboxTick}>Ô£ô</Text>
++            ) : null}
++          </View>
++          <Text style={styles.availabilityToggleText}>
++            Yaln¦-zca m+-sait ekipmanlar¦- g+Âster
++          </Text>
++        </TouchableOpacity>
++
++        {dateError ? (
++          <Text style={styles.inlineError}>{dateError}</Text>
++        ) : null}
++
++        <View style={styles.dateActions}>
++          <TouchableOpacity
++            style={styles.primaryButton}
++            onPress={applyAvailabilityFilters}
++            accessibilityRole="button"
++          >
++            <Text style={styles.primaryButtonText}>Filtreyi Uygula</Text>
++          </TouchableOpacity>
++
++          <TouchableOpacity
++            style={styles.clearButton}
++            onPress={clearAvailabilityFilters}
++            accessibilityRole="button"
++          >
++            <Text style={styles.clearButtonText}>Temizle</Text>
++          </TouchableOpacity>
++        </View>
++      </View>
++
++      <View style={styles.resultsHeader}>
++        <Text style={styles.resultsText}>{totalCount} ekipman bulundu</Text>
++        {isRefetching ? (
++          <ActivityIndicator size="small" color={colors.primary} />
++        ) : null}
++      </View>
++
++      {error && result ? (
++        <Text style={styles.inlineError}>
++          G+-ncel veriler al¦-namad¦-. +ûnceki sonu+ðlar g+Âsteriliyor.
++        </Text>
++      ) : null}
++    </View>
++  );
++
++  if (isInitialLoading) {
+     return (
+       <View style={styles.center}>
+         <ActivityIndicator color={colors.primary} />
+-        <Text style={styles.loadingText}>
+-          Ekipmanlar y+-kleniyor...
+-        </Text>
++        <Text style={styles.loadingText}>Ekipmanlar y+-kleniyor...</Text>
+       </View>
+     );
+   }
+ 
+-  if (error) {
++  if (error && !result) {
+     return (
+       <View style={styles.center}>
+         <Text style={styles.error}>
+-          Ekipmanlar y+-klenemedi. L+-tfen tekrar dene.
++          Ekipmanlar y+-klenemedi: {String(error)}
+         </Text>
++        <TouchableOpacity
++          style={styles.primaryButton}
++          onPress={() => void refetch()}
++          accessibilityRole="button"
++        >
++          <Text style={styles.primaryButtonText}>Tekrar Dene</Text>
++        </TouchableOpacity>
+       </View>
+     );
+   }
+ 
+   return (
+     <View style={styles.container}>
+-      <View style={styles.header}>
+-        <Text style={styles.title}>Ekipmanlar</Text>
+-
+-        <Text style={styles.subtitle}>
+-          Kullan¦-labilir ekipmanlar¦- g+Âr+-nt+-le.
+-        </Text>
+-      </View>
+-
+       <FlatList
++        style={styles.list}
+         data={equipment}
+         keyExtractor={(item) => item.id}
+         renderItem={({ item }) => (
+-<EquipmentCard
+-  equipment={item}
+-  onPress={() => {
+-    navigation.navigate('EquipmentDetail', {
+-      equipmentId: item.id,
+-        });
+-          }}
++          <EquipmentCard
++            equipment={item}
++            onPress={() =>
++              navigation.navigate('EquipmentDetail', {
++                equipmentId: item.id,
++              })
++            }
+           />
+         )}
++        ListHeaderComponent={headerContent}
++        ListEmptyComponent={
++          <View style={styles.empty}>
++            <Text style={styles.emptyTitle}>Ekipman bulunamad¦-</Text>
++            <Text style={styles.emptyText}>
++              Arama veya filtreleri de¦þi+þtirerek tekrar deneyebilirsin.
++            </Text>
++          </View>
++        }
++        ListFooterComponent={
++          totalCount > 0 ? (
++            <View style={styles.pagination}>
++              <TouchableOpacity
++                style={[
++                  styles.pageButton,
++                  page <= 1 && styles.pageButtonDisabled,
++                ]}
++                disabled={page <= 1}
++                onPress={() =>
++                  setCurrentPage((current) => Math.max(1, current - 1))
++                }
++                accessibilityRole="button"
++                accessibilityLabel="+ûnceki sayfa"
++              >
++                <Text
++                  style={[
++                    styles.pageButtonText,
++                    page <= 1 && styles.pageButtonTextDisabled,
++                  ]}
++                >
++                  +ûnceki
++                </Text>
++              </TouchableOpacity>
++
++              <Text style={styles.pageIndicator}>
++                {page} / {totalPages}
++              </Text>
++
++              <TouchableOpacity
++                style={[
++                  styles.pageButton,
++                  page >= totalPages && styles.pageButtonDisabled,
++                ]}
++                disabled={page >= totalPages}
++                onPress={() =>
++                  setCurrentPage((current) =>
++                    Math.min(totalPages, current + 1),
++                  )
++                }
++                accessibilityRole="button"
++                accessibilityLabel="Sonraki sayfa"
++              >
++                <Text
++                  style={[
++                    styles.pageButtonText,
++                    page >= totalPages && styles.pageButtonTextDisabled,
++                  ]}
++                >
++                  Sonraki
++                </Text>
++              </TouchableOpacity>
++            </View>
++          ) : null
++        }
+         refreshControl={
+           <RefreshControl
+-            refreshing={isRefetching}
+-            onRefresh={refetch}
++            refreshing={isRefetching && !isLoading}
++            onRefresh={() => void refetch()}
+             tintColor={colors.primary}
+           />
+         }
+@@ -96,18 +602,72 @@ export function EquipmentScreen() {
+           equipment.length === 0 && styles.emptyList,
+         ]}
+         showsVerticalScrollIndicator={false}
+-        ListEmptyComponent={
+-          <View style={styles.empty}>
+-            <Text style={styles.emptyTitle}>
+-              Ekipman bulunamad¦-
+-            </Text>
++        keyboardShouldPersistTaps="handled"
++      />
+ 
+-            <Text style={styles.emptyText}>
+-              Hen+-z kay¦-tl¦- bir ekipman bulunmuyor.
++      <Modal
++        visible={datePickerTarget !== null}
++        transparent
++        animationType="fade"
++        onRequestClose={() => setDatePickerTarget(null)}
++      >
++        <View style={styles.modalOverlay}>
++          <View style={styles.datePickerModal}>
++            <Text style={styles.modalTitle}>
++              {datePickerTarget === 'start'
++                ? 'Ba+þlang¦-+ð tarihi se+ð'
++                : 'Biti+þ tarihi se+ð'}
+             </Text>
++
++            <DateTimePicker
++              value={pickerDraftDate}
++              mode="date"
++              display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
++              onChange={handleDateChange}
++              locale="tr-TR"
++              maximumDate={
++                datePickerTarget === 'start' && endDateSelection
++                  ? endDateSelection
++                  : undefined
++              }
++              minimumDate={
++                datePickerTarget === 'end' && startDateSelection
++                  ? startDateSelection
++                  : undefined
++              }
++              style={styles.datePicker}
++            />
++
++            {Platform.OS === 'ios' ? (
++              <View style={styles.modalActions}>
++                <TouchableOpacity
++                  style={styles.clearButton}
++                  onPress={() => setDatePickerTarget(null)}
++                  accessibilityRole="button"
++                >
++                  <Text style={styles.clearButtonText}>Vazge+ð</Text>
++                </TouchableOpacity>
++
++                <TouchableOpacity
++                  style={styles.primaryButton}
++                  onPress={confirmDateSelection}
++                  accessibilityRole="button"
++                >
++                  <Text style={styles.primaryButtonText}>Tamam</Text>
++                </TouchableOpacity>
++              </View>
++            ) : (
++              <TouchableOpacity
++                style={styles.androidCancelButton}
++                onPress={() => setDatePickerTarget(null)}
++                accessibilityRole="button"
++              >
++                <Text style={styles.clearButtonText}>Kapat</Text>
++              </TouchableOpacity>
++            )}
+           </View>
+-        }
+-      />
++        </View>
++      </Modal>
+     </View>
+   );
+ }
+@@ -118,69 +678,312 @@ const styles = StyleSheet.create({
+     backgroundColor: colors.background,
+     paddingHorizontal: spacing.xl,
+   },
+-
++  list: {
++    flex: 1,
++  },
+   header: {
+     paddingTop: spacing.xl,
+     paddingBottom: spacing.lg,
++    gap: spacing.md,
++  },
++  headerText: {
++    gap: spacing.xs,
+   },
+-
+   title: {
+     color: colors.text,
+     fontSize: typography.heading,
+     fontWeight: '800',
+   },
+-
+   subtitle: {
+     color: colors.textSecondary,
+     fontSize: typography.body,
+-    marginTop: spacing.xs,
+   },
+-
++  qrButton: {
++    alignSelf: 'flex-start',
++    backgroundColor: colors.primary,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
++  },
++  qrButtonText: {
++    color: colors.white,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  searchInput: {
++    backgroundColor: colors.surface,
++    borderColor: colors.border,
++    borderWidth: 1,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
++    color: colors.text,
++    fontSize: typography.body,
++  },
++  filterSection: {
++    marginTop: spacing.lg,
++    gap: spacing.sm,
++  },
++  filterLabel: {
++    color: colors.text,
++    fontSize: typography.label,
++    fontWeight: '700',
++  },
++  categoryList: {
++    gap: spacing.sm,
++    paddingBottom: spacing.xs,
++  },
++  categoryChip: {
++    borderWidth: 1,
++    borderColor: colors.border,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.md,
++    paddingVertical: spacing.sm,
++    backgroundColor: colors.surface,
++  },
++  categoryChipSelected: {
++    backgroundColor: colors.primary,
++    borderColor: colors.primary,
++  },
++  categoryChipText: {
++    color: colors.text,
++    fontSize: typography.label,
++    fontWeight: '600',
++  },
++  categoryChipTextSelected: {
++    color: colors.white,
++  },
++  categoryErrorContainer: {
++    marginTop: spacing.sm,
++    gap: spacing.xs,
++  },
++  smallButton: {
++    alignSelf: 'flex-start',
++    paddingVertical: spacing.xs,
++  },
++  smallButtonText: {
++    color: colors.primary,
++    fontSize: typography.label,
++    fontWeight: '700',
++  },
++  availabilitySection: {
++    marginTop: spacing.md,
++    gap: spacing.sm,
++  },
++  dateHint: {
++    color: colors.textSecondary,
++    fontSize: typography.label,
++  },
++  dateButton: {
++    minHeight: 64,
++    flexDirection: 'row',
++    alignItems: 'center',
++    justifyContent: 'space-between',
++    backgroundColor: colors.surface,
++    borderColor: colors.border,
++    borderWidth: 1,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.sm,
++  },
++  dateButtonTextContainer: {
++    flex: 1,
++    gap: spacing.xs,
++  },
++  dateButtonLabel: {
++    color: colors.textSecondary,
++    fontSize: typography.label,
++  },
++  dateButtonValue: {
++    color: colors.text,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  datePlaceholder: {
++    color: colors.textSecondary,
++    fontWeight: '400',
++  },
++  calendarIcon: {
++    color: colors.primary,
++    fontSize: 24,
++    marginLeft: spacing.md,
++  },
++  availabilityToggle: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    gap: spacing.sm,
++    paddingVertical: spacing.xs,
++  },
++  checkbox: {
++    width: 22,
++    height: 22,
++    borderRadius: 5,
++    borderWidth: 1,
++    borderColor: colors.border,
++    alignItems: 'center',
++    justifyContent: 'center',
++  },
++  checkboxSelected: {
++    backgroundColor: colors.primary,
++    borderColor: colors.primary,
++  },
++  checkboxTick: {
++    color: colors.white,
++    fontWeight: '800',
++  },
++  availabilityToggleText: {
++    flex: 1,
++    color: colors.text,
++    fontSize: typography.label,
++  },
++  dateActions: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    gap: spacing.sm,
++  },
++  primaryButton: {
++    alignSelf: 'flex-start',
++    backgroundColor: colors.primary,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
++  },
++  primaryButtonText: {
++    color: colors.white,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  clearButton: {
++    borderWidth: 1,
++    borderColor: colors.border,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
++  },
++  clearButtonText: {
++    color: colors.text,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  resultsHeader: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    justifyContent: 'space-between',
++    paddingTop: spacing.lg,
++    paddingBottom: spacing.md,
++  },
++  resultsText: {
++    color: colors.textSecondary,
++    fontSize: typography.label,
++  },
++  inlineError: {
++    color: colors.error,
++    fontSize: typography.label,
++    marginBottom: spacing.sm,
++  },
+   listContent: {
+     paddingBottom: spacing.xl,
+   },
+-
+   emptyList: {
+     flexGrow: 1,
+   },
+-
++  empty: {
++    flex: 1,
++    alignItems: 'center',
++    justifyContent: 'center',
++    paddingVertical: spacing.xl,
++    gap: spacing.sm,
++  },
++  emptyTitle: {
++    color: colors.text,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  emptyText: {
++    color: colors.textSecondary,
++    fontSize: typography.label,
++    textAlign: 'center',
++  },
++  pagination: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    justifyContent: 'space-between',
++    paddingVertical: spacing.lg,
++    gap: spacing.md,
++  },
++  pageButton: {
++    borderWidth: 1,
++    borderColor: colors.border,
++    borderRadius: radii.md,
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
++  },
++  pageButtonDisabled: {
++    opacity: 0.45,
++  },
++  pageButtonText: {
++    color: colors.text,
++    fontSize: typography.label,
++    fontWeight: '700',
++  },
++  pageButtonTextDisabled: {
++    color: colors.textSecondary,
++  },
++  pageIndicator: {
++    color: colors.textSecondary,
++    fontSize: typography.label,
++    fontWeight: '600',
++  },
+   center: {
+     flex: 1,
+-    backgroundColor: colors.background,
+     alignItems: 'center',
+     justifyContent: 'center',
+-    paddingHorizontal: spacing.xl,
++    backgroundColor: colors.background,
++    padding: spacing.xl,
++    gap: spacing.md,
+   },
+-
+   loadingText: {
+     color: colors.textSecondary,
+     fontSize: typography.body,
+-    marginTop: spacing.md,
+   },
+-
+   error: {
+     color: colors.error,
+     fontSize: typography.body,
+     textAlign: 'center',
+   },
+-
+-  empty: {
++  modalOverlay: {
+     flex: 1,
+-    alignItems: 'center',
+     justifyContent: 'center',
+-    paddingHorizontal: spacing.xl,
++    alignItems: 'center',
++    padding: spacing.xl,
++    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+   },
+-
+-  emptyTitle: {
++  datePickerModal: {
++    width: '100%',
++    maxWidth: 380,
++    backgroundColor: colors.surface,
++    borderRadius: radii.lg,
++    padding: spacing.lg,
++    gap: spacing.md,
++  },
++  modalTitle: {
+     color: colors.text,
+-    fontSize: typography.body,
++    fontSize: typography.heading,
+     fontWeight: '700',
+-  },
+-
+-  emptyText: {
+-    color: colors.textSecondary,
+-    fontSize: typography.label,
+     textAlign: 'center',
+-    marginTop: spacing.sm,
++  },
++  datePicker: {
++    alignSelf: 'stretch',
++  },
++  modalActions: {
++    flexDirection: 'row',
++    alignItems: 'center',
++    justifyContent: 'flex-end',
++    gap: spacing.sm,
++  },
++  androidCancelButton: {
++    alignSelf: 'flex-end',
++    paddingHorizontal: spacing.lg,
++    paddingVertical: spacing.md,
+   },
+ });
+\ No newline at end of file
+diff --git a/src/screens/app/MyActionsScreen.tsx b/src/screens/app/MyActionsScreen.tsx
+index cd2de19..b1d6139 100644
+--- a/src/screens/app/MyActionsScreen.tsx
++++ b/src/screens/app/MyActionsScreen.tsx
+@@ -1,5 +1,6 @@
+-import { useRoute } from '@react-navigation/native';
++import { useNavigation, useRoute } from '@react-navigation/native';
+ import { useQuery } from '@tanstack/react-query';
++import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+ import { useEffect, useMemo, useRef } from 'react';
+ import {
+   ActivityIndicator,
+@@ -7,9 +8,12 @@ import {
+   ScrollView,
+   StyleSheet,
+   Text,
++  TouchableOpacity,
+   View,
+ } from 'react-native';
+ 
++import type { AppStackParamList } from '../../navigation/AppStack';
++import { authService } from '../../services/authService';
+ import { loanService } from '../../services/loanService';
+ import { reservationService } from '../../services/reservationService';
+ import { colors, radii, spacing, typography } from '../../theme';
+@@ -44,6 +48,30 @@ type HighlightParams = {
+   highlightEntityId?: string;
+ };
+ 
++type AdminActionButtonProps = {
++  title: string;
++  description: string;
++  onPress: () => void;
++};
++
++function AdminActionButton({
++  title,
++  description,
++  onPress,
++}: AdminActionButtonProps) {
++  return (
++    <TouchableOpacity
++      style={styles.adminActionButton}
++      onPress={onPress}
++      activeOpacity={0.8}
++      accessibilityRole="button"
++    >
++      <Text style={styles.adminActionTitle}>{title}</Text>
++      <Text style={styles.adminActionDescription}>{description}</Text>
++    </TouchableOpacity>
++  );
++}
++
+ function getStatusLabel(status: Reservation['status']) {
+   switch (status) {
+     case 'PENDING':
+@@ -125,9 +153,7 @@ function ReservationCard({
+ 
+       <View style={styles.infoRow}>
+         <Text style={styles.label}>Biti+þ</Text>
+-        <Text style={styles.value}>
+-          {formatDateTime(reservation.end_at)}
+-        </Text>
++        <Text style={styles.value}>{formatDateTime(reservation.end_at)}</Text>
+       </View>
+ 
+       <View style={styles.divider} />
+@@ -151,9 +177,7 @@ function ReservationCard({
+       ) : null}
+ 
+       {highlighted ? (
+-        <Text style={styles.highlightLabel}>
+-          Bildirimden a+ð¦-lan kay¦-t
+-        </Text>
++        <Text style={styles.highlightLabel}>Bildirimden a+ð¦-lan kay¦-t</Text>
+       ) : null}
+     </View>
+   );
+@@ -177,9 +201,7 @@ function LoanCard({
+           </Text>
+ 
+           {loan.equipment?.code ? (
+-            <Text style={styles.equipmentCode}>
+-              {loan.equipment.code}
+-            </Text>
++            <Text style={styles.equipmentCode}>{loan.equipment.code}</Text>
+           ) : null}
+         </View>
+ 
+@@ -197,9 +219,7 @@ function LoanCard({
+ 
+       <View style={styles.infoRow}>
+         <Text style={styles.label}>Teslim Al¦-nma</Text>
+-        <Text style={styles.value}>
+-          {formatDateTime(loan.checked_out_at)}
+-        </Text>
++        <Text style={styles.value}>{formatDateTime(loan.checked_out_at)}</Text>
+       </View>
+ 
+       <View style={styles.divider} />
+@@ -252,9 +272,7 @@ function LoanCard({
+       ) : null}
+ 
+       {highlighted ? (
+-        <Text style={styles.highlightLabel}>
+-          Bildirimden a+ð¦-lan kay¦-t
+-        </Text>
++        <Text style={styles.highlightLabel}>Bildirimden a+ð¦-lan kay¦-t</Text>
+       ) : null}
+     </View>
+   );
+@@ -266,6 +284,24 @@ export function MyActionsScreen() {
+ 
+   const route = useRoute();
+ 
++  const navigation =
++    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
++
++  const { data: profile } = useQuery({
++    queryKey: ['current-profile'],
++    queryFn: async () => {
++      const { data, error } = await authService.getCurrentProfile();
++
++      if (error) {
++        throw error;
++      }
++
++      return data;
++    },
++  });
++
++  const isAdmin = profile?.role === 'ADMIN';
++
+   const highlightedEntity = useMemo(() => {
+     const params = route.params as HighlightParams | undefined;
+ 
+@@ -362,9 +398,7 @@ export function MyActionsScreen() {
+     return (
+       <View style={styles.center}>
+         <ActivityIndicator color={colors.primary} />
+-        <Text style={styles.loadingText}>
+-          ¦-+þlemlerin y+-kleniyor...
+-        </Text>
++        <Text style={styles.loadingText}>¦-+þlemlerin y+-kleniyor...</Text>
+       </View>
+     );
+   }
+@@ -390,6 +424,42 @@ export function MyActionsScreen() {
+           </Text>
+         </View>
+ 
++        {isAdmin ? (
++          <View style={styles.adminSection}>
++            <Text style={styles.sectionTitle}>Y+Ânetim ¦-+þlemleri</Text>
++
++            <AdminActionButton
++              title="Rezervasyon Y+Ânetimi"
++              description="Rezervasyonlar¦- onayla veya reddet."
++              onPress={() => navigation.navigate('AdminReservations')}
++            />
++
++            <AdminActionButton
++              title="Bak¦-m Y+Ânetimi"
++              description="Ekipman bak¦-mlar¦-n¦- takip et."
++              onPress={() => navigation.navigate('AdminMaintenance')}
++            />
++
++            <AdminActionButton
++              title="Ekipman Y+Ânetimi"
++              description="Ekipman ekle ve mevcut kay¦-tlar¦- d+-zenle."
++              onPress={() => navigation.navigate('AdminEquipment')}
++            />
++
++            <AdminActionButton
++              title="Zimmet Y+Ânetimi"
++              description="Zimmet ve iade durumlar¦-n¦- y+Ânet."
++              onPress={() => navigation.navigate('AdminLoans')}
++            />
++
++            <AdminActionButton
++              title="Kategori Y+Ânetimi"
++              description="Kategorileri ekle, d+-zenle ve aktiflik durumlar¦-n¦- y+Ânet."
++              onPress={() => navigation.navigate('AdminCategories')}
++            />
++          </View>
++        ) : null}
++
+         <Text style={styles.sectionTitle}>Rezervasyonlar¦-m</Text>
+ 
+         {reservationsError ? (
+@@ -397,9 +467,7 @@ export function MyActionsScreen() {
+             Rezervasyonlar y+-klenemedi. Ekran¦- a+þa¦þ¦- +ðekerek tekrar dene.
+           </Text>
+         ) : reservations.length === 0 ? (
+-          <Text style={styles.emptyText}>
+-            Hen+-z rezervasyonun yok.
+-          </Text>
++          <Text style={styles.emptyText}>Hen+-z rezervasyonun yok.</Text>
+         ) : (
+           reservations.map((reservation) => {
+             const highlighted =
+@@ -495,6 +563,27 @@ const styles = StyleSheet.create({
+     paddingHorizontal: spacing.lg,
+     paddingBottom: spacing.xxxl,
+   },
++  adminSection: {
++    marginBottom: spacing.lg,
++  },
++  adminActionButton: {
++    backgroundColor: colors.surface,
++    borderWidth: 1,
++    borderColor: colors.border,
++    borderRadius: radii.lg,
++    padding: spacing.lg,
++    marginBottom: spacing.sm,
++  },
++  adminActionTitle: {
++    color: colors.primary,
++    fontSize: typography.body,
++    fontWeight: '700',
++  },
++  adminActionDescription: {
++    color: colors.textSecondary,
++    fontSize: typography.caption,
++    marginTop: spacing.xs,
++  },
+   card: {
+     backgroundColor: colors.surface,
+     borderWidth: 1,
+diff --git a/src/screens/app/ProfileScreen.tsx b/src/screens/app/ProfileScreen.tsx
+index 69287dc..27fa2cd 100644
+--- a/src/screens/app/ProfileScreen.tsx
++++ b/src/screens/app/ProfileScreen.tsx
+@@ -10,6 +10,7 @@ import {
+   TouchableOpacity,
+   View,
+ } from 'react-native';
++import { Ionicons } from '@expo/vector-icons';
+ import type { CompositeScreenProps } from '@react-navigation/native';
+ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+@@ -17,6 +18,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+ import type { MainTabParamList } from '../../navigation/MainTabs';
+ import type { AppStackParamList } from '../../navigation/AppStack';
+ import { authService } from '../../services/authService';
++import { notificationService } from '../../services/notificationService';
+ import { colors, radii, spacing, typography } from '../../theme';
+ 
+ type Props = CompositeScreenProps<
+@@ -40,6 +42,24 @@ export function ProfileScreen({ navigation }: Props) {
+     },
+   });
+ 
++  const { data: notifications = [] } = useQuery({
++    queryKey: ['my-notifications'],
++    queryFn: async () => {
++      const { data, error } =
++        await notificationService.getMyNotifications();
++
++      if (error) {
++        throw error;
++      }
++
++      return data ?? [];
++    },
++  });
++
++  const hasUnreadNotifications = notifications.some(
++    (notification) => !notification.read_at,
++  );
++
+   async function handleSignOut() {
+     setIsSigningOut(true);
+ 
+@@ -70,16 +90,40 @@ export function ProfileScreen({ navigation }: Props) {
+   const isAdmin = profile?.role === 'ADMIN';
+ 
+   return (
+-  <ScrollView
+-    style={styles.container}
+-    contentContainerStyle={styles.scrollContent}
+-    showsVerticalScrollIndicator={false}
+-  >
++    <ScrollView
++      style={styles.container}
++      contentContainerStyle={styles.scrollContent}
++      showsVerticalScrollIndicator={false}
++    >
+       <View style={styles.header}>
+-        <Text style={styles.title}>Profil</Text>
+-        <Text style={styles.subtitle}>
+-          Hesap bilgilerini ve hesap i+þlemlerini buradan y+Ânet.
+-        </Text>
++        <View style={styles.headerText}>
++          <Text style={styles.title}>Profil</Text>
++          <Text style={styles.subtitle}>
++            Hesap bilgilerini ve hesap i+þlemlerini buradan y+Ânet.
++          </Text>
++        </View>
++
++        <TouchableOpacity
++          style={styles.notificationButton}
++          onPress={() => navigation.navigate('Notifications')}
++          activeOpacity={0.75}
++          accessibilityRole="button"
++          accessibilityLabel={
++            hasUnreadNotifications
++              ? 'Okunmam¦-+þ bildirimler var'
++              : 'Bildirimleri a+ð'
++          }
++        >
++          <Ionicons
++            name="notifications-outline"
++            size={24}
++            color={colors.primary}
++          />
++
++          {hasUnreadNotifications ? (
++            <View style={styles.notificationDot} />
++          ) : null}
++        </TouchableOpacity>
+       </View>
+ 
+       <View style={styles.card}>
+@@ -96,69 +140,12 @@ export function ProfileScreen({ navigation }: Props) {
+         </Text>
+       </View>
+ 
+-      {isAdmin ? (
+-        <>
+-          <TouchableOpacity
+-            style={styles.adminButton}
+-            onPress={() => navigation.navigate('AdminReservations')}
+-            activeOpacity={0.8}
+-          >
+-            <Text style={styles.adminButtonText}>
+-              Rezervasyon Y+Ânetimi
+-            </Text>
+-            <Text style={styles.adminButtonDescription}>
+-              Kullan¦-c¦- rezervasyonlar¦-n¦- onayla veya reddet.
+-            </Text>
+-          </TouchableOpacity>
+-
+-          <TouchableOpacity
+-            style={styles.maintenanceButton}
+-            onPress={() => navigation.navigate('AdminMaintenance')}
+-            activeOpacity={0.8}
+-          >
+-            <Text style={styles.outlinedButtonText}>
+-              Bak¦-m Y+Ânetimi
+-            </Text>
+-            <Text style={styles.outlinedButtonDescription}>
+-              Ekipman bak¦-mlar¦-n¦- ba+þlat, takip et ve tamamla.
+-            </Text>
+-          </TouchableOpacity>
+-
+-          <TouchableOpacity
+-            style={styles.maintenanceButton}
+-            onPress={() => navigation.navigate('AdminEquipment')}
+-            activeOpacity={0.8}
+-          >
+-            <Text style={styles.outlinedButtonText}>
+-              Ekipman Y+Ânetimi
+-            </Text>
+-            <Text style={styles.outlinedButtonDescription}>
+-              Yeni ekipman ekle ve mevcut ekipmanlar¦- d+-zenle.
+-            </Text>
+-          </TouchableOpacity>
+-
+-<TouchableOpacity
+-  style={styles.maintenanceButton}
+-  onPress={() => navigation.navigate('AdminLoans')}
+-  activeOpacity={0.8}
+->
+-  <Text style={styles.outlinedButtonText}>
+-    Zimmet Y+Ânetimi
+-  </Text>
+-  <Text style={styles.outlinedButtonDescription}>
+-    T+-m zimmetleri ve iade durumlar¦-n¦- g+Âr+-nt+-le.
+-  </Text>
+-</TouchableOpacity>
+-
+-
+-        </>
+-      ) : null}
+-
+       <TouchableOpacity
+         style={styles.logoutButton}
+         onPress={handleSignOut}
+         disabled={isSigningOut}
+         activeOpacity={0.8}
++        accessibilityRole="button"
+       >
+         {isSigningOut ? (
+           <ActivityIndicator color={colors.error} />
+@@ -166,20 +153,8 @@ export function ProfileScreen({ navigation }: Props) {
+           <Text style={styles.logoutButtonText}>+ç¦-k¦-+þ Yap</Text>
+         )}
+       </TouchableOpacity>
+-<TouchableOpacity
+-  style={styles.maintenanceButton}
+-  onPress={() => navigation.navigate('Notifications')}
+-  activeOpacity={0.8}
+->
+-  <Text style={styles.outlinedButtonText}>Bildirimler</Text>
+-  <Text style={styles.outlinedButtonDescription}>
+-    Rezervasyon ve zimmet bildirimlerini g+Âr+-nt+-le.
+-  </Text>
+-</TouchableOpacity>
+-
+-
+-  </ScrollView>
+-);
++    </ScrollView>
++  );
+ }
+ 
+ const styles = StyleSheet.create({
+@@ -188,9 +163,19 @@ const styles = StyleSheet.create({
+     backgroundColor: colors.background,
+     padding: spacing.lg,
+   },
++  scrollContent: {
++    paddingBottom: spacing.xl,
++  },
+   header: {
++    flexDirection: 'row',
++    alignItems: 'flex-start',
++    justifyContent: 'space-between',
++    gap: spacing.md,
+     marginBottom: spacing.lg,
+   },
++  headerText: {
++    flex: 1,
++  },
+   title: {
+     color: colors.text,
+     fontSize: typography.heading,
+@@ -201,6 +186,28 @@ const styles = StyleSheet.create({
+     fontSize: typography.body,
+     marginTop: spacing.xs,
+   },
++  notificationButton: {
++    width: 48,
++    height: 48,
++    alignItems: 'center',
++    justifyContent: 'center',
++    borderRadius: radii.lg,
++    backgroundColor: colors.surface,
++    borderWidth: 1,
++    borderColor: colors.border,
++    position: 'relative',
++  },
++  notificationDot: {
++    position: 'absolute',
++    top: 9,
++    right: 9,
++    width: 9,
++    height: 9,
++    borderRadius: 5,
++    backgroundColor: '#3B82F6',
++    borderWidth: 1,
++    borderColor: colors.surface,
++  },
+   card: {
+     backgroundColor: colors.surface,
+     borderWidth: 1,
+@@ -224,40 +231,6 @@ const styles = StyleSheet.create({
+     backgroundColor: colors.border,
+     marginVertical: spacing.md,
+   },
+-  adminButton: {
+-    backgroundColor: colors.primary,
+-    borderRadius: radii.lg,
+-    padding: spacing.lg,
+-    marginTop: spacing.lg,
+-  },
+-  maintenanceButton: {
+-    backgroundColor: colors.surface,
+-    borderWidth: 1,
+-    borderColor: colors.primary,
+-    borderRadius: radii.lg,
+-    padding: spacing.lg,
+-    marginTop: spacing.md,
+-  },
+-  adminButtonText: {
+-    color: colors.white,
+-    fontSize: typography.body,
+-    fontWeight: '700',
+-  },
+-  adminButtonDescription: {
+-    color: colors.white,
+-    fontSize: typography.caption,
+-    marginTop: spacing.xs,
+-  },
+-  outlinedButtonText: {
+-    color: colors.primary,
+-    fontSize: typography.body,
+-    fontWeight: '700',
+-  },
+-  outlinedButtonDescription: {
+-    color: colors.textSecondary,
+-    fontSize: typography.caption,
+-    marginTop: spacing.xs,
+-  },
+   logoutButton: {
+     borderWidth: 1,
+     borderColor: colors.error,
+@@ -277,7 +250,4 @@ const styles = StyleSheet.create({
+     justifyContent: 'center',
+     backgroundColor: colors.background,
+   },
+-  scrollContent: {
+-  paddingBottom: spacing.xl,
+-},
+ });
+diff --git a/src/services/equipmentService.ts b/src/services/equipmentService.ts
+index b6e30c1..f156054 100644
+--- a/src/services/equipmentService.ts
++++ b/src/services/equipmentService.ts
+@@ -1,6 +1,25 @@
+-
++import type {
++  Equipment,
++  EquipmentCategory,
++} from '../types/equipment';
+ import { supabase } from './supabase';
+ 
++
++const DEFAULT_PAGE_SIZE = 20;
++const MAX_PAGE_SIZE = 100;
++
++const EQUIPMENT_SELECT = `
++  id,
++  code,
++  name,
++  category_id,
++  location,
++  description,
++  image_path,
++  lifecycle_status,
++  created_at
++`;
++
+ export type EquipmentInput = {
+   code: string;
+   name: string;
+@@ -9,108 +28,147 @@ export type EquipmentInput = {
+   description?: string;
+ };
+ 
+-export type Equipment = {
+-  id: string;
+-  code: string;
+-  name: string;
+-  category_id: string;
+-  location: string;
+-  description: string | null;
+-  image_path: string | null;
+-  lifecycle_status: 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
+-  created_at: string;
+-  categories: {
+-    id: string;
+-    name: string;
+-  }[];
+-};
+ 
+-export type EquipmentCategory = {
+-  id: string;
+-  name: string;
++
++export type GetEquipmentParams = {
++  page?: number;
++  pageSize?: number;
++  search?: string;
++  categoryId?: string;
++  startAt?: string;
++  endAt?: string;
++  availableOnly?: boolean;
+ };
+ 
+ export const equipmentService = {
+-  async getEquipment() {
+-    const { data: equipment, error: equipmentError } = await supabase
+-      .from('equipment')
+-      .select(
+-        `
+-          id,
+-          code,
+-          name,
+-          category_id,
+-          location,
+-          description,
+-          image_path,
+-          lifecycle_status,
+-          created_at
+-        `,
+-      )
+-      .order('created_at', { ascending: false });
++  async getEquipment({
++    page = 1,
++    pageSize = DEFAULT_PAGE_SIZE,
++    search = '',
++    categoryId,
++    startAt,
++    endAt,
++    availableOnly = false,
++  }: GetEquipmentParams = {}) {
++    const normalizedPage = Number.isFinite(page)
++      ? Math.max(1, Math.floor(page))
++      : 1;
+ 
+-    if (equipmentError) {
+-      return { data: null, error: equipmentError };
++    const normalizedPageSize = Number.isFinite(pageSize)
++      ? Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(pageSize)))
++      : DEFAULT_PAGE_SIZE;
++
++    if ((startAt == null) !== (endAt == null)) {
++      return {
++        data: null,
++        count: null,
++        error: new Error(
++          'M+-saitlik kontrol+- i+ðin ba+þlang¦-+ð ve biti+þ zaman¦- birlikte se+ðilmelidir.',
++        ),
++      };
+     }
+ 
+-    const categoryIds = [
+-      ...new Set(
+-        (equipment ?? [])
+-          .map((item) => item.category_id)
+-          .filter(Boolean),
+-      ),
+-    ];
++    if (startAt && endAt && startAt >= endAt) {
++      return {
++        data: null,
++        count: null,
++        error: new Error(
++          'Ba+þlang¦-+ð zaman¦- biti+þ zaman¦-ndan +Ânce olmal¦-d¦-r.',
++        ),
++      };
++    }
+ 
+-    if (categoryIds.length === 0) {
++    if (availableOnly && (!startAt || !endAt)) {
+       return {
+-        data: (equipment ?? []).map((item) => ({
+-          ...item,
+-          categories: [] as EquipmentCategory[],
+-        })),
+-        error: null,
++        data: null,
++        count: null,
++        error: new Error(
++          'M+-saitlik filtresi i+ðin ba+þlang¦-+ð ve biti+þ zaman¦- se+ðin.',
++        ),
+       };
+     }
+ 
+-    const { data: categories, error: categoriesError } = await supabase
+-      .from('categories')
+-      .select('id, name')
+-      .in('id', categoryIds);
++    const { data, error } = await supabase.rpc(
++      'get_equipment_catalog',
++      {
++        p_page: normalizedPage,
++        p_page_size: normalizedPageSize,
++        p_search: search.trim(),
++        p_category_id: categoryId?.trim() || null,
++        p_start_at: startAt ?? null,
++        p_end_at: endAt ?? null,
++        p_available_only: availableOnly,
++      },
++    );
+ 
+-    if (categoriesError) {
+-      return { data: null, error: categoriesError };
++    if (error) {
++      return {
++        data: null,
++        count: null,
++        error,
++      };
+     }
+ 
+-    const equipmentWithCategories = (equipment ?? []).map((item) => ({
+-      ...item,
+-      categories: (categories ?? []).filter(
+-        (category) => category.id === item.category_id,
+-      ),
++  
++    type EquipmentCatalogRow = {
++      id: string;
++      code: string;
++      name: string;
++      category_id: string;
++      location: string;
++      description: string | null;
++      image_path: string | null;
++      lifecycle_status: Equipment['lifecycle_status'];
++      created_at: string;
++      category_name: string | null;
++      is_available: boolean;
++      total_count: number;
++    };
++
++    const rows = (data ?? []) as EquipmentCatalogRow[];
++    const count = Number(rows[0]?.total_count ?? 0);
++
++    const equipment: Equipment[] = rows.map((item) => ({
++      id: item.id,
++      code: item.code,
++      name: item.name,
++      category_id: item.category_id,
++      location: item.location,
++      description: item.description,
++      image_path: item.image_path,
++      lifecycle_status: item.lifecycle_status,
++      created_at: item.created_at,
++      categories: item.category_name
++        ? [
++            {
++              id: item.category_id,
++              name: item.category_name,
++            },
++          ]
++        : [],
++      is_available: item.is_available,
+     }));
+ 
+-    return { data: equipmentWithCategories, error: null };
++
++    return {
++      data: equipment,
++      count,
++      error: null,
++    };
+   },
+ 
+   async getEquipmentDetail(equipmentId: string) {
+     const { data: equipment, error: equipmentError } = await supabase
+       .from('equipment')
+-      .select(
+-        `
+-          id,
+-          code,
+-          name,
+-          category_id,
+-          location,
+-          description,
+-          image_path,
+-          lifecycle_status,
+-          created_at
+-        `,
+-      )
++      .select(EQUIPMENT_SELECT)
+       .eq('id', equipmentId)
+       .single();
+ 
+     if (equipmentError) {
+-      return { data: null, error: equipmentError };
++      return {
++        data: null,
++        error: equipmentError,
++      };
+     }
+ 
+     const { data: category, error: categoryError } = await supabase
+@@ -120,7 +178,10 @@ export const equipmentService = {
+       .maybeSingle();
+ 
+     if (categoryError) {
+-      return { data: null, error: categoryError };
++      return {
++        data: null,
++        error: categoryError,
++      };
+     }
+ 
+     return {
+@@ -132,6 +193,28 @@ export const equipmentService = {
+     };
+   },
+ 
++  async getEquipmentByCode(code: string) {
++    const normalizedCode = code.trim();
++
++    if (!normalizedCode) {
++      return {
++        data: null,
++        error: new Error('L+-tfen ge+ðerli bir ekipman kodu girin.'),
++      };
++    }
++
++    const { data, error } = await supabase
++      .from('equipment')
++      .select('id, code, name, lifecycle_status')
++      .eq('code', normalizedCode)
++      .maybeSingle();
++
++    return {
++      data,
++      error,
++    };
++  },
++
+   async getActiveCategories() {
+     const { data, error } = await supabase
+       .from('categories')
+@@ -139,7 +222,10 @@ export const equipmentService = {
+       .eq('is_active', true)
+       .order('name', { ascending: true });
+ 
+-    return { data, error };
++    return {
++      data,
++      error,
++    };
+   },
+ 
+   async createEquipment(input: EquipmentInput) {
+@@ -170,7 +256,10 @@ export const equipmentService = {
+       .select()
+       .single();
+ 
+-    return { data, error };
++    return {
++      data,
++      error,
++    };
+   },
+ 
+   async updateEquipment(
+@@ -204,7 +293,10 @@ export const equipmentService = {
+       .select()
+       .single();
+ 
+-    return { data, error };
++    return {
++      data,
++      error,
++    };
+   },
+ 
+   async deactivateEquipment(equipmentId: string) {
+@@ -220,9 +312,15 @@ export const equipmentService = {
+     });
+ 
+     if (error) {
+-      return { data: null, error };
++      return {
++        data: null,
++        error,
++      };
+     }
+ 
+-    return { data: true, error: null };
++    return {
++      data: true,
++      error: null,
++    };
+   },
+ };
+diff --git a/src/services/reservationService.ts b/src/services/reservationService.ts
+index 2708971..c6e317a 100644
+--- a/src/services/reservationService.ts
++++ b/src/services/reservationService.ts
+@@ -73,7 +73,7 @@ export const reservationService = {
+ 
+     const { data: equipment, error: equipmentError } = await supabase
+       .from('equipment')
+-      .select('id, name, code')
++      .select('id, name, code, lifecycle_status')
+       .in('id', equipmentIds);
+ 
+     if (equipmentError) {
+@@ -187,12 +187,12 @@ export const reservationService = {
+       return { data: reservations ?? [], error: null };
+     }
+ 
+-    const { data: equipment, error: equipmentError } =
+-      await supabase
+-        .from('equipment')
+-        .select('id, name, code')
+-        .in('id', equipmentIds);
+-
++const { data: equipment, error: equipmentError } =
++  await supabase
++    .from('equipment')
++    .select('id, name, code, lifecycle_status')
++    .in('id', equipmentIds);
++    
+     if (equipmentError) {
+       return { data: null, error: equipmentError };
+     }
+diff --git a/src/types/equipment.ts b/src/types/equipment.ts
+index 354f2a1..1301b31 100644
+--- a/src/types/equipment.ts
++++ b/src/types/equipment.ts
+@@ -1,3 +1,4 @@
++
+ export type EquipmentLifecycleStatus =
+   | 'ACTIVE'
+   | 'MAINTENANCE'
+@@ -9,19 +10,21 @@ export type Category = {
+   is_active: boolean;
+ };
+ 
++export type EquipmentCategory = {
++  id: string;
++  name: string;
++};
++
+ export type Equipment = {
+   id: string;
+   code: string;
+   name: string;
+   category_id: string;
+   location: string;
+-  description: string;
+-  image_path: string;
++  description: string | null;
++  image_path: string | null;
+   lifecycle_status: EquipmentLifecycleStatus;
+-  categories?: {
+-    id: string;
+-    name: string;
+-  }[];
+-  
++  categories?: EquipmentCategory[];
+   created_at: string;
++  is_available?: boolean;
+ };
+
+=== NEW FILE: src/screens/admin/AdminCategoriesScreen.tsx ===
+import { useState } from 'react';
+
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+import type { Category } from '../../types/category';
+
+import { categoryService } from '../../services/categoryService';
+import { colors, radii, spacing, typography } from '../../theme';
+
+export default function AdminCategoriesScreen() {
+  const queryClient = useQueryClient();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(
+    null,
+  );
+  const [categoryName, setCategoryName] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [changingStatusId, setChangingStatusId] = useState<string | null>(
+    null,
+  );
+
+  const {
+    data: categories = [],
+    isLoading,
+    isRefetching,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const result = await categoryService.getCategories();
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data ?? [];
+    },
+  });
+
+  const openCreateForm = () => {
+    setEditingCategory(null);
+    setCategoryName('');
+    setModalVisible(true);
+  };
+
+  const openEditForm = (category: Category) => {
+    setEditingCategory(category);
+    setCategoryName(category.name);
+    setModalVisible(true);
+  };
+
+  const closeForm = () => {
+    if (saving) {
+      return;
+    }
+
+    setModalVisible(false);
+    setEditingCategory(null);
+    setCategoryName('');
+  };
+
+  const saveCategory = async () => {
+    const name = categoryName.trim();
+
+    if (!name) {
+      Alert.alert('Eksik bilgi', 'Kategori adÄ± zorunludur.');
+      return;
+    }
+
+    if (name.length > 100) {
+      Alert.alert(
+        'GeÃ§ersiz kategori adÄ±',
+        'Kategori adÄ± en fazla 100 karakter olabilir.',
+      );
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const result = editingCategory
+        ? await categoryService.updateCategory(editingCategory.id, { name })
+        : await categoryService.createCategory({ name });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['categories'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['active-equipment-categories'],
+        }),
+      ]);
+
+      setModalVisible(false);
+      setEditingCategory(null);
+      setCategoryName('');
+
+      Alert.alert(
+        'BaÅŸarÄ±lÄ±',
+        editingCategory
+          ? 'Kategori adÄ± gÃ¼ncellendi.'
+          : 'Yeni kategori oluÅŸturuldu.',
+      );
+    } catch (saveError) {
+      Alert.alert(
+        'Ä°ÅŸlem baÅŸarÄ±sÄ±z',
+        saveError instanceof Error
+          ? saveError.message
+          : 'Kategori kaydedilirken bir hata oluÅŸtu.',
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const changeCategoryStatus = (category: Category) => {
+    if (changingStatusId) {
+      return;
+    }
+
+    const nextIsActive = !category.isActive;
+
+    Alert.alert(
+      nextIsActive ? 'Kategoriyi aktifleÅŸtir' : 'Kategoriyi pasife al',
+      nextIsActive
+        ? `â€œ${category.name}â€ kategorisi yeniden aktif olacak.`
+        : `â€œ${category.name}â€ kategorisi yeni ekipman seÃ§imlerinde kullanÄ±lamayacak. Mevcut ekipman kayÄ±tlarÄ± silinmeyecek.`,
+      [
+        {
+          text: 'VazgeÃ§',
+          style: 'cancel',
+        },
+        {
+          text: nextIsActive ? 'AktifleÅŸtir' : 'Pasife Al',
+          style: nextIsActive ? 'default' : 'destructive',
+          onPress: () => void confirmCategoryStatus(category, nextIsActive),
+        },
+      ],
+    );
+  };
+
+  const confirmCategoryStatus = async (
+    category: Category,
+    isActive: boolean,
+  ) => {
+    if (changingStatusId) {
+      return;
+    }
+
+    setChangingStatusId(category.id);
+
+    try {
+      const result = await categoryService.setCategoryActive(
+        category.id,
+        isActive,
+      );
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['categories'] }),
+        queryClient.invalidateQueries({
+          queryKey: ['active-equipment-categories'],
+        }),
+        queryClient.invalidateQueries({ queryKey: ['equipment'] }),
+        queryClient.invalidateQueries({ queryKey: ['home'] }),
+      ]);
+
+      Alert.alert(
+        'BaÅŸarÄ±lÄ±',
+        isActive ? 'Kategori aktifleÅŸtirildi.' : 'Kategori pasife alÄ±ndÄ±.',
+      );
+    } catch (statusError) {
+      Alert.alert(
+        'Ä°ÅŸlem baÅŸarÄ±sÄ±z',
+        statusError instanceof Error
+          ? statusError.message
+          : 'Kategori durumu deÄŸiÅŸtirilirken bir hata oluÅŸtu.',
+      );
+    } finally {
+      setChangingStatusId(null);
+    }
+  };
+
+  const renderCategory = ({ item }: { item: Category }) => {
+    const isChanging = changingStatusId === item.id;
+
+    return (
+      <View style={styles.categoryCard}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleContainer}>
+            <Text style={styles.categoryName}>{item.name}</Text>
+            <Text style={styles.categoryId}>Kategori kaydÄ±</Text>
+          </View>
+
+          <View
+            style={[
+              styles.statusBadge,
+              item.isActive ? styles.activeBadge : styles.inactiveBadge,
+            ]}
+          >
+            <Text style={styles.statusText}>
+              {item.isActive ? 'Aktif' : 'Pasif'}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.cardActions}>
+          <Pressable
+            accessibilityRole="button"
+            disabled={isChanging || changingStatusId !== null}
+            style={styles.editButton}
+            onPress={() => openEditForm(item)}
+          >
+            <Text style={styles.editButtonText}>DÃ¼zenle</Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            disabled={isChanging || changingStatusId !== null}
+            style={[
+              item.isActive ? styles.deactivateButton : styles.activateButton,
+              changingStatusId !== null && styles.disabledButton,
+            ]}
+            onPress={() => changeCategoryStatus(item)}
+          >
+            {isChanging ? (
+              <ActivityIndicator
+                color={item.isActive ? colors.error : colors.primary}
+              />
+            ) : (
+              <Text
+                style={
+                  item.isActive
+                    ? styles.deactivateButtonText
+                    : styles.activateButtonText
+                }
+              >
+                {item.isActive ? 'Pasife Al' : 'AktifleÅŸtir'}
+              </Text>
+            )}
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={colors.primary} />
+        <Text style={styles.helperText}>Kategoriler yÃ¼kleniyor...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>Kategoriler yÃ¼klenemedi.</Text>
+
+        <Pressable
+          accessibilityRole="button"
+          style={styles.primaryButton}
+          onPress={() => void refetch()}
+        >
+          <Text style={styles.primaryButtonText}>Tekrar dene</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.title}>Kategori YÃ¶netimi</Text>
+          <Text style={styles.subtitle}>
+            Kategorileri oluÅŸtur, dÃ¼zenle ve durumlarÄ±nÄ± yÃ¶net.
+          </Text>
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          style={styles.primaryButton}
+          onPress={openCreateForm}
+        >
+          <Text style={styles.primaryButtonText}>+ Ekle</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.notice}>
+        <Text style={styles.noticeText}>
+          Pasife alÄ±nan kategoriler yeni ekipman oluÅŸtururken seÃ§ilemez.
+          Kategoriye baÄŸlÄ± mevcut ekipman kayÄ±tlarÄ± korunur.
+        </Text>
+      </View>
+
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.id}
+        renderItem={renderCategory}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => void refetch()}
+            tintColor={colors.primary}
+          />
+        }
+        contentContainerStyle={[
+          styles.listContent,
+          categories.length === 0 && styles.emptyList,
+        ]}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyTitle}>HenÃ¼z kategori yok</Text>
+            <Text style={styles.helperText}>
+              Ä°lk kategorini ekleyerek baÅŸlayabilirsin.
+            </Text>
+          </View>
+        }
+      />
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closeForm}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalContainer}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>
+              {editingCategory ? 'Kategoriyi DÃ¼zenle' : 'Yeni Kategori'}
+            </Text>
+
+            <Pressable
+              accessibilityRole="button"
+              disabled={saving}
+              onPress={closeForm}
+            >
+              <Text style={styles.closeText}>Kapat</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.formContent}>
+            <Text style={styles.label}>Kategori adÄ± *</Text>
+
+            <TextInput
+              value={categoryName}
+              onChangeText={setCategoryName}
+              placeholder="Ã–rn. Bilgisayar"
+              placeholderTextColor={colors.textSecondary}
+              autoCapitalize="sentences"
+              autoCorrect={false}
+              maxLength={100}
+              editable={!saving}
+              returnKeyType="done"
+              onSubmitEditing={() => void saveCategory()}
+              style={styles.input}
+            />
+
+            <Text style={styles.helperText}>
+              Kategori adÄ± en fazla 100 karakter olabilir.
+            </Text>
+
+            <Pressable
+              accessibilityRole="button"
+              disabled={saving}
+              style={[
+                styles.primaryButton,
+                styles.saveButton,
+                saving && styles.disabledButton,
+              ]}
+              onPress={() => void saveCategory()}
+            >
+              {saving ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {editingCategory
+                    ? 'DeÄŸiÅŸiklikleri Kaydet'
+                    : 'Kategoriyi OluÅŸtur'}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  title: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '800',
+  },
+  subtitle: {
+    color: colors.textSecondary,
+    fontSize: typography.label,
+    marginTop: spacing.xs,
+  },
+  primaryButton: {
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonText: {
+    color: colors.white,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+  notice: {
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+  },
+  noticeText: {
+    color: colors.textSecondary,
+    fontSize: typography.label,
+    lineHeight: 20,
+  },
+  listContent: {
+    paddingBottom: spacing.xl,
+    gap: spacing.md,
+  },
+  emptyList: {
+    flexGrow: 1,
+  },
+  categoryCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  cardTitleContainer: {
+    flex: 1,
+  },
+  categoryName: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  categoryId: {
+    color: colors.textSecondary,
+    fontSize: typography.label,
+    marginTop: spacing.xs,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.md,
+  },
+  activeBadge: {
+    backgroundColor: colors.primarySoft,
+  },
+  inactiveBadge: {
+    backgroundColor: colors.border,
+  },
+  statusText: {
+    color: colors.text,
+    fontSize: typography.label,
+    fontWeight: '600',
+  },
+  cardActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  editButton: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    minHeight: 36,
+    justifyContent: 'center',
+  },
+  editButtonText: {
+    color: colors.primary,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+  deactivateButton: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.error,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    minHeight: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deactivateButtonText: {
+    color: colors.error,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+  activateButton: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    minHeight: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activateButtonText: {
+    color: colors.primary,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  center: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    gap: spacing.md,
+  },
+  helperText: {
+    color: colors.textSecondary,
+    fontSize: typography.label,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: colors.error,
+    fontSize: typography.body,
+    textAlign: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  emptyTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  modalTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '800',
+  },
+  closeText: {
+    color: colors.primary,
+    fontSize: typography.label,
+    fontWeight: '700',
+  },
+  formContent: {
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  label: {
+    color: colors.text,
+    fontSize: typography.label,
+    fontWeight: '700',
+    marginTop: spacing.sm,
+  },
+  input: {
+    backgroundColor: colors.surface,
+    color: colors.text,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: typography.body,
+  },
+  saveButton: {
+    marginTop: spacing.xl,
+    minHeight: 48,
+  },
+});
+
+=== NEW FILE: src/screens/app/QRScannerScreen.tsx ===
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { AppStackParamList } from '../../navigation/AppStack';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  CameraView,
+  useCameraPermissions,
+  type BarcodeScanningResult,
+} from 'expo-camera';
+import { useQuery } from '@tanstack/react-query';
+
+import { equipmentService } from '../../services/equipmentService';
+import { colors, radii, spacing, typography } from '../../theme';
+
+type QRScannerScreenProps = NativeStackScreenProps<
+  AppStackParamList,
+  'QRScanner'
+>;
+type EquipmentStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
+
+function getEquipmentStatusLabel(status: EquipmentStatus) {
+  switch (status) {
+    case 'ACTIVE':
+      return 'KullanÄ±ma Uygun';
+    case 'MAINTENANCE':
+      return 'BakÄ±mda';
+    case 'INACTIVE':
+      return 'KullanÄ±m DÄ±ÅŸÄ±';
+    default:
+      return status;
+  }
+}
+
+export default function QRScannerScreen({
+  navigation,
+}: QRScannerScreenProps) {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [manualCode, setManualCode] = useState('');
+  const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const equipmentQuery = useQuery({
+    queryKey: ['equipment-by-code', scannedCode],
+    enabled: Boolean(scannedCode),
+    queryFn: async () => {
+      const { data, error } =
+        await equipmentService.getEquipmentByCode(scannedCode!);
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error(
+          'Girilen kodla eÅŸleÅŸen bir ekipman bulunamadÄ±. Kodu kontrol edip tekrar deneyin.',
+        );
+      }
+
+      return data;
+    },
+    retry: false,
+  });
+
+  function handleCode(code: string) {
+    const normalizedCode = code.trim();
+
+    if (!normalizedCode) {
+      Alert.alert(
+        'Ekipman kodu gerekli',
+        'LÃ¼tfen bir QR kod okutun veya ekipman kodunu manuel olarak girin.',
+      );
+      return;
+    }
+
+    setManualCode(normalizedCode);
+    setScannedCode(normalizedCode);
+  }
+
+  function handleBarcodeScanned(result: BarcodeScanningResult) {
+    if (scannedCode || isSearching) {
+      return;
+    }
+
+    setIsSearching(true);
+    handleCode(result.data);
+  }
+
+  function resetScanner() {
+    setScannedCode(null);
+    setIsSearching(false);
+    setManualCode('');
+  }
+
+  if (!permission) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>
+          Kamera eriÅŸimi kontrol ediliyor...
+        </Text>
+      </View>
+    );
+  }
+
+  const hasPermission = permission.granted;
+
+return (
+  <ScrollView
+    style={styles.container}
+    contentContainerStyle={styles.scrollContent}
+    keyboardShouldPersistTaps="handled"
+    showsVerticalScrollIndicator={false}
+  >
+    
+      <View style={styles.header}>
+        <Text style={styles.eyebrow}>EKÄ°PMAN YÃ–NETÄ°MÄ°</Text>
+        <Text style={styles.title}>QR Kod Okutma</Text>
+        <Text style={styles.subtitle}>
+          Ekipman bilgilerine hÄ±zlÄ±ca ulaÅŸmak iÃ§in QR kodu okutun
+          veya ekipman kodunu manuel olarak girin.
+        </Text>
+      </View>
+
+      {hasPermission ? (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionIcon}>
+              <Text style={styles.sectionIconText}>01</Text>
+            </View>
+            <View style={styles.sectionHeading}>
+              <Text style={styles.sectionTitle}>Kamerayla Tara</Text>
+              <Text style={styles.sectionDescription}>
+                QR kodu kamera gÃ¶rÃ¼ntÃ¼sÃ¼nÃ¼n iÃ§ine hizalayÄ±n.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.cameraContainer}>
+            <CameraView
+              style={styles.camera}
+              facing="back"
+              barcodeScannerSettings={{
+                barcodeTypes: ['qr'],
+              }}
+              onBarcodeScanned={
+                scannedCode ? undefined : handleBarcodeScanned
+              }
+            />
+
+            <View pointerEvents="none" style={styles.scanOverlay}>
+              <View style={styles.scanFrame}>
+                <View style={[styles.corner, styles.topLeft]} />
+                <View style={[styles.corner, styles.topRight]} />
+                <View style={[styles.corner, styles.bottomLeft]} />
+                <View style={[styles.corner, styles.bottomRight]} />
+              </View>
+            </View>
+
+            <View style={styles.cameraHint}>
+              <Text style={styles.cameraHintText}>
+                QR kodu Ã§erÃ§evenin iÃ§ine getirin
+              </Text>
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.permissionCard}>
+          <View style={styles.permissionIcon}>
+            <Text style={styles.permissionIconText}>!</Text>
+          </View>
+          <Text style={styles.sectionTitle}>Kamera eriÅŸimi gerekli</Text>
+          <Text style={styles.sectionDescription}>
+            QR kod tarama Ã¶zelliÄŸini kullanmak iÃ§in kamera izni
+            vermeniz gerekir. Ä°zin vermeden de ekipman kodunu
+            manuel olarak arayabilirsiniz.
+          </Text>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => {
+              void requestPermission();
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.primaryButtonText}>
+              Kamera Ä°znini Ver
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <View style={styles.manualCard}>
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionIcon}>
+            <Text style={styles.sectionIconText}>02</Text>
+          </View>
+          <View style={styles.sectionHeading}>
+            <Text style={styles.sectionTitle}>Kod ile Ara</Text>
+            <Text style={styles.sectionDescription}>
+              EkipmanÄ±n Ã¼zerindeki kodu girerek kaydÄ± bulun.
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.inputLabel}>Ekipman Kodu</Text>
+        <TextInput
+          style={styles.input}
+          value={manualCode}
+          onChangeText={setManualCode}
+          placeholder="Ã–rn. KAM001"
+          placeholderTextColor={colors.textSecondary}
+          autoCapitalize="characters"
+          autoCorrect={false}
+          maxLength={100}
+          returnKeyType="search"
+          accessibilityLabel="Ekipman kodu"
+          onSubmitEditing={() => handleCode(manualCode)}
+        />
+
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => handleCode(manualCode)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.primaryButtonText}>EkipmanÄ± Ara</Text>
+        </TouchableOpacity>
+      </View>
+
+      {scannedCode ? (
+        <View style={styles.resultCard}>
+          <Text style={styles.resultEyebrow}>ARAMA SONUCU</Text>
+
+          {equipmentQuery.isLoading ? (
+            <View style={styles.resultLoading}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={styles.sectionDescription}>
+                Ekipman kaydÄ± sorgulanÄ±yor...
+              </Text>
+            </View>
+          ) : equipmentQuery.isError ? (
+            <>
+              <Text style={styles.errorTitle}>
+                Ekipman bulunamadÄ±
+              </Text>
+              <Text style={styles.sectionDescription}>
+                {equipmentQuery.error instanceof Error
+                  ? equipmentQuery.error.message
+                  : 'Arama sÄ±rasÄ±nda bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.'}
+              </Text>
+
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={resetScanner}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.primaryButtonText}>
+                  Yeniden Ara
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : equipmentQuery.data ? (
+            <>
+              <Text style={styles.equipmentName}>
+                {equipmentQuery.data.name}
+              </Text>
+
+              <View style={styles.equipmentInfoRow}>
+                <Text style={styles.infoLabel}>Ekipman Kodu</Text>
+                <Text style={styles.infoValue}>
+                  {equipmentQuery.data.code}
+                </Text>
+              </View>
+
+              <View style={styles.equipmentInfoRow}>
+                <Text style={styles.infoLabel}>KullanÄ±m Durumu</Text>
+                <Text style={styles.infoValue}>
+                  {getEquipmentStatusLabel(
+                    equipmentQuery.data.lifecycle_status as EquipmentStatus,
+                  )}
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={() =>
+                  navigation.navigate('EquipmentDetail', {
+                    equipmentId: equipmentQuery.data.id,
+                  })
+                }
+                activeOpacity={0.8}
+              >
+                <Text style={styles.primaryButtonText}>
+                  Ekipman DetaylarÄ±nÄ± GÃ¶rÃ¼ntÃ¼le
+                </Text>
+              </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.secondaryButton}
+  onPress={() =>
+    navigation.navigate('AdminReservations', {
+      equipmentId: equipmentQuery.data.id,
+    })
+  }
+  activeOpacity={0.8}
+>
+  <Text style={styles.secondaryButtonText}>
+    Teslim / Ä°ade Ä°ÅŸlemlerine Git
+  </Text>
+</TouchableOpacity>
+
+
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={resetScanner}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.secondaryButtonText}>
+                  BaÅŸka Ekipman Ara
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : null}
+        </View>
+      ) : null}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+  flex: 1,
+  backgroundColor: colors.background,
+},
+scrollContent: {
+  paddingHorizontal: spacing.lg,
+  paddingTop: spacing.lg,
+  paddingBottom: spacing.xl,
+  flexGrow: 1,
+},
+
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background,
+    padding: spacing.xl,
+    gap: spacing.md,
+  },
+  header: {
+    marginBottom: spacing.lg,
+  },
+  eyebrow: {
+    color: colors.primary,
+    fontSize: typography.caption,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    marginBottom: spacing.xs,
+  },
+  title: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '700',
+  },
+  subtitle: {
+    color: colors.textSecondary,
+    fontSize: typography.body,
+    lineHeight: 22,
+    marginTop: spacing.sm,
+  },
+  section: {
+    marginBottom: spacing.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  sectionIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionIconText: {
+    color: colors.primary,
+    fontSize: typography.caption,
+    fontWeight: '700',
+  },
+  sectionHeading: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  sectionDescription: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+    lineHeight: 19,
+  },
+  cameraContainer: {
+    height: 245,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+    backgroundColor: '#101828',
+  },
+  camera: {
+    flex: 1,
+  },
+  scanOverlay: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanFrame: {
+    width: 190,
+    height: 150,
+    position: 'relative',
+  },
+  corner: {
+    position: 'absolute',
+    width: 28,
+    height: 28,
+    borderColor: '#FFFFFF',
+  },
+  topLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderTopLeftRadius: radii.md,
+  },
+  topRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 3,
+    borderRightWidth: 3,
+    borderTopRightRadius: radii.md,
+  },
+  bottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 3,
+    borderLeftWidth: 3,
+    borderBottomLeftRadius: radii.md,
+  },
+  bottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 3,
+    borderRightWidth: 3,
+    borderBottomRightRadius: radii.md,
+  },
+  cameraHint: {
+    position: 'absolute',
+    bottom: spacing.md,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(16, 24, 40, 0.82)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.md,
+  },
+  cameraHintText: {
+    color: '#FFFFFF',
+    fontSize: typography.caption,
+    fontWeight: '500',
+  },
+  permissionCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  permissionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  permissionIconText: {
+    color: colors.primary,
+    fontSize: typography.heading,
+    fontWeight: '700',
+  },
+  manualCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+  },
+  inputLabel: {
+    color: colors.text,
+    fontSize: typography.caption,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
+  },
+  input: {
+    minHeight: 48,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    color: colors.text,
+    backgroundColor: colors.background,
+    fontSize: typography.body,
+  },
+  primaryButton: {
+    minHeight: 48,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.md,
+  },
+  primaryButtonText: {
+    color: colors.white,
+    fontSize: typography.body,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  secondaryButton: {
+    minHeight: 46,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+  },
+  secondaryButtonText: {
+    color: colors.primary,
+    fontSize: typography.body,
+    fontWeight: '600',
+  },
+  resultCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    padding: spacing.lg,
+    marginTop: spacing.lg,
+  },
+  resultEyebrow: {
+    color: colors.primary,
+    fontSize: typography.caption,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
+  },
+  resultLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  equipmentName: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '700',
+    marginBottom: spacing.md,
+  },
+  equipmentInfoRow: {
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing.xs,
+  },
+  infoLabel: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+  },
+  infoValue: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '600',
+  },
+  errorTitle: {
+    color: colors.error,
+    fontSize: typography.body,
+    fontWeight: '700',
+    marginBottom: spacing.xs,
+  },
+  loadingText: {
+    color: colors.textSecondary,
+    fontSize: typography.body,
+    textAlign: 'center',
+  },
+});
+
+=== NEW FILE: src/services/categoryService.ts ===
+import { supabase } from './supabase';
+
+import type { Category, CategoryInput } from '../types/category';
+
+type CategoryRow = {
+  id: string;
+  name: string;
+  is_active: boolean;
+};
+
+function mapCategory(row: CategoryRow): Category {
+  return {
+    id: row.id,
+    name: row.name,
+    isActive: row.is_active,
+  };
+}
+
+function validateCategoryName(name: string): string | null {
+  const normalizedName = name.trim();
+
+  if (!normalizedName) {
+    return 'Kategori adÄ± boÅŸ bÄ±rakÄ±lamaz.';
+  }
+
+  if (normalizedName.length > 100) {
+    return 'Kategori adÄ± en fazla 100 karakter olabilir.';
+  }
+
+  return null;
+}
+
+export const categoryService = {
+  async getCategories() {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, is_active')
+      .order('name', { ascending: true });
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    return {
+      data: (data ?? []).map((row) => mapCategory(row as CategoryRow)),
+      error: null,
+    };
+  },
+
+  async createCategory(input: CategoryInput) {
+    const name = input.name.trim();
+    const validationError = validateCategoryName(name);
+
+    if (validationError) {
+      return {
+        data: null,
+        error: new Error(validationError),
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({ name })
+      .select('id, name, is_active')
+      .single();
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    return {
+      data: mapCategory(data as CategoryRow),
+      error: null,
+    };
+  },
+
+  async updateCategory(categoryId: string, input: CategoryInput) {
+    const name = input.name.trim();
+    const validationError = validateCategoryName(name);
+
+    if (validationError) {
+      return {
+        data: null,
+        error: new Error(validationError),
+      };
+    }
+
+    if (!categoryId.trim()) {
+      return {
+        data: null,
+        error: new Error('DÃ¼zenlenecek kategori seÃ§ilmedi.'),
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update({ name })
+      .eq('id', categoryId)
+      .select('id, name, is_active')
+      .single();
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    return {
+      data: mapCategory(data as CategoryRow),
+      error: null,
+    };
+  },
+
+  async setCategoryActive(categoryId: string, isActive: boolean) {
+    if (!categoryId.trim()) {
+      return {
+        data: null,
+        error: new Error('Durumu deÄŸiÅŸtirilecek kategori seÃ§ilmedi.'),
+      };
+    }
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update({ is_active: isActive })
+      .eq('id', categoryId)
+      .select('id, name, is_active')
+      .single();
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    return {
+      data: mapCategory(data as CategoryRow),
+      error: null,
+    };
+  },
+};
+
+=== NEW FILE: src/types/category.ts ===
+export type Category = {
+  id: string;
+  name: string;
+  isActive: boolean;
+};
+
+export type CategoryInput = {
+  name: string;
+};
