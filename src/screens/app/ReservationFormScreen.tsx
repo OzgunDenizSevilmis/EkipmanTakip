@@ -1,9 +1,10 @@
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import {
   ActivityIndicator,
   Alert,
@@ -17,6 +18,8 @@ import {
 import { z } from 'zod';
 
 import type { AppStackParamList } from '../../navigation/AppStack';
+import { authService } from '../../services/authService';
+import { reservationDraftService } from '../../services/reservationDraftService';
 import { reservationService } from '../../services/reservationService';
 import { colors, radii, spacing, typography } from '../../theme';
 
@@ -70,6 +73,10 @@ export default function ReservationFormScreen({
 
   const [pickerField, setPickerField] = useState<PickerField>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isDraftReady, setIsDraftReady] = useState(false);
+
+  const isRestoringDraft = useRef(false);
 
   const [initialStartAt] = useState(() => new Date());
   const [initialEndAt] = useState(
@@ -81,6 +88,7 @@ export default function ReservationFormScreen({
     handleSubmit,
     setValue,
     getValues,
+    reset,
     formState: { errors },
   } = useForm<ReservationFormValues>({
     resolver: zodResolver(reservationSchema),
@@ -90,6 +98,119 @@ export default function ReservationFormScreen({
       purpose: '',
     },
   });
+
+  const formValues = useWatch({ control });
+
+  // Oturumu ve ilgili ekipmana ait taslağı yükle.
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDraft() {
+      try {
+        const {
+          data: { session },
+          error,
+        } = await authService.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!session?.user.id) {
+          return;
+        }
+
+        const currentUserId = session.user.id;
+
+        const draft = await reservationDraftService.get(
+          currentUserId,
+          equipmentId,
+        );
+
+        if (!isMounted) {
+          return;
+        }
+
+        isRestoringDraft.current = true;
+
+        if (draft) {
+          const startAt = new Date(draft.startAt);
+          const endAt = new Date(draft.endAt);
+
+          if (
+            !Number.isNaN(startAt.getTime()) &&
+            !Number.isNaN(endAt.getTime())
+          ) {
+            reset({
+              startAt,
+              endAt,
+              purpose: draft.purpose,
+            });
+          }
+        }
+
+        setUserId(currentUserId);
+      } catch {
+        if (isMounted) {
+          Alert.alert(
+            'Taslak yüklenemedi',
+            'Kaydedilmiş form bilgileri yüklenemedi. Formu kullanmaya devam edebilirsin.',
+          );
+        }
+      } finally {
+        if (isMounted) {
+          isRestoringDraft.current = false;
+          setIsDraftReady(true);
+        }
+      }
+    }
+
+    void loadDraft();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [equipmentId, reset]);
+
+  // Form değerlerini değişikliklerden kısa süre sonra yerel olarak kaydet.
+  useEffect(() => {
+    if (
+      !userId ||
+      !isDraftReady ||
+      !formValues ||
+      isRestoringDraft.current
+    ) {
+      return;
+    }
+
+    const { startAt, endAt, purpose } = formValues;
+
+    if (
+      !(startAt instanceof Date) ||
+      !(endAt instanceof Date) ||
+      Number.isNaN(startAt.getTime()) ||
+      Number.isNaN(endAt.getTime()) ||
+      typeof purpose !== 'string'
+    ) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      void reservationDraftService
+        .save(userId, equipmentId, {
+          startAt: startAt.toISOString(),
+          endAt: endAt.toISOString(),
+          purpose,
+        })
+        .catch(() => {
+          // Taslak kaydedilemezse form kullanılmaya devam edebilir.
+        });
+    }, 400);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [userId, equipmentId, isDraftReady, formValues]);
 
   const onSubmit = async (values: ReservationFormValues) => {
     setIsSubmitting(true);
@@ -107,6 +228,15 @@ export default function ReservationFormScreen({
         return;
       }
 
+      // Taslak yalnızca sunucu isteği başarılı olduğunda silinir.
+      if (userId) {
+        try {
+          await reservationDraftService.clear(userId, equipmentId);
+        } catch {
+          // Taslak silme hatası oluşturulmuş rezervasyonu geçersiz kılmaz.
+        }
+      }
+
       Alert.alert(
         'Rezervasyon oluşturuldu',
         'Rezervasyon talebin başarıyla oluşturuldu.',
@@ -120,7 +250,7 @@ export default function ReservationFormScreen({
     } catch {
       Alert.alert(
         'Bir sorun oluştu',
-        'Rezervasyon talebi gönderilemedi. Lütfen tekrar dene.',
+        'Rezervasyon talebi gönderilemedi. İnternet bağlantını kontrol edip tekrar dene. Form bilgilerin korunur.',
       );
     } finally {
       setIsSubmitting(false);
@@ -137,11 +267,13 @@ export default function ReservationFormScreen({
 
     if (pickerField === 'startDate') {
       const startAt = new Date(currentValues.startAt);
+
       startAt.setFullYear(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
         selectedDate.getDate(),
       );
+
       setValue('startAt', startAt, {
         shouldValidate: true,
         shouldDirty: true,
@@ -150,12 +282,14 @@ export default function ReservationFormScreen({
 
     if (pickerField === 'startTime') {
       const startAt = new Date(currentValues.startAt);
+
       startAt.setHours(
         selectedDate.getHours(),
         selectedDate.getMinutes(),
         0,
         0,
       );
+
       setValue('startAt', startAt, {
         shouldValidate: true,
         shouldDirty: true,
@@ -164,11 +298,13 @@ export default function ReservationFormScreen({
 
     if (pickerField === 'endDate') {
       const endAt = new Date(currentValues.endAt);
+
       endAt.setFullYear(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
         selectedDate.getDate(),
       );
+
       setValue('endAt', endAt, {
         shouldValidate: true,
         shouldDirty: true,
@@ -177,12 +313,14 @@ export default function ReservationFormScreen({
 
     if (pickerField === 'endTime') {
       const endAt = new Date(currentValues.endAt);
+
       endAt.setHours(
         selectedDate.getHours(),
         selectedDate.getMinutes(),
         0,
         0,
       );
+
       setValue('endAt', endAt, {
         shouldValidate: true,
         shouldDirty: true,
@@ -196,6 +334,9 @@ export default function ReservationFormScreen({
     pickerField === 'startDate' || pickerField === 'startTime'
       ? getValues('startAt')
       : getValues('endAt');
+
+  const displayedStartAt = formValues.startAt ?? initialStartAt;
+  const displayedEndAt = formValues.endAt ?? initialEndAt;
 
   return (
     <ScrollView
@@ -251,7 +392,7 @@ export default function ReservationFormScreen({
               <Text style={styles.label}>Tarih</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Başlangıç tarihi: ${formatDate(getValues('startAt'))}`}
+                accessibilityLabel={`Başlangıç tarihi: ${formatDate(displayedStartAt)}`}
                 style={({ pressed }) => [
                   styles.pickerButton,
                   pressed && styles.pickerButtonPressed,
@@ -264,7 +405,7 @@ export default function ReservationFormScreen({
                   color={colors.primary}
                 />
                 <Text style={styles.pickerText}>
-                  {formatDate(getValues('startAt'))}
+                  {formatDate(displayedStartAt)}
                 </Text>
                 <Ionicons
                   name="chevron-down"
@@ -278,7 +419,7 @@ export default function ReservationFormScreen({
               <Text style={styles.label}>Saat</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Başlangıç saati: ${formatTime(getValues('startAt'))}`}
+                accessibilityLabel={`Başlangıç saati: ${formatTime(displayedStartAt)}`}
                 style={({ pressed }) => [
                   styles.pickerButton,
                   pressed && styles.pickerButtonPressed,
@@ -291,7 +432,7 @@ export default function ReservationFormScreen({
                   color={colors.primary}
                 />
                 <Text style={styles.pickerText}>
-                  {formatTime(getValues('startAt'))}
+                  {formatTime(displayedStartAt)}
                 </Text>
                 <Ionicons
                   name="chevron-down"
@@ -326,7 +467,7 @@ export default function ReservationFormScreen({
               <Text style={styles.label}>Tarih</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Bitiş tarihi: ${formatDate(getValues('endAt'))}`}
+                accessibilityLabel={`Bitiş tarihi: ${formatDate(displayedEndAt)}`}
                 style={({ pressed }) => [
                   styles.pickerButton,
                   pressed && styles.pickerButtonPressed,
@@ -339,7 +480,7 @@ export default function ReservationFormScreen({
                   color={colors.primary}
                 />
                 <Text style={styles.pickerText}>
-                  {formatDate(getValues('endAt'))}
+                  {formatDate(displayedEndAt)}
                 </Text>
                 <Ionicons
                   name="chevron-down"
@@ -353,7 +494,7 @@ export default function ReservationFormScreen({
               <Text style={styles.label}>Saat</Text>
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Bitiş saati: ${formatTime(getValues('endAt'))}`}
+                accessibilityLabel={`Bitiş saati: ${formatTime(displayedEndAt)}`}
                 style={({ pressed }) => [
                   styles.pickerButton,
                   pressed && styles.pickerButtonPressed,
@@ -366,7 +507,7 @@ export default function ReservationFormScreen({
                   color={colors.primary}
                 />
                 <Text style={styles.pickerText}>
-                  {formatTime(getValues('endAt'))}
+                  {formatTime(displayedEndAt)}
                 </Text>
                 <Ionicons
                   name="chevron-down"
@@ -477,10 +618,10 @@ export default function ReservationFormScreen({
         style={({ pressed }) => [
           styles.submitButton,
           pressed && styles.submitButtonPressed,
-          isSubmitting && styles.submitButtonDisabled,
+          (isSubmitting || !isDraftReady) && styles.submitButtonDisabled,
         ]}
         onPress={handleSubmit(onSubmit)}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !isDraftReady}
       >
         {isSubmitting ? (
           <>
