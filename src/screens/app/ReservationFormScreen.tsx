@@ -1,4 +1,3 @@
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,10 +22,7 @@ import { reservationDraftService } from '../../services/reservationDraftService'
 import { reservationService } from '../../services/reservationService';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type ReservationFormScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'ReservationForm'
->;
+type ReservationFormScreenProps = NativeStackScreenProps<AppStackParamList, 'ReservationForm'>;
 
 const reservationSchema = z
   .object({
@@ -36,10 +32,7 @@ const reservationSchema = z
     endAt: z.date({
       message: 'Bitiş tarihi seçilmelidir.',
     }),
-    purpose: z
-      .string()
-      .trim()
-      .min(3, 'Kullanım amacı en az 3 karakter olmalıdır.'),
+    purpose: z.string().trim().min(3, 'Kullanım amacı en az 3 karakter olmalıdır.'),
   })
   .refine((data) => data.endAt > data.startAt, {
     message: 'Bitiş zamanı başlangıç zamanından sonra olmalıdır.',
@@ -65,10 +58,7 @@ function formatTime(date: Date) {
   });
 }
 
-export default function ReservationFormScreen({
-  route,
-  navigation,
-}: ReservationFormScreenProps) {
+export default function ReservationFormScreen({ route, navigation }: ReservationFormScreenProps) {
   const { equipmentId } = route.params;
 
   const [pickerField, setPickerField] = useState<PickerField>(null);
@@ -79,9 +69,7 @@ export default function ReservationFormScreen({
   const isRestoringDraft = useRef(false);
 
   const [initialStartAt] = useState(() => new Date());
-  const [initialEndAt] = useState(
-    () => new Date(initialStartAt.getTime() + 60 * 60 * 1000),
-  );
+  const [initialEndAt] = useState(() => new Date(initialStartAt.getTime() + 60 * 60 * 1000));
 
   const {
     control,
@@ -122,10 +110,7 @@ export default function ReservationFormScreen({
 
         const currentUserId = session.user.id;
 
-        const draft = await reservationDraftService.get(
-          currentUserId,
-          equipmentId,
-        );
+        const draft = await reservationDraftService.get(currentUserId, equipmentId);
 
         if (!isMounted) {
           return;
@@ -137,10 +122,7 @@ export default function ReservationFormScreen({
           const startAt = new Date(draft.startAt);
           const endAt = new Date(draft.endAt);
 
-          if (
-            !Number.isNaN(startAt.getTime()) &&
-            !Number.isNaN(endAt.getTime())
-          ) {
+          if (!Number.isNaN(startAt.getTime()) && !Number.isNaN(endAt.getTime())) {
             reset({
               startAt,
               endAt,
@@ -174,12 +156,7 @@ export default function ReservationFormScreen({
 
   // Form değerlerini değişikliklerden kısa süre sonra yerel olarak kaydet.
   useEffect(() => {
-    if (
-      !userId ||
-      !isDraftReady ||
-      !formValues ||
-      isRestoringDraft.current
-    ) {
+    if (!userId || !isDraftReady || !formValues || isRestoringDraft.current) {
       return;
     }
 
@@ -237,16 +214,12 @@ export default function ReservationFormScreen({
         }
       }
 
-      Alert.alert(
-        'Rezervasyon oluşturuldu',
-        'Rezervasyon talebin başarıyla oluşturuldu.',
-        [
-          {
-            text: 'Tamam',
-            onPress: () => navigation.goBack(),
-          },
-        ],
-      );
+      Alert.alert('Rezervasyon oluşturuldu', 'Rezervasyon talebin başarıyla oluşturuldu.', [
+        {
+          text: 'Tamam',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     } catch {
       Alert.alert(
         'Bir sorun oluştu',
@@ -283,12 +256,7 @@ export default function ReservationFormScreen({
     if (pickerField === 'startTime') {
       const startAt = new Date(currentValues.startAt);
 
-      startAt.setHours(
-        selectedDate.getHours(),
-        selectedDate.getMinutes(),
-        0,
-        0,
-      );
+      startAt.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
 
       setValue('startAt', startAt, {
         shouldValidate: true,
@@ -314,12 +282,7 @@ export default function ReservationFormScreen({
     if (pickerField === 'endTime') {
       const endAt = new Date(currentValues.endAt);
 
-      endAt.setHours(
-        selectedDate.getHours(),
-        selectedDate.getMinutes(),
-        0,
-        0,
-      );
+      endAt.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
 
       setValue('endAt', endAt, {
         shouldValidate: true,
@@ -347,34 +310,24 @@ export default function ReservationFormScreen({
     >
       <View style={styles.header}>
         <View style={styles.headerIcon}>
-          <Ionicons
-            name="calendar-outline"
-            size={30}
-            color={colors.primary}
-          />
+          <Ionicons name="calendar-outline" size={30} color={colors.primary} />
         </View>
 
         <Text style={styles.eyebrow}>EKİPMAN TAKİP</Text>
         <Text style={styles.title}>Rezervasyon oluştur</Text>
         <Text style={styles.subtitle}>
-          Ekipmanı kullanmak istediğin tarih ve saati belirle, ardından kullanım
-          amacını açıklayarak talebini gönder.
+          Ekipmanı kullanmak istediğin tarih ve saati belirle, ardından kullanım amacını açıklayarak
+          talebini gönder.
         </Text>
       </View>
 
       <View style={styles.sectionHeading}>
         <View style={styles.sectionIcon}>
-          <Ionicons
-            name="time-outline"
-            size={21}
-            color={colors.primary}
-          />
+          <Ionicons name="time-outline" size={21} color={colors.primary} />
         </View>
         <View style={styles.sectionHeadingText}>
           <Text style={styles.sectionTitle}>Rezervasyon zamanı</Text>
-          <Text style={styles.sectionSubtitle}>
-            Başlangıç ve bitiş tarihini belirle.
-          </Text>
+          <Text style={styles.sectionSubtitle}>Başlangıç ve bitiş tarihini belirle.</Text>
         </View>
       </View>
 
@@ -399,19 +352,9 @@ export default function ReservationFormScreen({
                 ]}
                 onPress={() => setPickerField('startDate')}
               >
-                <Ionicons
-                  name="calendar-outline"
-                  size={19}
-                  color={colors.primary}
-                />
-                <Text style={styles.pickerText}>
-                  {formatDate(displayedStartAt)}
-                </Text>
-                <Ionicons
-                  name="chevron-down"
-                  size={16}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="calendar-outline" size={19} color={colors.primary} />
+                <Text style={styles.pickerText}>{formatDate(displayedStartAt)}</Text>
+                <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
               </Pressable>
             </View>
 
@@ -426,19 +369,9 @@ export default function ReservationFormScreen({
                 ]}
                 onPress={() => setPickerField('startTime')}
               >
-                <Ionicons
-                  name="time-outline"
-                  size={19}
-                  color={colors.primary}
-                />
-                <Text style={styles.pickerText}>
-                  {formatTime(displayedStartAt)}
-                </Text>
-                <Ionicons
-                  name="chevron-down"
-                  size={16}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="time-outline" size={19} color={colors.primary} />
+                <Text style={styles.pickerText}>{formatTime(displayedStartAt)}</Text>
+                <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
               </Pressable>
             </View>
           </View>
@@ -446,11 +379,7 @@ export default function ReservationFormScreen({
 
         <View style={styles.sectionDivider}>
           <View style={styles.timelineLine} />
-          <Ionicons
-            name="arrow-down-circle-outline"
-            size={22}
-            color={colors.primary}
-          />
+          <Ionicons name="arrow-down-circle-outline" size={22} color={colors.primary} />
           <View style={styles.timelineLine} />
         </View>
 
@@ -474,19 +403,9 @@ export default function ReservationFormScreen({
                 ]}
                 onPress={() => setPickerField('endDate')}
               >
-                <Ionicons
-                  name="calendar-outline"
-                  size={19}
-                  color={colors.primary}
-                />
-                <Text style={styles.pickerText}>
-                  {formatDate(displayedEndAt)}
-                </Text>
-                <Ionicons
-                  name="chevron-down"
-                  size={16}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="calendar-outline" size={19} color={colors.primary} />
+                <Text style={styles.pickerText}>{formatDate(displayedEndAt)}</Text>
+                <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
               </Pressable>
             </View>
 
@@ -501,30 +420,16 @@ export default function ReservationFormScreen({
                 ]}
                 onPress={() => setPickerField('endTime')}
               >
-                <Ionicons
-                  name="time-outline"
-                  size={19}
-                  color={colors.primary}
-                />
-                <Text style={styles.pickerText}>
-                  {formatTime(displayedEndAt)}
-                </Text>
-                <Ionicons
-                  name="chevron-down"
-                  size={16}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="time-outline" size={19} color={colors.primary} />
+                <Text style={styles.pickerText}>{formatTime(displayedEndAt)}</Text>
+                <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
               </Pressable>
             </View>
           </View>
 
           {errors.endAt ? (
             <View style={styles.errorContainer}>
-              <Ionicons
-                name="alert-circle-outline"
-                size={17}
-                color={colors.error}
-              />
+              <Ionicons name="alert-circle-outline" size={17} color={colors.error} />
               <Text style={styles.error}>{errors.endAt.message}</Text>
             </View>
           ) : null}
@@ -533,17 +438,11 @@ export default function ReservationFormScreen({
 
       <View style={styles.sectionHeading}>
         <View style={styles.sectionIcon}>
-          <Ionicons
-            name="document-text-outline"
-            size={21}
-            color={colors.primary}
-          />
+          <Ionicons name="document-text-outline" size={21} color={colors.primary} />
         </View>
         <View style={styles.sectionHeadingText}>
           <Text style={styles.sectionTitle}>Kullanım amacı</Text>
-          <Text style={styles.sectionSubtitle}>
-            Ekipmana neden ihtiyaç duyduğunu belirt.
-          </Text>
+          <Text style={styles.sectionSubtitle}>Ekipmana neden ihtiyaç duyduğunu belirt.</Text>
         </View>
       </View>
 
@@ -559,10 +458,7 @@ export default function ReservationFormScreen({
               </View>
 
               <TextInput
-                style={[
-                  styles.input,
-                  errors.purpose && styles.inputError,
-                ]}
+                style={[styles.input, errors.purpose && styles.inputError]}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -578,19 +474,11 @@ export default function ReservationFormScreen({
               <View style={styles.inputFooter}>
                 {errors.purpose ? (
                   <View style={styles.errorContainer}>
-                    <Ionicons
-                      name="alert-circle-outline"
-                      size={17}
-                      color={colors.error}
-                    />
-                    <Text style={styles.error}>
-                      {errors.purpose.message}
-                    </Text>
+                    <Ionicons name="alert-circle-outline" size={17} color={colors.error} />
+                    <Text style={styles.error}>{errors.purpose.message}</Text>
                   </View>
                 ) : (
-                  <Text style={styles.helperText}>
-                    En az 3 karakter yazmalısın.
-                  </Text>
+                  <Text style={styles.helperText}>En az 3 karakter yazmalısın.</Text>
                 )}
 
                 <Text style={styles.characterCount}>{value.length}/500</Text>
@@ -601,14 +489,10 @@ export default function ReservationFormScreen({
       </View>
 
       <View style={styles.infoBanner}>
-        <Ionicons
-          name="information-circle-outline"
-          size={22}
-          color={colors.primary}
-        />
+        <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
         <Text style={styles.infoText}>
-          Talebin gönderildikten sonra onay sürecine alınabilir. Rezervasyon
-          durumunu uygulamadaki işlemlerinden takip edebilirsin.
+          Talebin gönderildikten sonra onay sürecine alınabilir. Rezervasyon durumunu uygulamadaki
+          işlemlerinden takip edebilirsin.
         </Text>
       </View>
 
@@ -630,35 +514,19 @@ export default function ReservationFormScreen({
           </>
         ) : (
           <>
-            <Ionicons
-              name="paper-plane-outline"
-              size={20}
-              color={colors.white}
-            />
-            <Text style={styles.submitButtonText}>
-              Rezervasyon Talebi Oluştur
-            </Text>
-            <Ionicons
-              name="arrow-forward"
-              size={19}
-              color={colors.white}
-            />
+            <Ionicons name="paper-plane-outline" size={20} color={colors.white} />
+            <Text style={styles.submitButtonText}>Rezervasyon Talebi Oluştur</Text>
+            <Ionicons name="arrow-forward" size={19} color={colors.white} />
           </>
         )}
       </Pressable>
 
-      <Text style={styles.footerNote}>
-        Göndermeden önce tarih ve saat bilgilerini kontrol et.
-      </Text>
+      <Text style={styles.footerNote}>Göndermeden önce tarih ve saat bilgilerini kontrol et.</Text>
 
       {pickerField ? (
         <DateTimePicker
           value={pickerValue}
-          mode={
-            pickerField === 'startDate' || pickerField === 'endDate'
-              ? 'date'
-              : 'time'
-          }
+          mode={pickerField === 'startDate' || pickerField === 'endDate' ? 'date' : 'time'}
           onChange={handlePickerChange}
         />
       ) : null}

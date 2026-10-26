@@ -1,4 +1,3 @@
-
 import { supabase } from './supabase';
 
 export type MaintenanceRecord = {
@@ -25,18 +24,14 @@ export const maintenanceService = {
   async getMaintenanceRecords() {
     const { data: records, error: recordsError } = await supabase
       .from('maintenance')
-      .select(
-        'id, equipment_id, description, opened_at, closed_at, created_by',
-      )
+      .select('id, equipment_id, description, opened_at, closed_at, created_by')
       .order('opened_at', { ascending: false });
 
     if (recordsError) {
       return { data: null, error: recordsError };
     }
 
-    const equipmentIds = [
-      ...new Set((records ?? []).map((record) => record.equipment_id)),
-    ];
+    const equipmentIds = [...new Set((records ?? []).map((record) => record.equipment_id))];
 
     if (equipmentIds.length === 0) {
       return {
@@ -54,13 +49,10 @@ export const maintenanceService = {
       return { data: null, error: equipmentError };
     }
 
-    const recordsWithEquipment: MaintenanceRecord[] = (records ?? []).map(
-      (record) => ({
-        ...record,
-        equipment:
-          equipment?.find((item) => item.id === record.equipment_id) ?? null,
-      }),
-    );
+    const recordsWithEquipment: MaintenanceRecord[] = (records ?? []).map((record) => ({
+      ...record,
+      equipment: equipment?.find((item) => item.id === record.equipment_id) ?? null,
+    }));
 
     return { data: recordsWithEquipment, error: null };
   },

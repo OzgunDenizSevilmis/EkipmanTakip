@@ -1,9 +1,5 @@
-import type {
-  Equipment,
-  EquipmentCategory,
-} from '../types/equipment';
+import type { Equipment } from '../types/equipment';
 import { supabase } from './supabase';
-
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
@@ -28,8 +24,6 @@ export type EquipmentInput = {
   description?: string;
 };
 
-
-
 export type GetEquipmentParams = {
   page?: number;
   pageSize?: number;
@@ -50,9 +44,7 @@ export const equipmentService = {
     endAt,
     availableOnly = false,
   }: GetEquipmentParams = {}) {
-    const normalizedPage = Number.isFinite(page)
-      ? Math.max(1, Math.floor(page))
-      : 1;
+    const normalizedPage = Number.isFinite(page) ? Math.max(1, Math.floor(page)) : 1;
 
     const normalizedPageSize = Number.isFinite(pageSize)
       ? Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(pageSize)))
@@ -72,9 +64,7 @@ export const equipmentService = {
       return {
         data: null,
         count: null,
-        error: new Error(
-          'Başlangıç zamanı bitiş zamanından önce olmalıdır.',
-        ),
+        error: new Error('Başlangıç zamanı bitiş zamanından önce olmalıdır.'),
       };
     }
 
@@ -82,24 +72,19 @@ export const equipmentService = {
       return {
         data: null,
         count: null,
-        error: new Error(
-          'Müsaitlik filtresi için başlangıç ve bitiş zamanı seçin.',
-        ),
+        error: new Error('Müsaitlik filtresi için başlangıç ve bitiş zamanı seçin.'),
       };
     }
 
-    const { data, error } = await supabase.rpc(
-      'get_equipment_catalog',
-      {
-        p_page: normalizedPage,
-        p_page_size: normalizedPageSize,
-        p_search: search.trim(),
-        p_category_id: categoryId?.trim() || null,
-        p_start_at: startAt ?? null,
-        p_end_at: endAt ?? null,
-        p_available_only: availableOnly,
-      },
-    );
+    const { data, error } = await supabase.rpc('get_equipment_catalog', {
+      p_page: normalizedPage,
+      p_page_size: normalizedPageSize,
+      p_search: search.trim(),
+      p_category_id: categoryId?.trim() || null,
+      p_start_at: startAt ?? null,
+      p_end_at: endAt ?? null,
+      p_available_only: availableOnly,
+    });
 
     if (error) {
       return {
@@ -109,7 +94,6 @@ export const equipmentService = {
       };
     }
 
-  
     type EquipmentCatalogRow = {
       id: string;
       code: string;
@@ -148,7 +132,6 @@ export const equipmentService = {
         : [],
       is_available: item.is_available,
     }));
-
 
     return {
       data: equipment,
@@ -237,9 +220,7 @@ export const equipmentService = {
     if (!code || !name || !location || !input.categoryId) {
       return {
         data: null,
-        error: new Error(
-          'Ekipman kodu, adı, kategorisi ve konumu zorunludur.',
-        ),
+        error: new Error('Ekipman kodu, adı, kategorisi ve konumu zorunludur.'),
       };
     }
 
@@ -262,10 +243,7 @@ export const equipmentService = {
     };
   },
 
-  async updateEquipment(
-    equipmentId: string,
-    input: EquipmentInput,
-  ) {
+  async updateEquipment(equipmentId: string, input: EquipmentInput) {
     const code = input.code.trim();
     const name = input.name.trim();
     const location = input.location.trim();
@@ -274,9 +252,7 @@ export const equipmentService = {
     if (!code || !name || !location || !input.categoryId) {
       return {
         data: null,
-        error: new Error(
-          'Ekipman kodu, adı, kategorisi ve konumu zorunludur.',
-        ),
+        error: new Error('Ekipman kodu, adı, kategorisi ve konumu zorunludur.'),
       };
     }
 

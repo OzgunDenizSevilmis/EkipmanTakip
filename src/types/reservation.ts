@@ -1,11 +1,5 @@
 export type ReservationStatus =
-  | 'PENDING'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'CANCELLED'
-  | 'EXPIRED'
-  | 'DELIVERED'
-  | 'COMPLETED';
+  'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED' | 'EXPIRED' | 'DELIVERED' | 'COMPLETED';
 
 export type Reservation = {
   id: string;

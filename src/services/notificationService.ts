@@ -22,7 +22,8 @@ export const notificationService = {
 
     const { data, error } = await supabase
       .from('notifications')
-      .select(`
+      .select(
+        `
         id,
         user_id,
         entity_type,
@@ -30,7 +31,8 @@ export const notificationService = {
         message,
         read_at,
         created_at
-      `)
+      `,
+      )
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 

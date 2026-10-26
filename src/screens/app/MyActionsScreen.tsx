@@ -59,12 +59,7 @@ type AdminActionButtonProps = {
   onPress: () => void;
 };
 
-function AdminActionButton({
-  title,
-  description,
-  icon,
-  onPress,
-}: AdminActionButtonProps) {
+function AdminActionButton({ title, description, icon, onPress }: AdminActionButtonProps) {
   return (
     <TouchableOpacity
       style={styles.adminActionButton}
@@ -81,11 +76,7 @@ function AdminActionButton({
         <Text style={styles.adminActionDescription}>{description}</Text>
       </View>
 
-      <Ionicons
-        name="chevron-forward"
-        size={19}
-        color={colors.textSecondary}
-      />
+      <Ionicons name="chevron-forward" size={19} color={colors.textSecondary} />
     </TouchableOpacity>
   );
 }
@@ -183,9 +174,7 @@ function InfoRow({
 
       <View style={styles.infoContent}>
         <Text style={styles.label}>{label}</Text>
-        <Text style={[styles.value, valueColor ? { color: valueColor } : null]}>
-          {value}
-        </Text>
+        <Text style={[styles.value, valueColor ? { color: valueColor } : null]}>{value}</Text>
       </View>
     </View>
   );
@@ -223,11 +212,7 @@ function ReservationCard({
     <View style={[styles.card, highlighted && styles.highlightedCard]}>
       {highlighted ? (
         <View style={styles.highlightBanner}>
-          <Ionicons
-            name="notifications-outline"
-            size={15}
-            color={colors.primary}
-          />
+          <Ionicons name="notifications-outline" size={15} color={colors.primary} />
           <Text style={styles.highlightLabel}>Bildirimden açılan kayıt</Text>
         </View>
       ) : null}
@@ -244,9 +229,7 @@ function ReservationCard({
           </Text>
 
           {reservation.equipment?.code ? (
-            <Text style={styles.equipmentCode}>
-              {reservation.equipment.code}
-            </Text>
+            <Text style={styles.equipmentCode}>{reservation.equipment.code}</Text>
           ) : null}
         </View>
       </View>
@@ -271,19 +254,11 @@ function ReservationCard({
 
       <View style={styles.smallDivider} />
 
-      <InfoRow
-        label="Bitiş"
-        value={formatDateTime(reservation.end_at)}
-        icon="time-outline"
-      />
+      <InfoRow label="Bitiş" value={formatDateTime(reservation.end_at)} icon="time-outline" />
 
       <View style={styles.smallDivider} />
 
-      <InfoRow
-        label="Kullanım amacı"
-        value={reservation.purpose}
-        icon="document-text-outline"
-      />
+      <InfoRow label="Kullanım amacı" value={reservation.purpose} icon="document-text-outline" />
 
       {reservation.rejection_reason ? (
         <>
@@ -313,11 +288,7 @@ function LoanCard({
     <View style={[styles.card, highlighted && styles.highlightedCard]}>
       {highlighted ? (
         <View style={styles.highlightBanner}>
-          <Ionicons
-            name="notifications-outline"
-            size={15}
-            color={colors.primary}
-          />
+          <Ionicons name="notifications-outline" size={15} color={colors.primary} />
           <Text style={styles.highlightLabel}>Bildirimden açılan kayıt</Text>
         </View>
       ) : null}
@@ -359,11 +330,7 @@ function LoanCard({
 
       <View style={styles.smallDivider} />
 
-      <InfoRow
-        label="Planlanan iade"
-        value={formatDateTime(loan.due_at)}
-        icon="calendar-outline"
-      />
+      <InfoRow label="Planlanan iade" value={formatDateTime(loan.due_at)} icon="calendar-outline" />
 
       {isReturned ? (
         <>
@@ -378,31 +345,19 @@ function LoanCard({
 
       <View style={styles.smallDivider} />
 
-      <InfoRow
-        label="Son kayıtlı durum"
-        value={loan.condition}
-        icon="clipboard-outline"
-      />
+      <InfoRow label="Son kayıtlı durum" value={loan.condition} icon="clipboard-outline" />
 
       {loan.delivery_note ? (
         <>
           <View style={styles.smallDivider} />
-          <InfoRow
-            label="Teslim notu"
-            value={loan.delivery_note}
-            icon="document-text-outline"
-          />
+          <InfoRow label="Teslim notu" value={loan.delivery_note} icon="document-text-outline" />
         </>
       ) : null}
 
       {loan.return_note ? (
         <>
           <View style={styles.smallDivider} />
-          <InfoRow
-            label="İade notu"
-            value={loan.return_note}
-            icon="chatbox-outline"
-          />
+          <InfoRow label="İade notu" value={loan.return_note} icon="chatbox-outline" />
         </>
       ) : null}
     </View>
@@ -466,8 +421,7 @@ export function MyActionsScreen() {
   const cardPositions = useRef<Record<string, number>>({});
   const route = useRoute();
 
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
   const { data: profile } = useQuery({
     queryKey: ['current-profile'],
@@ -583,9 +537,7 @@ export function MyActionsScreen() {
           <ActivityIndicator color={colors.primary} size="large" />
         </View>
         <Text style={styles.loadingTitle}>İşlemlerin yükleniyor</Text>
-        <Text style={styles.loadingText}>
-          Rezervasyon ve zimmet kayıtların getiriliyor.
-        </Text>
+        <Text style={styles.loadingText}>Rezervasyon ve zimmet kayıtların getiriliyor.</Text>
       </View>
     );
   }
@@ -607,11 +559,7 @@ export function MyActionsScreen() {
       >
         <View style={styles.header}>
           <View style={styles.headerIcon}>
-            <Ionicons
-              name="file-tray-full-outline"
-              size={30}
-              color={colors.primary}
-            />
+            <Ionicons name="file-tray-full-outline" size={30} color={colors.primary} />
           </View>
 
           <Text style={styles.eyebrow}>HESABIM</Text>
@@ -623,11 +571,7 @@ export function MyActionsScreen() {
           <View style={styles.summaryRow}>
             <View style={styles.summaryItem}>
               <View style={styles.summaryIcon}>
-                <Ionicons
-                  name="calendar-outline"
-                  size={19}
-                  color={colors.primary}
-                />
+                <Ionicons name="calendar-outline" size={19} color={colors.primary} />
               </View>
               <View>
                 <Text style={styles.summaryValue}>{reservations.length}</Text>
@@ -639,11 +583,7 @@ export function MyActionsScreen() {
 
             <View style={styles.summaryItem}>
               <View style={styles.summaryIcon}>
-                <Ionicons
-                  name="cube-outline"
-                  size={19}
-                  color={colors.primary}
-                />
+                <Ionicons name="cube-outline" size={19} color={colors.primary} />
               </View>
               <View>
                 <Text style={styles.summaryValue}>{loans.length}</Text>
@@ -723,17 +663,9 @@ export function MyActionsScreen() {
             return (
               <View
                 key={reservation.id}
-                onLayout={(event) =>
-                  scrollToHighlightedRecord(
-                    key,
-                    event.nativeEvent.layout.y,
-                  )
-                }
+                onLayout={(event) => scrollToHighlightedRecord(key, event.nativeEvent.layout.y)}
               >
-                <ReservationCard
-                  reservation={reservation}
-                  highlighted={highlighted}
-                />
+                <ReservationCard reservation={reservation} highlighted={highlighted} />
               </View>
             );
           })
@@ -764,12 +696,7 @@ export function MyActionsScreen() {
             return (
               <View
                 key={loan.id}
-                onLayout={(event) =>
-                  scrollToHighlightedRecord(
-                    key,
-                    event.nativeEvent.layout.y,
-                  )
-                }
+                onLayout={(event) => scrollToHighlightedRecord(key, event.nativeEvent.layout.y)}
               >
                 <LoanCard loan={loan} highlighted={highlighted} />
               </View>
@@ -778,11 +705,7 @@ export function MyActionsScreen() {
         )}
 
         <View style={styles.bottomNote}>
-          <Ionicons
-            name="refresh-outline"
-            size={16}
-            color={colors.textSecondary}
-          />
+          <Ionicons name="refresh-outline" size={16} color={colors.textSecondary} />
           <Text style={styles.bottomNoteText}>
             En güncel kayıtları görmek için ekranı aşağı çek.
           </Text>

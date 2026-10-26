@@ -29,11 +29,7 @@ const Stack = createNativeStackNavigator<AppStackParamList>();
 export function AppStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Main"
-        component={MainTabs}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
 
       <Stack.Screen
         name="EquipmentDetail"

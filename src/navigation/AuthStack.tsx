@@ -15,16 +15,8 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 export function AuthStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ title: 'Giriş Yap' }}
-      />
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{ title: 'Kayıt Ol' }}
-      />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Giriş Yap' }} />
+      <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Kayıt Ol' }} />
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}

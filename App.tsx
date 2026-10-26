@@ -1,14 +1,8 @@
 import { useEffect } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import {
-  focusManager,
-  onlineManager,
-  QueryClient,
-} from '@tanstack/react-query';
-import {
-  PersistQueryClientProvider,
-} from '@tanstack/react-query-persist-client';
+import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -32,21 +26,15 @@ const persister = createAsyncStoragePersister({
 
 onlineManager.setEventListener((setOnline) =>
   NetInfo.addEventListener((state) => {
-    setOnline(
-      state.isConnected === true &&
-        state.isInternetReachable !== false,
-    );
+    setOnline(state.isConnected === true && state.isInternetReachable !== false);
   }),
 );
 
 export default function App() {
   useEffect(() => {
-    const subscription = AppState.addEventListener(
-      'change',
-      (status: AppStateStatus) => {
-        focusManager.setFocused(status === 'active');
-      },
-    );
+    const subscription = AppState.addEventListener('change', (status: AppStateStatus) => {
+      focusManager.setFocused(status === 'active');
+    });
 
     return () => subscription.remove();
   }, []);
@@ -59,8 +47,7 @@ export default function App() {
         maxAge: 24 * 60 * 60 * 1000,
         dehydrateOptions: {
           shouldDehydrateQuery: (query) =>
-            query.state.status === 'success' &&
-            query.queryKey[0] === 'equipment',
+            query.state.status === 'success' && query.queryKey[0] === 'equipment',
         },
       }}
     >

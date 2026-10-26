@@ -1,12 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -15,10 +8,7 @@ import { equipmentService } from '../../services/equipmentService';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { AppStackParamList } from '../../navigation/AppStack';
 
-type EquipmentDetailScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'EquipmentDetail'
->;
+type EquipmentDetailScreenProps = NativeStackScreenProps<AppStackParamList, 'EquipmentDetail'>;
 
 function getLifecycleStatusLabel(status: Equipment['lifecycle_status']) {
   switch (status) {
@@ -31,10 +21,7 @@ function getLifecycleStatusLabel(status: Equipment['lifecycle_status']) {
   }
 }
 
-export default function EquipmentDetailScreen({
-  route,
-  navigation,
-}: EquipmentDetailScreenProps) {
+export default function EquipmentDetailScreen({ route, navigation }: EquipmentDetailScreenProps) {
   const { equipmentId } = route.params;
 
   const {
@@ -71,11 +58,7 @@ export default function EquipmentDetailScreen({
     return (
       <View style={styles.center}>
         <View style={styles.stateIcon}>
-          <Ionicons
-            name="alert-circle-outline"
-            size={34}
-            color={colors.error}
-          />
+          <Ionicons name="alert-circle-outline" size={34} color={colors.error} />
         </View>
 
         <Text style={styles.stateTitle}>Ekipman yüklenemedi</Text>
@@ -86,10 +69,7 @@ export default function EquipmentDetailScreen({
         <Pressable
           accessibilityRole="button"
           onPress={() => refetch()}
-          style={({ pressed }) => [
-            styles.retryButton,
-            pressed && styles.buttonPressed,
-          ]}
+          style={({ pressed }) => [styles.retryButton, pressed && styles.buttonPressed]}
         >
           <Ionicons name="refresh-outline" size={18} color={colors.white} />
           <Text style={styles.retryButtonText}>Tekrar dene</Text>
@@ -110,11 +90,7 @@ export default function EquipmentDetailScreen({
       <View style={styles.hero}>
         <View style={styles.heroTopRow}>
           <View style={styles.equipmentIcon}>
-            <Ionicons
-              name="cube-outline"
-              size={38}
-              color={colors.primary}
-            />
+            <Ionicons name="cube-outline" size={38} color={colors.primary} />
           </View>
 
           <View style={styles.statusBadge}>
@@ -124,9 +100,7 @@ export default function EquipmentDetailScreen({
                 isActive ? styles.statusDotActive : styles.statusDotInactive,
               ]}
             />
-            <Text style={styles.statusText}>
-              {getLifecycleStatusLabel(status)}
-            </Text>
+            <Text style={styles.statusText}>{getLifecycleStatusLabel(status)}</Text>
           </View>
         </View>
 
@@ -141,11 +115,7 @@ export default function EquipmentDetailScreen({
       </View>
 
       <View style={styles.card}>
-        <InfoRow
-          icon="pricetag-outline"
-          label="Ekipman kodu"
-          value={equipment.code}
-        />
+        <InfoRow icon="pricetag-outline" label="Ekipman kodu" value={equipment.code} />
 
         <View style={styles.divider} />
 
@@ -170,11 +140,7 @@ export default function EquipmentDetailScreen({
 
       <View style={styles.descriptionCard}>
         <View style={styles.descriptionIcon}>
-          <Ionicons
-            name="document-text-outline"
-            size={21}
-            color={colors.primary}
-          />
+          <Ionicons name="document-text-outline" size={21} color={colors.primary} />
         </View>
         <Text style={styles.description}>
           {equipment.description || 'Bu ekipman için açıklama eklenmemiş.'}
@@ -182,11 +148,7 @@ export default function EquipmentDetailScreen({
       </View>
 
       <View style={styles.note}>
-        <Ionicons
-          name="information-circle-outline"
-          size={19}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="information-circle-outline" size={19} color={colors.textSecondary} />
         <Text style={styles.noteText}>
           Rezervasyon işlemi sırasında ekipmanın uygunluğu kontrol edilir.
         </Text>
@@ -195,10 +157,7 @@ export default function EquipmentDetailScreen({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Rezervasyon yap"
-        style={({ pressed }) => [
-          styles.reserveButton,
-          pressed && styles.buttonPressed,
-        ]}
+        style={({ pressed }) => [styles.reserveButton, pressed && styles.buttonPressed]}
         onPress={() => {
           navigation.navigate('ReservationForm', {
             equipmentId: equipment.id,

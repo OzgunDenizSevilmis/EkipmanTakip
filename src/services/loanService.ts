@@ -1,10 +1,10 @@
-
 import { supabase } from './supabase';
 
 async function getLoansWithDetails(userId?: string) {
   let query = supabase
     .from('loans')
-    .select(`
+    .select(
+      `
       id,
       reservation_id,
       equipment_id,
@@ -15,7 +15,8 @@ async function getLoansWithDetails(userId?: string) {
       delivery_note,
       return_note,
       condition
-    `)
+    `,
+    )
     .order('checked_out_at', { ascending: false });
 
   if (userId) {
@@ -34,24 +35,14 @@ async function getLoansWithDetails(userId?: string) {
     return { data: [], error: null };
   }
 
-  const equipmentIds = [
-    ...new Set(records.map((loan) => loan.equipment_id)),
-  ];
+  const equipmentIds = [...new Set(records.map((loan) => loan.equipment_id))];
   const userIds = [...new Set(records.map((loan) => loan.user_id))];
 
-  const [
-    { data: equipment, error: equipmentError },
-    { data: profiles, error: profilesError },
-  ] = await Promise.all([
-    supabase
-      .from('equipment')
-      .select('id, name, code')
-      .in('id', equipmentIds),
-    supabase
-      .from('profiles')
-      .select('id, full_name')
-      .in('id', userIds),
-  ]);
+  const [{ data: equipment, error: equipmentError }, { data: profiles, error: profilesError }] =
+    await Promise.all([
+      supabase.from('equipment').select('id, name, code').in('id', equipmentIds),
+      supabase.from('profiles').select('id, full_name').in('id', userIds),
+    ]);
 
   if (equipmentError) {
     return { data: null, error: equipmentError };
@@ -63,8 +54,7 @@ async function getLoansWithDetails(userId?: string) {
 
   const data = records.map((loan) => ({
     ...loan,
-    equipment:
-      equipment?.find((item) => item.id === loan.equipment_id) ?? null,
+    equipment: equipment?.find((item) => item.id === loan.equipment_id) ?? null,
     profile: profiles?.find((item) => item.id === loan.user_id) ?? null,
   }));
 

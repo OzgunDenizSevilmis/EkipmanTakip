@@ -1,4 +1,3 @@
-
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -36,10 +35,7 @@ function getLifecycleStatus(status: Equipment['lifecycle_status']) {
   }
 }
 
-export function EquipmentCard({
-  equipment,
-  onPress,
-}: EquipmentCardProps) {
+export function EquipmentCard({ equipment, onPress }: EquipmentCardProps) {
   const status = getLifecycleStatus(equipment.lifecycle_status);
   const categoryName = equipment.categories?.[0]?.name;
 
@@ -48,18 +44,11 @@ export function EquipmentCard({
       accessibilityRole="button"
       accessibilityLabel={`${equipment.name}, ${status.label}`}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <View style={styles.cardContent}>
         <View style={styles.iconContainer}>
-          <Ionicons
-            name="cube-outline"
-            size={27}
-            color={colors.primary}
-          />
+          <Ionicons name="cube-outline" size={27} color={colors.primary} />
         </View>
 
         <View style={styles.mainContent}>
@@ -68,19 +57,11 @@ export function EquipmentCard({
               {equipment.name}
             </Text>
 
-            <Ionicons
-              name="chevron-forward"
-              size={18}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
           </View>
 
           <View style={styles.codeRow}>
-            <Ionicons
-              name="barcode-outline"
-              size={14}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="barcode-outline" size={14} color={colors.textSecondary} />
             <Text style={styles.code} numberOfLines={1}>
               {equipment.code}
             </Text>
@@ -90,11 +71,7 @@ export function EquipmentCard({
             <View style={styles.metadata}>
               {categoryName ? (
                 <View style={styles.metadataItem}>
-                  <Ionicons
-                    name="pricetag-outline"
-                    size={14}
-                    color={colors.textSecondary}
-                  />
+                  <Ionicons name="pricetag-outline" size={14} color={colors.textSecondary} />
                   <Text style={styles.metadataText} numberOfLines={1}>
                     {categoryName}
                   </Text>
@@ -103,11 +80,7 @@ export function EquipmentCard({
 
               {equipment.location ? (
                 <View style={styles.metadataItem}>
-                  <Ionicons
-                    name="location-outline"
-                    size={14}
-                    color={colors.textSecondary}
-                  />
+                  <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
                   <Text style={styles.metadataText} numberOfLines={1}>
                     {equipment.location}
                   </Text>
@@ -117,25 +90,9 @@ export function EquipmentCard({
           ) : null}
 
           <View style={styles.footer}>
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: status.backgroundColor },
-              ]}
-            >
-              <Ionicons
-                name={status.icon}
-                size={13}
-                color={status.textColor}
-              />
-              <Text
-                style={[
-                  styles.statusText,
-                  { color: status.textColor },
-                ]}
-              >
-                {status.label}
-              </Text>
+            <View style={[styles.statusBadge, { backgroundColor: status.backgroundColor }]}>
+              <Ionicons name={status.icon} size={13} color={status.textColor} />
+              <Text style={[styles.statusText, { color: status.textColor }]}>{status.label}</Text>
             </View>
 
             <Text style={styles.detailHint}>Detayları gör</Text>

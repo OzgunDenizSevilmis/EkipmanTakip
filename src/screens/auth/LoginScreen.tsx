@@ -19,10 +19,7 @@ import { authService } from '../../services/authService';
 import type { AuthStackParamList } from '../../navigation/AuthStack';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type LoginScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'Login'
->;
+type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 const loginSchema = z.object({
   email: z.string().trim().email('Geçerli bir e-posta adresi gir.'),
@@ -51,20 +48,13 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
     setServerError(null);
 
     try {
-      const { error } = await authService.signIn(
-        values.email.trim(),
-        values.password,
-      );
+      const { error } = await authService.signIn(values.email.trim(), values.password);
 
       if (error) {
-        setServerError(
-          'Giriş yapılamadı. E-posta adresini ve parolanı kontrol et.',
-        );
+        setServerError('Giriş yapılamadı. E-posta adresini ve parolanı kontrol et.');
       }
     } catch {
-      setServerError(
-        'Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.',
-      );
+      setServerError('Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.');
     }
   };
 
@@ -88,9 +78,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
             <View>
               <Text style={styles.brandName}>EkipmanTakip</Text>
-              <Text style={styles.brandCaption}>
-                ENVANTER YÖNETİM SİSTEMİ
-              </Text>
+              <Text style={styles.brandCaption}>ENVANTER YÖNETİM SİSTEMİ</Text>
             </View>
           </View>
 
@@ -103,8 +91,8 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
             <Text style={styles.title}>Tekrar hoş geldin.</Text>
 
             <Text style={styles.subtitle}>
-              Ekipmanlarını, rezervasyonlarını ve zimmet kayıtlarını
-              yönetmek için hesabına giriş yap.
+              Ekipmanlarını, rezervasyonlarını ve zimmet kayıtlarını yönetmek için hesabına giriş
+              yap.
             </Text>
           </View>
 
@@ -117,10 +105,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    style={[
-                      styles.input,
-                      errors.email && styles.inputError,
-                    ]}
+                    style={[styles.input, errors.email && styles.inputError]}
                     placeholder="ornek@firma.com"
                     placeholderTextColor={colors.placeholder}
                     value={value}
@@ -141,22 +126,13 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 )}
               />
 
-              {errors.email ? (
-                <Text style={styles.fieldError}>
-                  {errors.email.message}
-                </Text>
-              ) : null}
+              {errors.email ? <Text style={styles.fieldError}>{errors.email.message}</Text> : null}
             </View>
 
             <View style={styles.field}>
               <Text style={styles.label}>Parola</Text>
 
-              <View
-                style={[
-                  styles.passwordContainer,
-                  errors.password && styles.inputError,
-                ]}
-              >
+              <View style={[styles.passwordContainer, errors.password && styles.inputError]}>
                 <Controller
                   control={control}
                   name="password"
@@ -184,13 +160,9 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
                 />
 
                 <Pressable
-                  onPress={() =>
-                    setIsPasswordVisible((current) => !current)
-                  }
+                  onPress={() => setIsPasswordVisible((current) => !current)}
                   accessibilityRole="button"
-                  accessibilityLabel={
-                    isPasswordVisible ? 'Parolayı gizle' : 'Parolayı göster'
-                  }
+                  accessibilityLabel={isPasswordVisible ? 'Parolayı gizle' : 'Parolayı göster'}
                   hitSlop={8}
                   disabled={isSubmitting}
                   style={styles.passwordToggleButton}
@@ -202,9 +174,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
               </View>
 
               {errors.password ? (
-                <Text style={styles.fieldError}>
-                  {errors.password.message}
-                </Text>
+                <Text style={styles.fieldError}>{errors.password.message}</Text>
               ) : null}
 
               <Pressable
@@ -219,10 +189,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
             {serverError ? (
               <View style={styles.serverErrorContainer}>
-                <Text
-                  accessibilityRole="alert"
-                  style={styles.serverError}
-                >
+                <Text accessibilityRole="alert" style={styles.serverError}>
                   {serverError}
                 </Text>
               </View>
@@ -249,9 +216,7 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
             </Pressable>
 
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>
-                Henüz hesabın yok mu?
-              </Text>
+              <Text style={styles.registerText}>Henüz hesabın yok mu?</Text>
               <Pressable
                 onPress={() => navigation.navigate('Register')}
                 disabled={isSubmitting}
@@ -265,12 +230,8 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
 
           <View style={styles.footerContainer}>
             <View style={styles.footerDivider} />
-            <Text style={styles.footer}>
-              Ekipman yönetimi, tek bir yerde.
-            </Text>
-            <Text style={styles.footerVersion}>
-              EKİPMANTAKİP · GÜVENLİ ERİŞİM
-            </Text>
+            <Text style={styles.footer}>Ekipman yönetimi, tek bir yerde.</Text>
+            <Text style={styles.footerVersion}>EKİPMANTAKİP · GÜVENLİ ERİŞİM</Text>
           </View>
         </View>
       </ScrollView>

@@ -22,7 +22,6 @@ import type { AppStackParamList } from '../../navigation/AppStack';
 import { colors, radii, spacing, typography } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
 
-
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
 
@@ -53,24 +52,20 @@ function endOfLocalDay(date: Date): Date {
 }
 
 export function EquipmentScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [startDateSelection, setStartDateSelection] = useState<Date | null>(
-    null,
-  );
+  const [startDateSelection, setStartDateSelection] = useState<Date | null>(null);
   const [endDateSelection, setEndDateSelection] = useState<Date | null>(null);
   const [appliedStartDate, setAppliedStartDate] = useState('');
   const [appliedEndDate, setAppliedEndDate] = useState('');
   const [availableOnly, setAvailableOnly] = useState(false);
 
-  const [datePickerTarget, setDatePickerTarget] =
-    useState<DatePickerTarget | null>(null);
+  const [datePickerTarget, setDatePickerTarget] = useState<DatePickerTarget | null>(null);
   const [pickerDraftDate, setPickerDraftDate] = useState(new Date());
   const [dateError, setDateError] = useState('');
 
@@ -122,16 +117,19 @@ export function EquipmentScreen() {
       },
     ],
     queryFn: async () => {
-      const { data, count, error: requestError } =
-        await equipmentService.getEquipment({
-          page: currentPage,
-          pageSize: PAGE_SIZE,
-          search,
-          categoryId: selectedCategoryId || undefined,
-          startAt: appliedStartDate || undefined,
-          endAt: appliedEndDate || undefined,
-          availableOnly,
-        });
+      const {
+        data,
+        count,
+        error: requestError,
+      } = await equipmentService.getEquipment({
+        page: currentPage,
+        pageSize: PAGE_SIZE,
+        search,
+        categoryId: selectedCategoryId || undefined,
+        startAt: appliedStartDate || undefined,
+        endAt: appliedEndDate || undefined,
+        availableOnly,
+      });
 
       if (requestError) {
         throw requestError;
@@ -151,13 +149,9 @@ export function EquipmentScreen() {
   const isInitialLoading = (isLoading || isLoadingCategories) && !result;
 
   const openDatePicker = (target: DatePickerTarget) => {
-    const selectedDate =
-      target === 'start' ? startDateSelection : endDateSelection;
+    const selectedDate = target === 'start' ? startDateSelection : endDateSelection;
 
-    const fallbackDate =
-      target === 'end' && startDateSelection
-        ? startDateSelection
-        : new Date();
+    const fallbackDate = target === 'end' && startDateSelection ? startDateSelection : new Date();
 
     setPickerDraftDate(selectedDate ?? fallbackDate);
     setDatePickerTarget(target);
@@ -177,16 +171,14 @@ export function EquipmentScreen() {
 
         if (
           endDateSelection &&
-          startOfLocalDay(endDateSelection).getTime() <
-            startOfLocalDay(selectedDate).getTime()
+          startOfLocalDay(endDateSelection).getTime() < startOfLocalDay(selectedDate).getTime()
         ) {
           setEndDateSelection(null);
         }
       } else if (selectedDate && datePickerTarget === 'end') {
         if (
           startDateSelection &&
-          startOfLocalDay(selectedDate).getTime() <
-            startOfLocalDay(startDateSelection).getTime()
+          startOfLocalDay(selectedDate).getTime() < startOfLocalDay(startDateSelection).getTime()
         ) {
           setDateError('Bitiş tarihi başlangıç tarihinden önce olamaz.');
         } else {
@@ -205,16 +197,14 @@ export function EquipmentScreen() {
 
       if (
         endDateSelection &&
-        startOfLocalDay(endDateSelection).getTime() <
-          startOfLocalDay(pickerDraftDate).getTime()
+        startOfLocalDay(endDateSelection).getTime() < startOfLocalDay(pickerDraftDate).getTime()
       ) {
         setEndDateSelection(null);
       }
     } else if (datePickerTarget === 'end') {
       if (
         startDateSelection &&
-        startOfLocalDay(pickerDraftDate).getTime() <
-          startOfLocalDay(startDateSelection).getTime()
+        startOfLocalDay(pickerDraftDate).getTime() < startOfLocalDay(startDateSelection).getTime()
       ) {
         setDateError('Bitiş tarihi başlangıç tarihinden önce olamaz.');
         return;
@@ -234,9 +224,7 @@ export function EquipmentScreen() {
     }
 
     if (availableOnly && (!startDateSelection || !endDateSelection)) {
-      setDateError(
-        'Yalnızca müsait ekipmanları filtrelemek için tarih aralığı seç.',
-      );
+      setDateError('Yalnızca müsait ekipmanları filtrelemek için tarih aralığı seç.');
       return;
     }
 
@@ -280,9 +268,7 @@ export function EquipmentScreen() {
     }
 
     if (!appliedStartDate || !appliedEndDate) {
-      setDateError(
-        'Önce başlangıç ve bitiş tarihlerini seçip "Filtreyi Uygula" butonuna bas.',
-      );
+      setDateError('Önce başlangıç ve bitiş tarihlerini seçip "Filtreyi Uygula" butonuna bas.');
       return;
     }
 
@@ -291,291 +277,218 @@ export function EquipmentScreen() {
     setDateError('');
   };
 
+  const headerContent = (
+    <View>
+      <View style={styles.pageHeading}>
+        <View style={styles.headingIcon}>
+          <Ionicons name="cube-outline" size={25} color={colors.primary} />
+        </View>
 
-const headerContent = (
-  <View>
-    <View style={styles.pageHeading}>
-      <View style={styles.headingIcon}>
-        <Ionicons name="cube-outline" size={25} color={colors.primary} />
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Ekipmanlar</Text>
+          <Text style={styles.subtitle}>Ekipmanları keşfet, müsaitlik durumunu kontrol et.</Text>
+        </View>
       </View>
 
-      <View style={styles.headerText}>
-        <Text style={styles.title}>Ekipmanlar</Text>
-        <Text style={styles.subtitle}>
-          Ekipmanları keşfet, müsaitlik durumunu kontrol et.
-        </Text>
-      </View>
-    </View>
-
-    <View style={styles.searchRow}>
-      <View style={styles.searchContainer}>
-        <Ionicons
-          name="search-outline"
-          size={20}
-          color={colors.textSecondary}
-        />
-        <TextInput
-          style={styles.searchInput}
-          value={searchInput}
-          onChangeText={setSearchInput}
-          placeholder="Ekipman adı veya kodu ara..."
-          placeholderTextColor={colors.placeholder}
-          autoCapitalize="none"
-          autoCorrect={false}
-          returnKeyType="search"
-          accessibilityLabel="Ekipman ara"
-        />
-        {searchInput.length > 0 ? (
-          <TouchableOpacity
-            onPress={() => setSearchInput('')}
-            accessibilityRole="button"
-            accessibilityLabel="Aramayı temizle"
-          >
-            <Ionicons
-              name="close-circle"
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-        ) : null}
-      </View>
-
-      <TouchableOpacity
-        style={styles.qrButton}
-        onPress={() => navigation.navigate('QRScanner')}
-        activeOpacity={0.8}
-        accessibilityRole="button"
-        accessibilityLabel="QR kod okut"
-      >
-        <Ionicons name="scan-outline" size={22} color={colors.white} />
-      </TouchableOpacity>
-    </View>
-
-    <View style={styles.filterPanel}>
-      <View style={styles.panelHeading}>
-        <View style={styles.panelHeadingIcon}>
-          <Ionicons
-            name="options-outline"
-            size={19}
-            color={colors.primary}
+      <View style={styles.searchRow}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search-outline" size={20} color={colors.textSecondary} />
+          <TextInput
+            style={styles.searchInput}
+            value={searchInput}
+            onChangeText={setSearchInput}
+            placeholder="Ekipman adı veya kodu ara..."
+            placeholderTextColor={colors.placeholder}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            accessibilityLabel="Ekipman ara"
           />
-        </View>
-        <View style={styles.panelHeadingText}>
-          <Text style={styles.panelTitle}>Filtreler</Text>
-          <Text style={styles.panelSubtitle}>
-            İhtiyacına uygun ekipmanı bul
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.filterSection}>
-        <Text style={styles.filterLabel}>Kategori</Text>
-
-        <FlatList
-          horizontal
-          data={[{ id: '', name: 'Tümü' }, ...categories]}
-          keyExtractor={(item) => item.id || 'all-categories'}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryList}
-          renderItem={({ item }) => {
-            const isSelected = selectedCategoryId === item.id;
-
-            return (
-              <TouchableOpacity
-                style={[
-                  styles.categoryChip,
-                  isSelected && styles.categoryChipSelected,
-                ]}
-                onPress={() => {
-                  setSelectedCategoryId(item.id);
-                  setCurrentPage(1);
-                }}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isSelected }}
-              >
-                <Text
-                  style={[
-                    styles.categoryChipText,
-                    isSelected && styles.categoryChipTextSelected,
-                  ]}
-                >
-                  {item.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
-
-      {categoriesError ? (
-        <View style={styles.categoryErrorContainer}>
-          <Text style={styles.inlineError}>
-            Kategoriler yüklenemedi. Tekrar deneyebilirsin.
-          </Text>
-          <TouchableOpacity
-            style={styles.smallButton}
-            onPress={() => void refetchCategories()}
-            accessibilityRole="button"
-          >
-            <Text style={styles.smallButtonText}>Kategorileri yenile</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
-
-      <View style={styles.filterDivider} />
-
-      <View style={styles.availabilitySection}>
-        <View style={styles.dateSectionHeading}>
-          <Ionicons
-            name="calendar-outline"
-            size={18}
-            color={colors.primary}
-          />
-          <Text style={styles.filterLabel}>Müsaitlik tarih aralığı</Text>
-        </View>
-
-        <Text style={styles.dateHint}>
-          Kullanım dönemini seçerek uygun ekipmanları filtrele.
-        </Text>
-
-        <View style={styles.dateRow}>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => openDatePicker('start')}
-            accessibilityRole="button"
-            accessibilityLabel="Başlangıç tarihi seç"
-          >
-            <Text style={styles.dateButtonLabel}>BAŞLANGIÇ</Text>
-            <View style={styles.dateValueRow}>
-              <Ionicons
-                name="calendar-outline"
-                size={16}
-                color={colors.primary}
-              />
-              <Text
-                style={[
-                  styles.dateButtonValue,
-                  !startDateSelection && styles.datePlaceholder,
-                ]}
-              >
-                {startDateSelection
-                  ? formatDate(startDateSelection)
-                  : 'Tarih seç'}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => openDatePicker('end')}
-            accessibilityRole="button"
-            accessibilityLabel="Bitiş tarihi seç"
-          >
-            <Text style={styles.dateButtonLabel}>BİTİŞ</Text>
-            <View style={styles.dateValueRow}>
-              <Ionicons
-                name="calendar-outline"
-                size={16}
-                color={colors.primary}
-              />
-              <Text
-                style={[
-                  styles.dateButtonValue,
-                  !endDateSelection && styles.datePlaceholder,
-                ]}
-              >
-                {endDateSelection ? formatDate(endDateSelection) : 'Tarih seç'}
-              </Text>
-            </View>
-          </TouchableOpacity>
+          {searchInput.length > 0 ? (
+            <TouchableOpacity
+              onPress={() => setSearchInput('')}
+              accessibilityRole="button"
+              accessibilityLabel="Aramayı temizle"
+            >
+              <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         <TouchableOpacity
-          style={styles.availabilityToggle}
-          onPress={toggleAvailableOnly}
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: availableOnly }}
+          style={styles.qrButton}
+          onPress={() => navigation.navigate('QRScanner')}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="QR kod okut"
         >
-          <View
-            style={[
-              styles.checkbox,
-              availableOnly && styles.checkboxSelected,
-            ]}
-          >
-            {availableOnly ? (
-              <Ionicons name="checkmark" size={15} color={colors.white} />
-            ) : null}
-          </View>
-          <Text style={styles.availabilityToggleText}>
-            Yalnızca müsait ekipmanları göster
-          </Text>
+          <Ionicons name="scan-outline" size={22} color={colors.white} />
         </TouchableOpacity>
+      </View>
 
-        {dateError ? (
-          <View style={styles.dateErrorContainer}>
-            <Ionicons
-              name="alert-circle-outline"
-              size={17}
-              color={colors.error}
-            />
-            <Text style={styles.inlineError}>{dateError}</Text>
+      <View style={styles.filterPanel}>
+        <View style={styles.panelHeading}>
+          <View style={styles.panelHeadingIcon}>
+            <Ionicons name="options-outline" size={19} color={colors.primary} />
+          </View>
+          <View style={styles.panelHeadingText}>
+            <Text style={styles.panelTitle}>Filtreler</Text>
+            <Text style={styles.panelSubtitle}>İhtiyacına uygun ekipmanı bul</Text>
+          </View>
+        </View>
+
+        <View style={styles.filterSection}>
+          <Text style={styles.filterLabel}>Kategori</Text>
+
+          <FlatList
+            horizontal
+            data={[{ id: '', name: 'Tümü' }, ...categories]}
+            keyExtractor={(item) => item.id || 'all-categories'}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryList}
+            renderItem={({ item }) => {
+              const isSelected = selectedCategoryId === item.id;
+
+              return (
+                <TouchableOpacity
+                  style={[styles.categoryChip, isSelected && styles.categoryChipSelected]}
+                  onPress={() => {
+                    setSelectedCategoryId(item.id);
+                    setCurrentPage(1);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
+                >
+                  <Text
+                    style={[styles.categoryChipText, isSelected && styles.categoryChipTextSelected]}
+                  >
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+
+        {categoriesError ? (
+          <View style={styles.categoryErrorContainer}>
+            <Text style={styles.inlineError}>Kategoriler yüklenemedi. Tekrar deneyebilirsin.</Text>
+            <TouchableOpacity
+              style={styles.smallButton}
+              onPress={() => void refetchCategories()}
+              accessibilityRole="button"
+            >
+              <Text style={styles.smallButtonText}>Kategorileri yenile</Text>
+            </TouchableOpacity>
           </View>
         ) : null}
 
-        <View style={styles.dateActions}>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={applyAvailabilityFilters}
-            accessibilityRole="button"
-          >
-            <Ionicons
-              name="checkmark-circle-outline"
-              size={17}
-              color={colors.white}
-            />
-            <Text style={styles.primaryButtonText}>Filtreyi Uygula</Text>
-          </TouchableOpacity>
+        <View style={styles.filterDivider} />
+
+        <View style={styles.availabilitySection}>
+          <View style={styles.dateSectionHeading}>
+            <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+            <Text style={styles.filterLabel}>Müsaitlik tarih aralığı</Text>
+          </View>
+
+          <Text style={styles.dateHint}>Kullanım dönemini seçerek uygun ekipmanları filtrele.</Text>
+
+          <View style={styles.dateRow}>
+            <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => openDatePicker('start')}
+              accessibilityRole="button"
+              accessibilityLabel="Başlangıç tarihi seç"
+            >
+              <Text style={styles.dateButtonLabel}>BAŞLANGIÇ</Text>
+              <View style={styles.dateValueRow}>
+                <Ionicons name="calendar-outline" size={16} color={colors.primary} />
+                <Text
+                  style={[styles.dateButtonValue, !startDateSelection && styles.datePlaceholder]}
+                >
+                  {startDateSelection ? formatDate(startDateSelection) : 'Tarih seç'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => openDatePicker('end')}
+              accessibilityRole="button"
+              accessibilityLabel="Bitiş tarihi seç"
+            >
+              <Text style={styles.dateButtonLabel}>BİTİŞ</Text>
+              <View style={styles.dateValueRow}>
+                <Ionicons name="calendar-outline" size={16} color={colors.primary} />
+                <Text style={[styles.dateButtonValue, !endDateSelection && styles.datePlaceholder]}>
+                  {endDateSelection ? formatDate(endDateSelection) : 'Tarih seç'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
-            style={styles.clearButton}
-            onPress={clearAvailabilityFilters}
-            accessibilityRole="button"
+            style={styles.availabilityToggle}
+            onPress={toggleAvailableOnly}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: availableOnly }}
           >
-            <Text style={styles.clearButtonText}>Temizle</Text>
+            <View style={[styles.checkbox, availableOnly && styles.checkboxSelected]}>
+              {availableOnly ? <Ionicons name="checkmark" size={15} color={colors.white} /> : null}
+            </View>
+            <Text style={styles.availabilityToggleText}>Yalnızca müsait ekipmanları göster</Text>
           </TouchableOpacity>
+
+          {dateError ? (
+            <View style={styles.dateErrorContainer}>
+              <Ionicons name="alert-circle-outline" size={17} color={colors.error} />
+              <Text style={styles.inlineError}>{dateError}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.dateActions}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={applyAvailabilityFilters}
+              accessibilityRole="button"
+            >
+              <Ionicons name="checkmark-circle-outline" size={17} color={colors.white} />
+              <Text style={styles.primaryButtonText}>Filtreyi Uygula</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={clearAvailabilityFilters}
+              accessibilityRole="button"
+            >
+              <Text style={styles.clearButtonText}>Temizle</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
 
-    <View style={styles.resultsHeader}>
-      <View>
-        <Text style={styles.resultsTitle}>Ekipman kataloğu</Text>
-        <Text style={styles.resultsText}>
-          {totalCount} ekipman bulundu
+      <View style={styles.resultsHeader}>
+        <View>
+          <Text style={styles.resultsTitle}>Ekipman kataloğu</Text>
+          <Text style={styles.resultsText}>{totalCount} ekipman bulundu</Text>
+        </View>
+
+        {isRefetching ? (
+          <ActivityIndicator size="small" color={colors.primary} />
+        ) : (
+          <View style={styles.resultsIcon}>
+            <Ionicons name="grid-outline" size={19} color={colors.primary} />
+          </View>
+        )}
+      </View>
+
+      {error && result ? (
+        <Text style={styles.inlineError}>
+          Güncel veriler alınamadı. Önceki sonuçlar gösteriliyor.
         </Text>
-      </View>
-
-      {isRefetching ? (
-        <ActivityIndicator size="small" color={colors.primary} />
-      ) : (
-        <View style={styles.resultsIcon}>
-          <Ionicons
-            name="grid-outline"
-            size={19}
-            color={colors.primary}
-          />
-        </View>
-      )}
+      ) : null}
     </View>
-
-    {error && result ? (
-      <Text style={styles.inlineError}>
-        Güncel veriler alınamadı. Önceki sonuçlar gösteriliyor.
-      </Text>
-    ) : null}
-  </View>
-);
-
+  );
 
   if (isInitialLoading) {
     return (
@@ -589,9 +502,7 @@ const headerContent = (
   if (error && !result) {
     return (
       <View style={styles.center}>
-        <Text style={styles.error}>
-          Ekipmanlar yüklenemedi: {String(error)}
-        </Text>
+        <Text style={styles.error}>Ekipmanlar yüklenemedi: {String(error)}</Text>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => void refetch()}
@@ -632,23 +543,13 @@ const headerContent = (
           totalCount > 0 ? (
             <View style={styles.pagination}>
               <TouchableOpacity
-                style={[
-                  styles.pageButton,
-                  page <= 1 && styles.pageButtonDisabled,
-                ]}
+                style={[styles.pageButton, page <= 1 && styles.pageButtonDisabled]}
                 disabled={page <= 1}
-                onPress={() =>
-                  setCurrentPage((current) => Math.max(1, current - 1))
-                }
+                onPress={() => setCurrentPage((current) => Math.max(1, current - 1))}
                 accessibilityRole="button"
                 accessibilityLabel="Önceki sayfa"
               >
-                <Text
-                  style={[
-                    styles.pageButtonText,
-                    page <= 1 && styles.pageButtonTextDisabled,
-                  ]}
-                >
+                <Text style={[styles.pageButtonText, page <= 1 && styles.pageButtonTextDisabled]}>
                   Önceki
                 </Text>
               </TouchableOpacity>
@@ -658,16 +559,9 @@ const headerContent = (
               </Text>
 
               <TouchableOpacity
-                style={[
-                  styles.pageButton,
-                  page >= totalPages && styles.pageButtonDisabled,
-                ]}
+                style={[styles.pageButton, page >= totalPages && styles.pageButtonDisabled]}
                 disabled={page >= totalPages}
-                onPress={() =>
-                  setCurrentPage((current) =>
-                    Math.min(totalPages, current + 1),
-                  )
-                }
+                onPress={() => setCurrentPage((current) => Math.min(totalPages, current + 1))}
                 accessibilityRole="button"
                 accessibilityLabel="Sonraki sayfa"
               >
@@ -690,10 +584,7 @@ const headerContent = (
             tintColor={colors.primary}
           />
         }
-        contentContainerStyle={[
-          styles.listContent,
-          equipment.length === 0 && styles.emptyList,
-        ]}
+        contentContainerStyle={[styles.listContent, equipment.length === 0 && styles.emptyList]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       />
@@ -707,9 +598,7 @@ const headerContent = (
         <View style={styles.modalOverlay}>
           <View style={styles.datePickerModal}>
             <Text style={styles.modalTitle}>
-              {datePickerTarget === 'start'
-                ? 'Başlangıç tarihi seç'
-                : 'Bitiş tarihi seç'}
+              {datePickerTarget === 'start' ? 'Başlangıç tarihi seç' : 'Bitiş tarihi seç'}
             </Text>
 
             <DateTimePicker
@@ -719,14 +608,10 @@ const headerContent = (
               onChange={handleDateChange}
               locale="tr-TR"
               maximumDate={
-                datePickerTarget === 'start' && endDateSelection
-                  ? endDateSelection
-                  : undefined
+                datePickerTarget === 'start' && endDateSelection ? endDateSelection : undefined
               }
               minimumDate={
-                datePickerTarget === 'end' && startDateSelection
-                  ? startDateSelection
-                  : undefined
+                datePickerTarget === 'end' && startDateSelection ? startDateSelection : undefined
               }
               style={styles.datePicker}
             />
@@ -774,46 +659,46 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-header: {
-  paddingTop: spacing.xl,
-  paddingBottom: spacing.lg,
-  gap: spacing.md,
-},
+  header: {
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+    gap: spacing.md,
+  },
   headerText: {
     gap: spacing.xs,
   },
-title: {
-  color: colors.text,
-  fontSize: typography.heading,
-  fontWeight: '800',
-},
+  title: {
+    color: colors.text,
+    fontSize: typography.heading,
+    fontWeight: '800',
+  },
   subtitle: {
     color: colors.textSecondary,
     fontSize: typography.body,
   },
-qrButton: {
-  width: 48,
-  height: 48,
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: colors.primary,
-  borderRadius: radii.md,
-},
+  qrButton: {
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+  },
   qrButtonText: {
     color: colors.white,
     fontSize: typography.body,
     fontWeight: '700',
   },
-searchInput: {
-  flex: 1,
-  minWidth: 0,
-  paddingVertical: spacing.md,
-  color: colors.text,
-  fontSize: typography.body,
-},
-filterSection: {
-  gap: spacing.sm,
-},
+  searchInput: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: spacing.md,
+    color: colors.text,
+    fontSize: typography.body,
+  },
+  filterSection: {
+    gap: spacing.sm,
+  },
   filterLabel: {
     color: colors.text,
     fontSize: typography.label,
@@ -864,35 +749,35 @@ filterSection: {
     color: colors.textSecondary,
     fontSize: typography.label,
   },
-dateButton: {
-  flex: 1,
-  minWidth: 0,
-  minHeight: 72,
-  justifyContent: 'center',
-  gap: spacing.sm,
-  backgroundColor: colors.background,
-  borderColor: colors.border,
-  borderWidth: 1,
-  borderRadius: radii.md,
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.md,
-},
+  dateButton: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 72,
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.background,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
   dateButtonTextContainer: {
     flex: 1,
     gap: spacing.xs,
   },
   dateButtonLabel: {
-  color: colors.textSecondary,
-  fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 0.7,
-},
-dateButtonValue: {
-  flexShrink: 1,
-  color: colors.text,
-  fontSize: typography.caption,
-  fontWeight: '700',
-},
+    color: colors.textSecondary,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.7,
+  },
+  dateButtonValue: {
+    flexShrink: 1,
+    color: colors.text,
+    fontSize: typography.caption,
+    fontWeight: '700',
+  },
   datePlaceholder: {
     color: colors.textSecondary,
     fontWeight: '400',
@@ -935,16 +820,16 @@ dateButtonValue: {
     alignItems: 'center',
     gap: spacing.sm,
   },
- primaryButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: spacing.xs,
-  backgroundColor: colors.primary,
-  borderRadius: radii.md,
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.md,
-},
+  primaryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+  },
 
   primaryButtonText: {
     color: colors.white,
@@ -963,13 +848,13 @@ dateButtonValue: {
     fontSize: typography.body,
     fontWeight: '700',
   },
-resultsHeader: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  paddingTop: spacing.xl,
-  paddingBottom: spacing.md,
-},
+  resultsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.md,
+  },
   resultsText: {
     color: colors.textSecondary,
     fontSize: typography.label,
@@ -1085,108 +970,107 @@ resultsHeader: {
     paddingVertical: spacing.md,
   },
 
-pageHeading: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.md,
-  paddingTop: spacing.xl,
-  paddingBottom: spacing.lg,
-},
-headingIcon: {
-  width: 48,
-  height: 48,
-  borderRadius: radii.md,
-  backgroundColor: colors.primarySoft,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-searchRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.sm,
-},
-searchContainer: {
-  flex: 1,
-  minWidth: 0,
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.sm,
-  backgroundColor: colors.surface,
-  borderColor: colors.border,
-  borderWidth: 1,
-  borderRadius: radii.md,
-  paddingHorizontal: spacing.md,
-},
-filterPanel: {
-  marginTop: spacing.lg,
-  padding: spacing.lg,
-  backgroundColor: colors.surface,
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: radii.lg,
-  gap: spacing.md,
-},
-panelHeading: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.sm,
-},
-panelHeadingIcon: {
-  width: 38,
-  height: 38,
-  borderRadius: radii.md,
-  backgroundColor: colors.primarySoft,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-panelHeadingText: {
-  flex: 1,
-  gap: spacing.xs,
-},
-panelTitle: {
-  color: colors.text,
-  fontSize: typography.body,
-  fontWeight: '700',
-},
-panelSubtitle: {
-  color: colors.textSecondary,
-  fontSize: typography.caption,
-},
-filterDivider: {
-  height: 1,
-  backgroundColor: colors.border,
-},
-dateSectionHeading: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.sm,
-},
-dateRow: {
-  flexDirection: 'row',
-  gap: spacing.sm,
-},
-dateValueRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.xs,
-},
-dateErrorContainer: {
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  gap: spacing.xs,
-},
-resultsTitle: {
-  color: colors.text,
-  fontSize: typography.body,
-  fontWeight: '700',
-},
-resultsIcon: {
-  width: 38,
-  height: 38,
-  borderRadius: radii.md,
-  backgroundColor: colors.primarySoft,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-
+  pageHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingTop: spacing.xl,
+    paddingBottom: spacing.lg,
+  },
+  headingIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  searchContainer: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+  },
+  filterPanel: {
+    marginTop: spacing.lg,
+    padding: spacing.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
+    gap: spacing.md,
+  },
+  panelHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  panelHeadingIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  panelHeadingText: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  panelTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  panelSubtitle: {
+    color: colors.textSecondary,
+    fontSize: typography.caption,
+  },
+  filterDivider: {
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  dateSectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  dateValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  dateErrorContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.xs,
+  },
+  resultsTitle: {
+    color: colors.text,
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  resultsIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radii.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

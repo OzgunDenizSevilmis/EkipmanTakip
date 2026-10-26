@@ -21,10 +21,7 @@ import type { Reservation } from '../../types/reservation';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { AppStackParamList } from '../../navigation/AppStack';
 
-type AdminReservationsScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'AdminReservations'
->;
+type AdminReservationsScreenProps = NativeStackScreenProps<AppStackParamList, 'AdminReservations'>;
 
 type LoanAction = 'DELIVERY' | 'RETURN';
 type EquipmentLifecycleStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
@@ -146,23 +143,18 @@ function InfoRow({
   );
 }
 
-export default function AdminReservationsScreen({
-  route,
-}: AdminReservationsScreenProps) {
+export default function AdminReservationsScreen({ route }: AdminReservationsScreenProps) {
   const queryClient = useQueryClient();
   const equipmentId = route.params?.equipmentId;
 
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
-  const [selectedReservationId, setSelectedReservationId] = useState<
-    string | null
-  >(null);
+  const [selectedReservationId, setSelectedReservationId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
 
   const [loanModalVisible, setLoanModalVisible] = useState(false);
   const [loanAction, setLoanAction] = useState<LoanAction>('DELIVERY');
-  const [loanReservation, setLoanReservation] =
-    useState<ReservationWithEquipment | null>(null);
+  const [loanReservation, setLoanReservation] = useState<ReservationWithEquipment | null>(null);
   const [condition, setCondition] = useState('İyi durumda');
   const [loanNote, setLoanNote] = useState('');
   const [isProcessingLoan, setIsProcessingLoan] = useState(false);
@@ -177,8 +169,7 @@ export default function AdminReservationsScreen({
   } = useQuery<ReservationWithEquipment[]>({
     queryKey: ['admin-reservations'],
     queryFn: async () => {
-      const { data, error: reservationError } =
-        await reservationService.getAllReservations();
+      const { data, error: reservationError } = await reservationService.getAllReservations();
 
       if (reservationError) {
         throw reservationError;
@@ -192,17 +183,11 @@ export default function AdminReservationsScreen({
     ? reservations.filter((item) => item.equipment_id === equipmentId)
     : reservations;
 
-  const pendingCount = filteredReservations.filter(
-    (item) => item.status === 'PENDING',
-  ).length;
+  const pendingCount = filteredReservations.filter((item) => item.status === 'PENDING').length;
 
-  const approvedCount = filteredReservations.filter(
-    (item) => item.status === 'APPROVED',
-  ).length;
+  const approvedCount = filteredReservations.filter((item) => item.status === 'APPROVED').length;
 
-  const deliveredCount = filteredReservations.filter(
-    (item) => item.status === 'DELIVERED',
-  ).length;
+  const deliveredCount = filteredReservations.filter((item) => item.status === 'DELIVERED').length;
 
   const refreshReservationQueries = useCallback(async () => {
     await Promise.all([
@@ -212,33 +197,26 @@ export default function AdminReservationsScreen({
     ]);
   }, [queryClient]);
 
-  const openLoanModal = useCallback(
-    (reservation: ReservationWithEquipment, action: LoanAction) => {
-      setLoanReservation(reservation);
-      setLoanAction(action);
-      setCondition('İyi durumda');
-      setLoanNote('');
-      setLoanModalVisible(true);
-    },
-    [],
-  );
+  const openLoanModal = useCallback((reservation: ReservationWithEquipment, action: LoanAction) => {
+    setLoanReservation(reservation);
+    setLoanAction(action);
+    setCondition('İyi durumda');
+    setLoanNote('');
+    setLoanModalVisible(true);
+  }, []);
 
   const handleQrEquipment = useCallback(() => {
     if (!equipmentId) {
       return;
     }
 
-    const equipmentReservations = reservations.filter(
-      (item) => item.equipment_id === equipmentId,
-    );
+    const equipmentReservations = reservations.filter((item) => item.equipment_id === equipmentId);
 
     const deliveredReservations = equipmentReservations.filter(
       (item) => item.status === 'DELIVERED',
     );
 
-    const approvedReservations = equipmentReservations.filter(
-      (item) => item.status === 'APPROVED',
-    );
+    const approvedReservations = equipmentReservations.filter((item) => item.status === 'APPROVED');
 
     if (deliveredReservations.length === 1) {
       openLoanModal(deliveredReservations[0], 'RETURN');
@@ -292,24 +270,17 @@ export default function AdminReservationsScreen({
       setIsApproving(reservationId);
 
       try {
-        const { error: approveError } =
-          await reservationService.approveReservation(reservationId);
+        const { error: approveError } = await reservationService.approveReservation(reservationId);
 
         if (approveError) {
-          Alert.alert(
-            'Onaylama Başarısız',
-            approveError.message || 'Rezervasyon onaylanamadı.',
-          );
+          Alert.alert('Onaylama Başarısız', approveError.message || 'Rezervasyon onaylanamadı.');
           return;
         }
 
         await refreshReservationQueries();
         Alert.alert('Başarılı', 'Rezervasyon onaylandı.');
       } catch {
-        Alert.alert(
-          'İşlem Başarısız',
-          'Rezervasyon onaylanırken beklenmeyen bir hata oluştu.',
-        );
+        Alert.alert('İşlem Başarısız', 'Rezervasyon onaylanırken beklenmeyen bir hata oluştu.');
       } finally {
         setIsApproving(null);
       }
@@ -318,19 +289,15 @@ export default function AdminReservationsScreen({
   );
 
   function confirmApprove(reservationId: string) {
-    Alert.alert(
-      'Rezervasyonu Onayla',
-      'Bu rezervasyonu onaylamak istediğine emin misin?',
-      [
-        { text: 'Vazgeç', style: 'cancel' },
-        {
-          text: 'Onayla',
-          onPress: () => {
-            void handleApprove(reservationId);
-          },
+    Alert.alert('Rezervasyonu Onayla', 'Bu rezervasyonu onaylamak istediğine emin misin?', [
+      { text: 'Vazgeç', style: 'cancel' },
+      {
+        text: 'Onayla',
+        onPress: () => {
+          void handleApprove(reservationId);
         },
-      ],
-    );
+      },
+    ]);
   }
 
   function openRejectModal(reservationId: string) {
@@ -352,17 +319,13 @@ export default function AdminReservationsScreen({
     setIsRejecting(true);
 
     try {
-      const { error: rejectError } =
-        await reservationService.rejectReservation(
-          selectedReservationId,
-          rejectionReason.trim(),
-        );
+      const { error: rejectError } = await reservationService.rejectReservation(
+        selectedReservationId,
+        rejectionReason.trim(),
+      );
 
       if (rejectError) {
-        Alert.alert(
-          'Red İşlemi Başarısız',
-          rejectError.message || 'Rezervasyon reddedilemedi.',
-        );
+        Alert.alert('Red İşlemi Başarısız', rejectError.message || 'Rezervasyon reddedilemedi.');
         return;
       }
 
@@ -373,10 +336,7 @@ export default function AdminReservationsScreen({
       await refreshReservationQueries();
       Alert.alert('Başarılı', 'Rezervasyon reddedildi.');
     } catch {
-      Alert.alert(
-        'İşlem Başarısız',
-        'Rezervasyon reddedilirken beklenmeyen bir hata oluştu.',
-      );
+      Alert.alert('İşlem Başarısız', 'Rezervasyon reddedilirken beklenmeyen bir hata oluştu.');
     } finally {
       setIsRejecting(false);
     }
@@ -431,9 +391,7 @@ export default function AdminReservationsScreen({
 
       if (result.error) {
         Alert.alert(
-          loanAction === 'DELIVERY'
-            ? 'Teslim İşlemi Başarısız'
-            : 'İade İşlemi Başarısız',
+          loanAction === 'DELIVERY' ? 'Teslim İşlemi Başarısız' : 'İade İşlemi Başarısız',
           result.error.message || 'İşlem tamamlanamadı. Lütfen tekrar dene.',
         );
         return;
@@ -448,15 +406,10 @@ export default function AdminReservationsScreen({
 
       Alert.alert(
         'Başarılı',
-        loanAction === 'DELIVERY'
-          ? 'Ekipman kullanıcıya teslim edildi.'
-          : 'Ekipman iade alındı.',
+        loanAction === 'DELIVERY' ? 'Ekipman kullanıcıya teslim edildi.' : 'Ekipman iade alındı.',
       );
     } catch {
-      Alert.alert(
-        'İşlem Başarısız',
-        'Beklenmeyen bir hata oluştu. Lütfen tekrar dene.',
-      );
+      Alert.alert('İşlem Başarısız', 'Beklenmeyen bir hata oluştu. Lütfen tekrar dene.');
     } finally {
       setIsProcessingLoan(false);
     }
@@ -475,16 +428,10 @@ export default function AdminReservationsScreen({
     return (
       <View style={styles.center}>
         <View style={styles.stateIcon}>
-          <Ionicons
-            name="cloud-offline-outline"
-            size={30}
-            color={colors.error}
-          />
+          <Ionicons name="cloud-offline-outline" size={30} color={colors.error} />
         </View>
         <Text style={styles.stateTitle}>Veriler yüklenemedi</Text>
-        <Text style={styles.error}>
-          Rezervasyonlar yüklenirken bir sorun oluştu.
-        </Text>
+        <Text style={styles.error}>Rezervasyonlar yüklenirken bir sorun oluştu.</Text>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => {
@@ -523,11 +470,7 @@ export default function AdminReservationsScreen({
           <View>
             <View style={styles.header}>
               <View style={styles.headerIcon}>
-                <Ionicons
-                  name="clipboard-outline"
-                  size={25}
-                  color={colors.primary}
-                />
+                <Ionicons name="clipboard-outline" size={25} color={colors.primary} />
               </View>
               <View style={styles.headerTextContainer}>
                 <Text style={styles.screenTitle}>Rezervasyon Yönetimi</Text>
@@ -566,16 +509,10 @@ export default function AdminReservationsScreen({
             {equipmentId ? (
               <View style={styles.qrActionContainer}>
                 <View style={styles.qrInfo}>
-                  <Ionicons
-                    name="qr-code-outline"
-                    size={22}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="qr-code-outline" size={22} color={colors.primary} />
                   <View style={styles.qrInfoText}>
                     <Text style={styles.qrTitle}>QR ekipman işlemi</Text>
-                    <Text style={styles.qrSubtitle}>
-                      Uygun kayda göre teslim veya iade başlat.
-                    </Text>
+                    <Text style={styles.qrSubtitle}>Uygun kayda göre teslim veya iade başlat.</Text>
                   </View>
                 </View>
                 <TouchableOpacity
@@ -583,11 +520,7 @@ export default function AdminReservationsScreen({
                   onPress={handleQrEquipment}
                   activeOpacity={0.8}
                 >
-                  <Ionicons
-                    name="swap-horizontal-outline"
-                    size={19}
-                    color={colors.white}
-                  />
+                  <Ionicons name="swap-horizontal-outline" size={19} color={colors.white} />
                   <Text style={styles.buttonText}>Teslim / İade Aç</Text>
                 </TouchableOpacity>
               </View>
@@ -601,11 +534,7 @@ export default function AdminReservationsScreen({
                 </Text>
               </View>
               <View style={styles.listHeadingIcon}>
-                <Ionicons
-                  name="list-outline"
-                  size={20}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="list-outline" size={20} color={colors.textSecondary} />
               </View>
             </View>
           </View>
@@ -618,11 +547,7 @@ export default function AdminReservationsScreen({
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <View style={styles.equipmentIcon}>
-                  <Ionicons
-                    name="desktop-outline"
-                    size={23}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="desktop-outline" size={23} color={colors.primary} />
                 </View>
 
                 <View style={styles.titleContainer}>
@@ -637,23 +562,9 @@ export default function AdminReservationsScreen({
                 </View>
               </View>
 
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: statusStyle.background },
-                ]}
-              >
-                <Ionicons
-                  name={statusStyle.icon}
-                  size={15}
-                  color={statusStyle.foreground}
-                />
-                <Text
-                  style={[
-                    styles.statusText,
-                    { color: statusStyle.foreground },
-                  ]}
-                >
+              <View style={[styles.statusBadge, { backgroundColor: statusStyle.background }]}>
+                <Ionicons name={statusStyle.icon} size={15} color={statusStyle.foreground} />
+                <Text style={[styles.statusText, { color: statusStyle.foreground }]}>
                   {statusStyle.label}
                 </Text>
               </View>
@@ -670,24 +581,14 @@ export default function AdminReservationsScreen({
                 value={formatDateTime(item.end_at)}
                 icon="calendar-clear-outline"
               />
-              <InfoRow
-                label="Kullanım amacı"
-                value={item.purpose}
-                icon="document-text-outline"
-              />
+              <InfoRow label="Kullanım amacı" value={item.purpose} icon="document-text-outline" />
 
               {item.rejection_reason ? (
                 <View style={styles.rejectionBox}>
-                  <Ionicons
-                    name="alert-circle-outline"
-                    size={18}
-                    color={colors.error}
-                  />
+                  <Ionicons name="alert-circle-outline" size={18} color={colors.error} />
                   <View style={styles.rejectionContent}>
                     <Text style={styles.rejectionLabel}>Red nedeni</Text>
-                    <Text style={styles.rejectionReason}>
-                      {item.rejection_reason}
-                    </Text>
+                    <Text style={styles.rejectionReason}>{item.rejection_reason}</Text>
                   </View>
                 </View>
               ) : null}
@@ -704,11 +605,7 @@ export default function AdminReservationsScreen({
                       <ActivityIndicator color={colors.white} size="small" />
                     ) : (
                       <>
-                        <Ionicons
-                          name="checkmark-outline"
-                          size={18}
-                          color={colors.white}
-                        />
+                        <Ionicons name="checkmark-outline" size={18} color={colors.white} />
                         <Text style={styles.buttonText}>Onayla</Text>
                       </>
                     )}
@@ -720,11 +617,7 @@ export default function AdminReservationsScreen({
                     disabled={isApproving !== null}
                     activeOpacity={0.8}
                   >
-                    <Ionicons
-                      name="close-outline"
-                      size={18}
-                      color={colors.error}
-                    />
+                    <Ionicons name="close-outline" size={18} color={colors.error} />
                     <Text style={styles.rejectButtonText}>Reddet</Text>
                   </TouchableOpacity>
                 </View>
@@ -736,11 +629,7 @@ export default function AdminReservationsScreen({
                   onPress={() => openLoanModal(item, 'DELIVERY')}
                   activeOpacity={0.8}
                 >
-                  <Ionicons
-                    name="arrow-up-circle-outline"
-                    size={19}
-                    color={colors.white}
-                  />
+                  <Ionicons name="arrow-up-circle-outline" size={19} color={colors.white} />
                   <Text style={styles.buttonText}>Ekipmanı Teslim Et</Text>
                 </TouchableOpacity>
               ) : null}
@@ -751,11 +640,7 @@ export default function AdminReservationsScreen({
                   onPress={() => openLoanModal(item, 'RETURN')}
                   activeOpacity={0.8}
                 >
-                  <Ionicons
-                    name="arrow-down-circle-outline"
-                    size={19}
-                    color="#63D8B4"
-                  />
+                  <Ionicons name="arrow-down-circle-outline" size={19} color="#63D8B4" />
                   <Text style={styles.returnButtonText}>İade Al</Text>
                 </TouchableOpacity>
               ) : null}
@@ -765,16 +650,10 @@ export default function AdminReservationsScreen({
         ListEmptyComponent={
           <View style={styles.empty}>
             <View style={styles.emptyIcon}>
-              <Ionicons
-                name="file-tray-outline"
-                size={34}
-                color={colors.textSecondary}
-              />
+              <Ionicons name="file-tray-outline" size={34} color={colors.textSecondary} />
             </View>
             <Text style={styles.emptyTitle}>
-              {equipmentId
-                ? 'Bu ekipman için rezervasyon yok'
-                : 'Henüz rezervasyon bulunmuyor'}
+              {equipmentId ? 'Bu ekipman için rezervasyon yok' : 'Henüz rezervasyon bulunmuyor'}
             </Text>
             <Text style={styles.emptyText}>
               {equipmentId
@@ -798,11 +677,7 @@ export default function AdminReservationsScreen({
           >
             <View style={styles.modalContent}>
               <View style={styles.modalIcon}>
-                <Ionicons
-                  name="close-circle-outline"
-                  size={25}
-                  color={colors.error}
-                />
+                <Ionicons name="close-circle-outline" size={25} color={colors.error} />
               </View>
               <Text style={styles.modalTitle}>Rezervasyonu Reddet</Text>
               <Text style={styles.modalDescription}>
@@ -833,10 +708,7 @@ export default function AdminReservationsScreen({
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[
-                    styles.confirmRejectButton,
-                    isRejecting && styles.disabledButton,
-                  ]}
+                  style={[styles.confirmRejectButton, isRejecting && styles.disabledButton]}
                   onPress={() => {
                     void handleReject();
                   }}
@@ -867,12 +739,7 @@ export default function AdminReservationsScreen({
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.modalContent}>
-              <View
-                style={[
-                  styles.modalIcon,
-                  loanAction === 'RETURN' && styles.returnModalIcon,
-                ]}
-              >
+              <View style={[styles.modalIcon, loanAction === 'RETURN' && styles.returnModalIcon]}>
                 <Ionicons
                   name={
                     loanAction === 'DELIVERY'
@@ -880,16 +747,12 @@ export default function AdminReservationsScreen({
                       : 'arrow-down-circle-outline'
                   }
                   size={25}
-                  color={
-                    loanAction === 'DELIVERY' ? colors.primary : '#63D8B4'
-                  }
+                  color={loanAction === 'DELIVERY' ? colors.primary : '#63D8B4'}
                 />
               </View>
 
               <Text style={styles.modalTitle}>
-                {loanAction === 'DELIVERY'
-                  ? 'Ekipman Teslimi'
-                  : 'Ekipman İadesi'}
+                {loanAction === 'DELIVERY' ? 'Ekipman Teslimi' : 'Ekipman İadesi'}
               </Text>
 
               <Text style={styles.modalDescription}>
@@ -939,10 +802,7 @@ export default function AdminReservationsScreen({
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[
-                    styles.approveButton,
-                    isProcessingLoan && styles.disabledButton,
-                  ]}
+                  style={[styles.approveButton, isProcessingLoan && styles.disabledButton]}
                   onPress={() => {
                     void handleLoanAction();
                   }}
@@ -953,9 +813,7 @@ export default function AdminReservationsScreen({
                     <ActivityIndicator color={colors.white} size="small" />
                   ) : (
                     <Text style={styles.buttonText}>
-                      {loanAction === 'DELIVERY'
-                        ? 'Teslim Et'
-                        : 'İadeyi Tamamla'}
+                      {loanAction === 'DELIVERY' ? 'Teslim Et' : 'İadeyi Tamamla'}
                     </Text>
                   )}
                 </TouchableOpacity>

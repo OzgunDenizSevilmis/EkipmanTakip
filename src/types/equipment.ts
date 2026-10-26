@@ -1,8 +1,4 @@
-
-export type EquipmentLifecycleStatus =
-  | 'ACTIVE'
-  | 'MAINTENANCE'
-  | 'INACTIVE';
+export type EquipmentLifecycleStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
 
 export type Category = {
   id: string;

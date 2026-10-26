@@ -18,19 +18,13 @@ import { authService } from '../../services/authService';
 import type { AuthStackParamList } from '../../navigation/AuthStack';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type ForgotPasswordScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'ForgotPassword'
->;
+type ForgotPasswordScreenProps = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
 
 const forgotPasswordSchema = z.object({
   email: z.string().trim().email('Geçerli bir e-posta adresi gir.'),
 });
 
-export default function ForgotPasswordScreen({
-  navigation,
-}: ForgotPasswordScreenProps) {
-
+export default function ForgotPasswordScreen({ navigation }: ForgotPasswordScreenProps) {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,23 +46,19 @@ export default function ForgotPasswordScreen({
     setIsSubmitting(true);
 
     try {
-      const { error: resetError } = await authService.resetPassword(
-        result.data.email,
-      );
+      const { error: resetError } = await authService.resetPassword(result.data.email);
 
       if (resetError) {
-  console.log('PASSWORD RESET ERROR:', resetError);
-  setError(resetError.message);
-  return;
-}
+        console.log('PASSWORD RESET ERROR:', resetError);
+        setError(resetError.message);
+        return;
+      }
 
       setSuccessMessage(
         'Şifre sıfırlama bağlantısı e-posta adresine gönderildi. Gelen kutunu kontrol et.',
       );
     } catch {
-      setError(
-        'Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.',
-      );
+      setError('Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,8 +86,7 @@ export default function ForgotPasswordScreen({
             <Text style={styles.title}>Parolanı mı unuttun?</Text>
 
             <Text style={styles.subtitle}>
-              Hesabına bağlı e-posta adresini gir. Sana parola sıfırlama
-              bağlantısı gönderelim.
+              Hesabına bağlı e-posta adresini gir. Sana parola sıfırlama bağlantısı gönderelim.
             </Text>
           </View>
 
@@ -139,19 +128,14 @@ export default function ForgotPasswordScreen({
             )}
 
             <Pressable
-              style={[
-                styles.submitButton,
-                isSubmitting && styles.disabledButton,
-              ]}
+              style={[styles.submitButton, isSubmitting && styles.disabledButton]}
               onPress={handleSubmit}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                <Text style={styles.submitButtonText}>
-                  Sıfırlama Bağlantısı Gönder
-                </Text>
+                <Text style={styles.submitButtonText}>Sıfırlama Bağlantısı Gönder</Text>
               )}
             </Pressable>
 
@@ -164,9 +148,7 @@ export default function ForgotPasswordScreen({
             </Pressable>
           </View>
 
-          <Text style={styles.footer}>
-            Ekipman yönetimi, tek bir yerde.
-          </Text>
+          <Text style={styles.footer}>Ekipman yönetimi, tek bir yerde.</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

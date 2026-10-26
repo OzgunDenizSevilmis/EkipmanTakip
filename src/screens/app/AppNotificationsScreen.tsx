@@ -49,10 +49,8 @@ function formatDate(value: string) {
 function translateNotificationMessage(message: string) {
   const translations: Record<string, string> = {
     'Your reservation has been approved.': 'Rezervasyonun onaylandı.',
-    'Your reserved equipment has been delivered.':
-      'Rezerve ettiğin ekipman sana teslim edildi.',
-    'Your reserved equipment has been returned.':
-      'Ekipmanın iadesi tamamlandı.',
+    'Your reserved equipment has been delivered.': 'Rezerve ettiğin ekipman sana teslim edildi.',
+    'Your reserved equipment has been returned.': 'Ekipmanın iadesi tamamlandı.',
   };
 
   const rejectionPrefix = 'Your reservation has been rejected: ';
@@ -117,8 +115,7 @@ function NotificationCard({
   const iconColor = getNotificationColor(notification.entity_type);
   const entityType = notification.entity_type.toLowerCase();
 
-  const canOpenRecord =
-    entityType === 'reservation' || entityType === 'loan';
+  const canOpenRecord = entityType === 'reservation' || entityType === 'loan';
 
   return (
     <Pressable
@@ -146,9 +143,7 @@ function NotificationCard({
 
         <View style={styles.cardMain}>
           <View style={styles.cardHeading}>
-            <Text style={styles.typeLabel}>
-              {getNotificationType(notification.entity_type)}
-            </Text>
+            <Text style={styles.typeLabel}>{getNotificationType(notification.entity_type)}</Text>
 
             {isUnread ? (
               <View style={styles.unreadBadge}>
@@ -157,29 +152,19 @@ function NotificationCard({
               </View>
             ) : (
               <View style={styles.readBadge}>
-                <Ionicons
-                  name="checkmark-done-outline"
-                  size={13}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="checkmark-done-outline" size={13} color={colors.textSecondary} />
                 <Text style={styles.readBadgeText}>Okundu</Text>
               </View>
             )}
           </View>
 
-          <Text style={styles.message}>
-            {translateNotificationMessage(notification.message)}
-          </Text>
+          <Text style={styles.message}>{translateNotificationMessage(notification.message)}</Text>
         </View>
       </View>
 
       <View style={styles.cardFooter}>
         <View style={styles.dateContainer}>
-          <Ionicons
-            name="time-outline"
-            size={15}
-            color={colors.textSecondary}
-          />
+          <Ionicons name="time-outline" size={15} color={colors.textSecondary} />
           <Text style={styles.date}>{formatDate(notification.created_at)}</Text>
         </View>
 
@@ -212,17 +197,13 @@ function EmptyNotifications() {
   return (
     <View style={styles.emptyState}>
       <View style={styles.emptyIcon}>
-        <Ionicons
-          name="notifications-off-outline"
-          size={34}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="notifications-off-outline" size={34} color={colors.textSecondary} />
       </View>
 
       <Text style={styles.emptyTitle}>Henüz bildirimin yok</Text>
       <Text style={styles.emptyDescription}>
-        Rezervasyon ve zimmet işlemlerinle ilgili güncellemeler burada
-        görünecek. Yeni bir gelişme olduğunda buradan takip edebilirsin.
+        Rezervasyon ve zimmet işlemlerinle ilgili güncellemeler burada görünecek. Yeni bir gelişme
+        olduğunda buradan takip edebilirsin.
       </Text>
     </View>
   );
@@ -251,24 +232,16 @@ export default function AppNotificationsScreen({ navigation }: Props) {
     },
   });
 
-  const unreadCount = notifications.filter(
-    (notification) => !notification.read_at,
-  ).length;
+  const unreadCount = notifications.filter((notification) => !notification.read_at).length;
 
   async function handleNotificationPress(notification: NotificationItem) {
     if (!notification.read_at) {
       const result = await notificationService.markAsRead(notification.id);
 
       if (result.error) {
-        console.error(
-          'Bildirim okundu güncellenemedi:',
-          result.error,
-        );
+        console.error('Bildirim okundu güncellenemedi:', result.error);
 
-        Alert.alert(
-          'İşlem başarısız',
-          `Bildirim güncellenemedi: ${result.error.message}`,
-        );
+        Alert.alert('İşlem başarısız', `Bildirim güncellenemedi: ${result.error.message}`);
 
         return;
       }
@@ -279,28 +252,21 @@ export default function AppNotificationsScreen({ navigation }: Props) {
     }
 
     const message = notification.message.toLowerCase();
-    const isLoanNotification =
-      message.includes('delivered') || message.includes('returned');
+    const isLoanNotification = message.includes('delivered') || message.includes('returned');
 
     if (notification.entity_type.toLowerCase() === 'reservation') {
-      navigation.navigate(
-        'Main',
-        {
-          screen: 'MyActions',
-          params: {
-            highlightEntityType: isLoanNotification ? 'loan' : 'reservation',
-            highlightEntityId: notification.entity_id,
-          },
-        } as never,
-      );
+      navigation.navigate('Main', {
+        screen: 'MyActions',
+        params: {
+          highlightEntityType: isLoanNotification ? 'loan' : 'reservation',
+          highlightEntityId: notification.entity_id,
+        },
+      } as never);
 
       return;
     }
 
-    Alert.alert(
-      'Bildirim',
-      'Bu bildirim için henüz doğrudan açılabilen bir ekran bulunmuyor.',
-    );
+    Alert.alert('Bildirim', 'Bu bildirim için henüz doğrudan açılabilen bir ekran bulunmuyor.');
   }
 
   if (isLoading) {
@@ -310,9 +276,7 @@ export default function AppNotificationsScreen({ navigation }: Props) {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
         <Text style={styles.stateTitle}>Bildirimlerin yükleniyor</Text>
-        <Text style={styles.stateDescription}>
-          Güncel bildirimlerin getiriliyor.
-        </Text>
+        <Text style={styles.stateDescription}>Güncel bildirimlerin getiriliyor.</Text>
       </View>
     );
   }
@@ -321,26 +285,17 @@ export default function AppNotificationsScreen({ navigation }: Props) {
     return (
       <View style={styles.center}>
         <View style={styles.errorIcon}>
-          <Ionicons
-            name="alert-circle-outline"
-            size={32}
-            color={colors.error}
-          />
+          <Ionicons name="alert-circle-outline" size={32} color={colors.error} />
         </View>
 
         <Text style={styles.stateTitle}>Bildirimler yüklenemedi</Text>
         <Text style={styles.stateDescription}>
-          {error instanceof Error
-            ? error.message
-            : 'Beklenmeyen bir hata oluştu.'}
+          {error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu.'}
         </Text>
 
         <Pressable
           accessibilityRole="button"
-          style={({ pressed }) => [
-            styles.retryButton,
-            pressed && styles.pressedButton,
-          ]}
+          style={({ pressed }) => [styles.retryButton, pressed && styles.pressedButton]}
           onPress={() => void refetch()}
         >
           <Ionicons name="refresh-outline" size={18} color={colors.white} />
@@ -378,11 +333,7 @@ export default function AppNotificationsScreen({ navigation }: Props) {
           <View style={styles.header}>
             <View style={styles.headerTop}>
               <View style={styles.headerIcon}>
-                <Ionicons
-                  name="notifications-outline"
-                  size={29}
-                  color={colors.primary}
-                />
+                <Ionicons name="notifications-outline" size={29} color={colors.primary} />
               </View>
 
               <View style={styles.headerText}>
@@ -392,23 +343,13 @@ export default function AppNotificationsScreen({ navigation }: Props) {
             </View>
 
             <Text style={styles.subtitle}>
-              Rezervasyon, zimmet ve ekipman işlemlerindeki gelişmeleri buradan
-              takip edebilirsin.
+              Rezervasyon, zimmet ve ekipman işlemlerindeki gelişmeleri buradan takip edebilirsin.
             </Text>
 
             <View style={styles.summaryCard}>
-              <View
-                style={[
-                  styles.summaryIcon,
-                  unreadCount === 0 && styles.summaryIconRead,
-                ]}
-              >
+              <View style={[styles.summaryIcon, unreadCount === 0 && styles.summaryIconRead]}>
                 <Ionicons
-                  name={
-                    unreadCount > 0
-                      ? 'mail-unread-outline'
-                      : 'checkmark-done-outline'
-                  }
+                  name={unreadCount > 0 ? 'mail-unread-outline' : 'checkmark-done-outline'}
                   size={22}
                   color={unreadCount > 0 ? colors.primary : '#53D6B0'}
                 />
@@ -430,19 +371,13 @@ export default function AppNotificationsScreen({ navigation }: Props) {
                   <Text style={styles.summaryCountText}>{unreadCount}</Text>
                 </View>
               ) : (
-                <Ionicons
-                  name="checkmark-circle"
-                  size={23}
-                  color="#53D6B0"
-                />
+                <Ionicons name="checkmark-circle" size={23} color="#53D6B0" />
               )}
             </View>
 
             <View style={styles.listHeading}>
               <Text style={styles.listTitle}>Son bildirimler</Text>
-              <Text style={styles.listCount}>
-                {notifications.length} kayıt
-              </Text>
+              <Text style={styles.listCount}>{notifications.length} kayıt</Text>
             </View>
           </View>
         }
@@ -450,14 +385,8 @@ export default function AppNotificationsScreen({ navigation }: Props) {
         ListFooterComponent={
           notifications.length > 0 ? (
             <View style={styles.bottomNote}>
-              <Ionicons
-                name="refresh-outline"
-                size={16}
-                color={colors.textSecondary}
-              />
-              <Text style={styles.bottomNoteText}>
-                Güncel bildirimler için ekranı aşağı çek.
-              </Text>
+              <Ionicons name="refresh-outline" size={16} color={colors.textSecondary} />
+              <Text style={styles.bottomNoteText}>Güncel bildirimler için ekranı aşağı çek.</Text>
             </View>
           ) : null
         }

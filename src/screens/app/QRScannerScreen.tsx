@@ -11,21 +11,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  CameraView,
-  useCameraPermissions,
-  type BarcodeScanningResult,
-} from 'expo-camera';
+import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'expo-camera';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import type { AppStackParamList } from '../../navigation/AppStack';
 import { equipmentService } from '../../services/equipmentService';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type QRScannerScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'QRScanner'
->;
+type QRScannerScreenProps = NativeStackScreenProps<AppStackParamList, 'QRScanner'>;
 
 type EquipmentStatus = 'ACTIVE' | 'MAINTENANCE' | 'INACTIVE';
 
@@ -57,9 +50,7 @@ function getEquipmentStatus(status: EquipmentStatus) {
   }
 }
 
-export default function QRScannerScreen({
-  navigation,
-}: QRScannerScreenProps) {
+export default function QRScannerScreen({ navigation }: QRScannerScreenProps) {
   const [permission, requestPermission] = useCameraPermissions();
   const [manualCode, setManualCode] = useState('');
   const [scannedCode, setScannedCode] = useState<string | null>(null);
@@ -69,8 +60,7 @@ export default function QRScannerScreen({
     queryKey: ['equipment-by-code', scannedCode],
     enabled: Boolean(scannedCode),
     queryFn: async () => {
-      const { data, error } =
-        await equipmentService.getEquipmentByCode(scannedCode!);
+      const { data, error } = await equipmentService.getEquipmentByCode(scannedCode!);
 
       if (error) {
         throw error;
@@ -128,9 +118,7 @@ export default function QRScannerScreen({
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
         <Text style={styles.stateTitle}>Kamera hazırlanıyor</Text>
-        <Text style={styles.stateDescription}>
-          Kamera erişimi kontrol ediliyor...
-        </Text>
+        <Text style={styles.stateDescription}>Kamera erişimi kontrol ediliyor...</Text>
       </View>
     );
   }
@@ -146,18 +134,14 @@ export default function QRScannerScreen({
     >
       <View style={styles.header}>
         <View style={styles.headerIcon}>
-          <Ionicons
-            name="qr-code-outline"
-            size={30}
-            color={colors.primary}
-          />
+          <Ionicons name="qr-code-outline" size={30} color={colors.primary} />
         </View>
 
         <Text style={styles.eyebrow}>HIZLI ERİŞİM</Text>
         <Text style={styles.title}>QR Kod Tarayıcı</Text>
         <Text style={styles.subtitle}>
-          Ekipmanın QR kodunu okutarak bilgilerine ulaşabilir veya üzerindeki
-          ekipman kodunu manuel olarak arayabilirsin.
+          Ekipmanın QR kodunu okutarak bilgilerine ulaşabilir veya üzerindeki ekipman kodunu manuel
+          olarak arayabilirsin.
         </Text>
       </View>
 
@@ -165,18 +149,12 @@ export default function QRScannerScreen({
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionIcon}>
-              <Ionicons
-                name="camera-outline"
-                size={22}
-                color={colors.primary}
-              />
+              <Ionicons name="camera-outline" size={22} color={colors.primary} />
             </View>
 
             <View style={styles.sectionHeading}>
               <Text style={styles.sectionTitle}>Kamerayla tara</Text>
-              <Text style={styles.sectionDescription}>
-                QR kodu çerçevenin içine hizala.
-              </Text>
+              <Text style={styles.sectionDescription}>QR kodu çerçevenin içine hizala.</Text>
             </View>
 
             <View style={styles.liveBadge}>
@@ -192,11 +170,7 @@ export default function QRScannerScreen({
               barcodeScannerSettings={{
                 barcodeTypes: ['qr'],
               }}
-              onBarcodeScanned={
-                scannedCode || isSearching
-                  ? undefined
-                  : handleBarcodeScanned
-              }
+              onBarcodeScanned={scannedCode || isSearching ? undefined : handleBarcodeScanned}
             />
 
             <View pointerEvents="none" style={styles.scanOverlay}>
@@ -207,42 +181,26 @@ export default function QRScannerScreen({
                 <View style={[styles.corner, styles.bottomRight]} />
 
                 <View style={styles.scanCenter}>
-                  <Ionicons
-                    name="qr-code-outline"
-                    size={36}
-                    color="rgba(255,255,255,0.8)"
-                  />
+                  <Ionicons name="qr-code-outline" size={36} color="rgba(255,255,255,0.8)" />
                 </View>
               </View>
             </View>
 
             <View style={styles.cameraHint}>
-              <Ionicons
-                name="scan-outline"
-                size={16}
-                color={colors.white}
-              />
-              <Text style={styles.cameraHintText}>
-                QR kodu çerçevenin içine getir
-              </Text>
+              <Ionicons name="scan-outline" size={16} color={colors.white} />
+              <Text style={styles.cameraHintText}>QR kodu çerçevenin içine getir</Text>
             </View>
 
             {isSearching ? (
               <View style={styles.cameraSearching}>
                 <ActivityIndicator color={colors.white} />
-                <Text style={styles.cameraSearchingText}>
-                  Kod kontrol ediliyor...
-                </Text>
+                <Text style={styles.cameraSearchingText}>Kod kontrol ediliyor...</Text>
               </View>
             ) : null}
           </View>
 
           <View style={styles.tipRow}>
-            <Ionicons
-              name="information-circle-outline"
-              size={18}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="information-circle-outline" size={18} color={colors.textSecondary} />
             <Text style={styles.tipText}>
               Daha iyi sonuç için QR kodu aydınlık bir ortamda okut.
             </Text>
@@ -251,17 +209,13 @@ export default function QRScannerScreen({
       ) : (
         <View style={styles.permissionCard}>
           <View style={styles.permissionIcon}>
-            <Ionicons
-              name="camera-outline"
-              size={30}
-              color={colors.primary}
-            />
+            <Ionicons name="camera-outline" size={30} color={colors.primary} />
           </View>
 
           <Text style={styles.sectionTitle}>Kamera erişimi gerekli</Text>
           <Text style={styles.sectionDescription}>
-            QR kod taramak için kamera izni vermelisin. İzin vermeden de
-            ekipman kodunu aşağıdaki alana girerek arama yapabilirsin.
+            QR kod taramak için kamera izni vermelisin. İzin vermeden de ekipman kodunu aşağıdaki
+            alana girerek arama yapabilirsin.
           </Text>
 
           <TouchableOpacity
@@ -279,29 +233,19 @@ export default function QRScannerScreen({
       <View style={styles.manualCard}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionIcon}>
-            <Ionicons
-              name="keypad-outline"
-              size={22}
-              color={colors.primary}
-            />
+            <Ionicons name="keypad-outline" size={22} color={colors.primary} />
           </View>
 
           <View style={styles.sectionHeading}>
             <Text style={styles.sectionTitle}>Kod ile ara</Text>
-            <Text style={styles.sectionDescription}>
-              Ekipman kodunu manuel olarak gir.
-            </Text>
+            <Text style={styles.sectionDescription}>Ekipman kodunu manuel olarak gir.</Text>
           </View>
         </View>
 
         <Text style={styles.inputLabel}>EKİPMAN KODU</Text>
 
         <View style={styles.inputContainer}>
-          <Ionicons
-            name="barcode-outline"
-            size={21}
-            color={colors.textSecondary}
-          />
+          <Ionicons name="barcode-outline" size={21} color={colors.textSecondary} />
 
           <TextInput
             style={styles.input}
@@ -325,20 +269,13 @@ export default function QRScannerScreen({
               accessibilityLabel="Kodu temizle"
               disabled={isSearching}
             >
-              <Ionicons
-                name="close-circle"
-                size={20}
-                color={colors.textSecondary}
-              />
+              <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           ) : null}
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.primaryButton,
-            isSearching && styles.disabledButton,
-          ]}
+          style={[styles.primaryButton, isSearching && styles.disabledButton]}
           onPress={() => handleCode(manualCode)}
           activeOpacity={0.8}
           disabled={isSearching}
@@ -348,11 +285,7 @@ export default function QRScannerScreen({
             <ActivityIndicator color={colors.white} />
           ) : (
             <>
-              <Ionicons
-                name="search-outline"
-                size={19}
-                color={colors.white}
-              />
+              <Ionicons name="search-outline" size={19} color={colors.white} />
               <Text style={styles.primaryButtonText}>Ekipmanı ara</Text>
             </>
           )}
@@ -363,11 +296,7 @@ export default function QRScannerScreen({
         <View style={styles.resultCard}>
           <View style={styles.resultHeader}>
             <View style={styles.resultHeaderIcon}>
-              <Ionicons
-                name="clipboard-outline"
-                size={22}
-                color={colors.primary}
-              />
+              <Ionicons name="clipboard-outline" size={22} color={colors.primary} />
             </View>
 
             <View style={styles.resultHeaderText}>
@@ -381,18 +310,12 @@ export default function QRScannerScreen({
           {equipmentQuery.isLoading ? (
             <View style={styles.resultLoading}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.sectionDescription}>
-                Ekipman kaydı sorgulanıyor...
-              </Text>
+              <Text style={styles.sectionDescription}>Ekipman kaydı sorgulanıyor...</Text>
             </View>
           ) : equipmentQuery.isError ? (
             <View style={styles.resultError}>
               <View style={styles.errorIcon}>
-                <Ionicons
-                  name="alert-circle-outline"
-                  size={25}
-                  color={colors.error}
-                />
+                <Ionicons name="alert-circle-outline" size={25} color={colors.error} />
               </View>
 
               <Text style={styles.errorTitle}>Ekipman bulunamadı</Text>
@@ -408,11 +331,7 @@ export default function QRScannerScreen({
                 activeOpacity={0.8}
                 accessibilityRole="button"
               >
-                <Ionicons
-                  name="refresh-outline"
-                  size={19}
-                  color={colors.white}
-                />
+                <Ionicons name="refresh-outline" size={19} color={colors.white} />
                 <Text style={styles.primaryButtonText}>Yeniden ara</Text>
               </TouchableOpacity>
             </View>
@@ -420,47 +339,29 @@ export default function QRScannerScreen({
             <>
               <View style={styles.equipmentHeading}>
                 <View style={styles.equipmentIcon}>
-                  <Ionicons
-                    name="cube-outline"
-                    size={27}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="cube-outline" size={27} color={colors.primary} />
                 </View>
 
                 <View style={styles.equipmentHeadingText}>
-                  <Text style={styles.equipmentName}>
-                    {equipmentQuery.data.name}
-                  </Text>
-                  <Text style={styles.equipmentCode}>
-                    {equipmentQuery.data.code}
-                  </Text>
+                  <Text style={styles.equipmentName}>{equipmentQuery.data.name}</Text>
+                  <Text style={styles.equipmentCode}>{equipmentQuery.data.code}</Text>
                 </View>
               </View>
 
               <View style={styles.equipmentInfoRow}>
                 <View style={styles.infoIcon}>
-                  <Ionicons
-                    name="barcode-outline"
-                    size={18}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="barcode-outline" size={18} color={colors.primary} />
                 </View>
 
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Ekipman kodu</Text>
-                  <Text style={styles.infoValue}>
-                    {equipmentQuery.data.code}
-                  </Text>
+                  <Text style={styles.infoValue}>{equipmentQuery.data.code}</Text>
                 </View>
               </View>
 
               <View style={styles.equipmentInfoRow}>
                 <View style={styles.infoIcon}>
-                  <Ionicons
-                    name="shield-checkmark-outline"
-                    size={18}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
                 </View>
 
                 <View style={styles.infoContent}>
@@ -477,15 +378,13 @@ export default function QRScannerScreen({
                   >
                     <Ionicons
                       name={
-                        getEquipmentStatus(
-                          equipmentQuery.data.lifecycle_status as EquipmentStatus,
-                        ).icon
+                        getEquipmentStatus(equipmentQuery.data.lifecycle_status as EquipmentStatus)
+                          .icon
                       }
                       size={15}
                       color={
-                        getEquipmentStatus(
-                          equipmentQuery.data.lifecycle_status as EquipmentStatus,
-                        ).textColor
+                        getEquipmentStatus(equipmentQuery.data.lifecycle_status as EquipmentStatus)
+                          .textColor
                       }
                     />
                     <Text
@@ -498,9 +397,10 @@ export default function QRScannerScreen({
                         },
                       ]}
                     >
-                      {getEquipmentStatus(
-                        equipmentQuery.data.lifecycle_status as EquipmentStatus,
-                      ).label}
+                      {
+                        getEquipmentStatus(equipmentQuery.data.lifecycle_status as EquipmentStatus)
+                          .label
+                      }
                     </Text>
                   </View>
                 </View>
@@ -516,14 +416,8 @@ export default function QRScannerScreen({
                 activeOpacity={0.8}
                 accessibilityRole="button"
               >
-                <Ionicons
-                  name="open-outline"
-                  size={19}
-                  color={colors.white}
-                />
-                <Text style={styles.primaryButtonText}>
-                  Ekipman detaylarını görüntüle
-                </Text>
+                <Ionicons name="open-outline" size={19} color={colors.white} />
+                <Text style={styles.primaryButtonText}>Ekipman detaylarını görüntüle</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -536,14 +430,8 @@ export default function QRScannerScreen({
                 activeOpacity={0.8}
                 accessibilityRole="button"
               >
-                <Ionicons
-                  name="swap-horizontal-outline"
-                  size={19}
-                  color={colors.primary}
-                />
-                <Text style={styles.secondaryButtonText}>
-                  Teslim / iade işlemlerine git
-                </Text>
+                <Ionicons name="swap-horizontal-outline" size={19} color={colors.primary} />
+                <Text style={styles.secondaryButtonText}>Teslim / iade işlemlerine git</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -552,11 +440,7 @@ export default function QRScannerScreen({
                 activeOpacity={0.8}
                 accessibilityRole="button"
               >
-                <Ionicons
-                  name="scan-outline"
-                  size={18}
-                  color={colors.textSecondary}
-                />
+                <Ionicons name="scan-outline" size={18} color={colors.textSecondary} />
                 <Text style={styles.textButtonLabel}>Başka ekipman ara</Text>
               </TouchableOpacity>
             </>
@@ -750,7 +634,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cameraSearching: {
-   ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.md,

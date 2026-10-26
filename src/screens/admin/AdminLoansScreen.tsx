@@ -1,12 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { loanService } from '../../services/loanService';
 import { colors, radii, spacing, typography } from '../../theme';
@@ -59,9 +52,7 @@ function SummaryCard({
       <View
         style={[
           styles.summaryIndicator,
-          variant === 'active'
-            ? styles.activeIndicator
-            : styles.returnedIndicator,
+          variant === 'active' ? styles.activeIndicator : styles.returnedIndicator,
         ]}
       />
       <Text style={styles.summaryTitle}>{title}</Text>
@@ -71,13 +62,7 @@ function SummaryCard({
   );
 }
 
-function InfoRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.infoRow}>
       <Text style={styles.infoLabel}>{label}</Text>
@@ -93,34 +78,15 @@ function LoanCard({ loan }: { loan: Loan }) {
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.equipmentInfo}>
-          <Text style={styles.equipmentName}>
-            {loan.equipment?.name ?? 'Ekipman bulunamadı'}
-          </Text>
+          <Text style={styles.equipmentName}>{loan.equipment?.name ?? 'Ekipman bulunamadı'}</Text>
           <Text style={styles.equipmentCode}>
-            {loan.equipment?.code
-              ? `Kod: ${loan.equipment.code}`
-              : 'Ekipman kodu bulunamadı'}
+            {loan.equipment?.code ? `Kod: ${loan.equipment.code}` : 'Ekipman kodu bulunamadı'}
           </Text>
         </View>
 
-        <View
-          style={[
-            styles.statusBadge,
-            isReturned ? styles.returnedBadge : styles.activeBadge,
-          ]}
-        >
-          <View
-            style={[
-              styles.statusDot,
-              isReturned ? styles.returnedDot : styles.activeDot,
-            ]}
-          />
-          <Text
-            style={[
-              styles.statusText,
-              isReturned ? styles.returnedText : styles.activeText,
-            ]}
-          >
+        <View style={[styles.statusBadge, isReturned ? styles.returnedBadge : styles.activeBadge]}>
+          <View style={[styles.statusDot, isReturned ? styles.returnedDot : styles.activeDot]} />
+          <Text style={[styles.statusText, isReturned ? styles.returnedText : styles.activeText]}>
             {isReturned ? 'İade Edildi' : 'Üzerinde'}
           </Text>
         </View>
@@ -131,10 +97,7 @@ function LoanCard({ loan }: { loan: Loan }) {
       <View style={styles.personSection}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
-            {(loan.profile?.full_name || '?')
-              .trim()
-              .charAt(0)
-              .toLocaleUpperCase('tr-TR')}
+            {(loan.profile?.full_name || '?').trim().charAt(0).toLocaleUpperCase('tr-TR')}
           </Text>
         </View>
         <View style={styles.personInfo}>
@@ -146,19 +109,10 @@ function LoanCard({ loan }: { loan: Loan }) {
       </View>
 
       <View style={styles.dateSection}>
-        <InfoRow
-          label="Teslim tarihi"
-          value={formatDate(loan.checked_out_at)}
-        />
-        <InfoRow
-          label="Planlanan iade"
-          value={formatDate(loan.due_at)}
-        />
+        <InfoRow label="Teslim tarihi" value={formatDate(loan.checked_out_at)} />
+        <InfoRow label="Planlanan iade" value={formatDate(loan.due_at)} />
         {isReturned ? (
-          <InfoRow
-            label="Gerçek iade tarihi"
-            value={formatDate(loan.returned_at)}
-          />
+          <InfoRow label="Gerçek iade tarihi" value={formatDate(loan.returned_at)} />
         ) : null}
       </View>
 
@@ -197,8 +151,7 @@ export default function AdminLoansScreen() {
   } = useQuery({
     queryKey: ['admin-loans'],
     queryFn: async () => {
-      const { data, error: serviceError } =
-        await loanService.getAllLoans();
+      const { data, error: serviceError } = await loanService.getAllLoans();
 
       if (serviceError) throw serviceError;
 
@@ -207,12 +160,8 @@ export default function AdminLoansScreen() {
   });
 
   const loanList = loans ?? [];
-  const activeCount = loanList.filter(
-    (loan) => !loan.returned_at,
-  ).length;
-  const returnedCount = loanList.filter(
-    (loan) => Boolean(loan.returned_at),
-  ).length;
+  const activeCount = loanList.filter((loan) => !loan.returned_at).length;
+  const returnedCount = loanList.filter((loan) => Boolean(loan.returned_at)).length;
 
   if (isLoading) {
     return (
@@ -231,9 +180,7 @@ export default function AdminLoansScreen() {
         </View>
         <Text style={styles.errorTitle}>Zimmetler yüklenemedi</Text>
         <Text style={styles.helperText}>
-          {error instanceof Error
-            ? error.message
-            : 'Beklenmeyen bir hata oluştu.'}
+          {error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu.'}
         </Text>
       </View>
     );
@@ -245,9 +192,7 @@ export default function AdminLoansScreen() {
         data={loanList}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <LoanCard loan={item} />}
-        contentContainerStyle={
-          loanList.length ? styles.list : styles.emptyList
-        }
+        contentContainerStyle={loanList.length ? styles.list : styles.emptyList}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -268,8 +213,8 @@ export default function AdminLoansScreen() {
 
               <Text style={styles.title}>Zimmet Yönetimi</Text>
               <Text style={styles.subtitle}>
-                Kullanıcılara teslim edilen ekipmanları ve geçmiş zimmet
-                kayıtlarını buradan takip edebilirsin.
+                Kullanıcılara teslim edilen ekipmanları ve geçmiş zimmet kayıtlarını buradan takip
+                edebilirsin.
               </Text>
 
               <View style={styles.totalCard}>
@@ -301,14 +246,10 @@ export default function AdminLoansScreen() {
             <View style={styles.sectionHeader}>
               <View>
                 <Text style={styles.sectionTitle}>Zimmet kayıtları</Text>
-                <Text style={styles.sectionSubtitle}>
-                  Tüm teslim ve iade geçmişi
-                </Text>
+                <Text style={styles.sectionSubtitle}>Tüm teslim ve iade geçmişi</Text>
               </View>
               <View style={styles.recordCount}>
-                <Text style={styles.recordCountText}>
-                  {loanList.length} kayıt
-                </Text>
+                <Text style={styles.recordCountText}>{loanList.length} kayıt</Text>
               </View>
             </View>
           </View>
@@ -320,8 +261,7 @@ export default function AdminLoansScreen() {
             </View>
             <Text style={styles.emptyTitle}>Henüz zimmet kaydı yok</Text>
             <Text style={styles.emptyText}>
-              Ekipman teslim işlemleri tamamlandığında kayıtlar burada
-              görüntülenecek.
+              Ekipman teslim işlemleri tamamlandığında kayıtlar burada görüntülenecek.
             </Text>
           </View>
         }

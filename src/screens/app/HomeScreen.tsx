@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -129,10 +128,7 @@ function SectionHeading({
       {actionLabel && onAction ? (
         <Pressable
           onPress={onAction}
-          style={({ pressed }) => [
-            styles.sectionAction,
-            pressed && styles.pressed,
-          ]}
+          style={({ pressed }) => [styles.sectionAction, pressed && styles.pressed]}
           accessibilityRole="button"
         >
           <Text style={styles.sectionActionText}>{actionLabel}</Text>
@@ -144,8 +140,7 @@ function SectionHeading({
 }
 
 export function HomeScreen() {
-  const navigation =
-    useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
   const {
     data: equipment = [],
@@ -193,13 +188,9 @@ export function HomeScreen() {
     (item) => item.lifecycle_status === 'ACTIVE',
   ).length;
 
-  const pendingReservationCount = reservations.filter(
-    (item) => item.status === 'PENDING',
-  ).length;
+  const pendingReservationCount = reservations.filter((item) => item.status === 'PENDING').length;
 
-  const approvedReservationCount = reservations.filter(
-    (item) => item.status === 'APPROVED',
-  ).length;
+  const approvedReservationCount = reservations.filter((item) => item.status === 'APPROVED').length;
 
   const recentReservations = reservations.slice(0, 3);
 
@@ -227,14 +218,9 @@ export function HomeScreen() {
           <Ionicons name="cloud-offline-outline" size={30} color={colors.error} />
         </View>
         <Text style={styles.errorTitle}>Veriler yüklenemedi</Text>
-        <Text style={styles.errorText}>
-          Bağlantını kontrol edip yeniden deneyebilirsin.
-        </Text>
+        <Text style={styles.errorText}>Bağlantını kontrol edip yeniden deneyebilirsin.</Text>
         <Pressable
-          style={({ pressed }) => [
-            styles.retryButton,
-            pressed && styles.pressed,
-          ]}
+          style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]}
           onPress={handleRefresh}
           accessibilityRole="button"
         >
@@ -284,10 +270,7 @@ export function HomeScreen() {
           </Text>
 
           <Pressable
-            style={({ pressed }) => [
-              styles.heroButton,
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.heroButton, pressed && styles.pressed]}
             onPress={() => navigation.navigate('Equipment')}
             accessibilityRole="button"
           >
@@ -353,10 +336,7 @@ export function HomeScreen() {
             İhtiyacın olan ekipmanı bulup ilk rezervasyon talebini oluşturabilirsin.
           </Text>
           <Pressable
-            style={({ pressed }) => [
-              styles.emptyButton,
-              pressed && styles.pressed,
-            ]}
+            style={({ pressed }) => [styles.emptyButton, pressed && styles.pressed]}
             onPress={() => navigation.navigate('Equipment')}
             accessibilityRole="button"
           >
@@ -372,11 +352,7 @@ export function HomeScreen() {
             return (
               <View key={reservation.id} style={styles.reservationCard}>
                 <View style={styles.reservationIcon}>
-                  <Ionicons
-                    name="cube-outline"
-                    size={23}
-                    color={colors.primary}
-                  />
+                  <Ionicons name="cube-outline" size={23} color={colors.primary} />
                 </View>
 
                 <View style={styles.reservationMain}>
@@ -386,42 +362,23 @@ export function HomeScreen() {
                     </Text>
 
                     <View
-                      style={[
-                        styles.statusBadge,
-                        { backgroundColor: statusColors.background },
-                      ]}
+                      style={[styles.statusBadge, { backgroundColor: statusColors.background }]}
                     >
-                      <View
-                        style={[
-                          styles.statusDot,
-                          { backgroundColor: statusColors.text },
-                        ]}
-                      />
-                      <Text
-                        style={[
-                          styles.statusText,
-                          { color: statusColors.text },
-                        ]}
-                      >
+                      <View style={[styles.statusDot, { backgroundColor: statusColors.text }]} />
+                      <Text style={[styles.statusText, { color: statusColors.text }]}>
                         {getStatusLabel(reservation.status)}
                       </Text>
                     </View>
                   </View>
 
                   {reservation.equipment?.code ? (
-                    <Text style={styles.equipmentCode}>
-                      Kod: {reservation.equipment.code}
-                    </Text>
+                    <Text style={styles.equipmentCode}>Kod: {reservation.equipment.code}</Text>
                   ) : null}
 
                   <View style={styles.reservationDivider} />
 
                   <View style={styles.reservationMeta}>
-                    <Ionicons
-                      name="calendar-outline"
-                      size={15}
-                      color={colors.textSecondary}
-                    />
+                    <Ionicons name="calendar-outline" size={15} color={colors.textSecondary} />
                     <Text style={styles.reservationDate}>
                       {formatDateTime(reservation.start_at)}
                     </Text>
@@ -441,10 +398,7 @@ export function HomeScreen() {
 
       <View style={styles.quickActions}>
         <Pressable
-          style={({ pressed }) => [
-            styles.quickAction,
-            pressed && styles.quickActionPressed,
-          ]}
+          style={({ pressed }) => [styles.quickAction, pressed && styles.quickActionPressed]}
           onPress={() => navigation.navigate('Equipment')}
           accessibilityRole="button"
         >
@@ -461,10 +415,7 @@ export function HomeScreen() {
         </Pressable>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.quickAction,
-            pressed && styles.quickActionPressed,
-          ]}
+          style={({ pressed }) => [styles.quickAction, pressed && styles.quickActionPressed]}
           onPress={() => navigation.navigate('MyActions')}
           accessibilityRole="button"
         >

@@ -23,12 +23,10 @@ export default function AdminCategoriesScreen() {
   const queryClient = useQueryClient();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingCategory, setEditingCategory] =
-    useState<Category | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryName, setCategoryName] = useState('');
   const [saving, setSaving] = useState(false);
-  const [changingStatusId, setChangingStatusId] =
-    useState<string | null>(null);
+  const [changingStatusId, setChangingStatusId] = useState<string | null>(null);
 
   const {
     data: categories = [],
@@ -49,9 +47,7 @@ export default function AdminCategoriesScreen() {
     },
   });
 
-  const activeCount = categories.filter(
-    (category) => category.isActive,
-  ).length;
+  const activeCount = categories.filter((category) => category.isActive).length;
 
   const inactiveCount = categories.length - activeCount;
 
@@ -84,10 +80,7 @@ export default function AdminCategoriesScreen() {
     }
 
     if (name.length > 100) {
-      Alert.alert(
-        'Geçersiz kategori adı',
-        'Kategori adı en fazla 100 karakter olabilir.',
-      );
+      Alert.alert('Geçersiz kategori adı', 'Kategori adı en fazla 100 karakter olabilir.');
       return;
     }
 
@@ -121,16 +114,12 @@ export default function AdminCategoriesScreen() {
 
       Alert.alert(
         'İşlem başarılı',
-        wasEditing
-          ? 'Kategori adı güncellendi.'
-          : 'Yeni kategori oluşturuldu.',
+        wasEditing ? 'Kategori adı güncellendi.' : 'Yeni kategori oluşturuldu.',
       );
     } catch (saveError) {
       Alert.alert(
         'İşlem başarısız',
-        saveError instanceof Error
-          ? saveError.message
-          : 'Kategori kaydedilirken bir hata oluştu.',
+        saveError instanceof Error ? saveError.message : 'Kategori kaydedilirken bir hata oluştu.',
       );
     } finally {
       setSaving(false);
@@ -155,26 +144,19 @@ export default function AdminCategoriesScreen() {
         {
           text: nextIsActive ? 'Aktifleştir' : 'Pasife al',
           style: nextIsActive ? 'default' : 'destructive',
-          onPress: () =>
-            void confirmCategoryStatus(category, nextIsActive),
+          onPress: () => void confirmCategoryStatus(category, nextIsActive),
         },
       ],
     );
   };
 
-  const confirmCategoryStatus = async (
-    category: Category,
-    isActive: boolean,
-  ) => {
+  const confirmCategoryStatus = async (category: Category, isActive: boolean) => {
     if (changingStatusId) return;
 
     setChangingStatusId(category.id);
 
     try {
-      const result = await categoryService.setCategoryActive(
-        category.id,
-        isActive,
-      );
+      const result = await categoryService.setCategoryActive(category.id, isActive);
 
       if (result.error) {
         throw result.error;
@@ -197,9 +179,7 @@ export default function AdminCategoriesScreen() {
 
       Alert.alert(
         'İşlem başarılı',
-        isActive
-          ? 'Kategori aktifleştirildi.'
-          : 'Kategori pasife alındı.',
+        isActive ? 'Kategori aktifleştirildi.' : 'Kategori pasife alındı.',
       );
     } catch (statusError) {
       Alert.alert(
@@ -219,17 +199,9 @@ export default function AdminCategoriesScreen() {
     return (
       <View style={styles.categoryCard}>
         <View style={styles.cardHeader}>
-          <View
-            style={[
-              styles.categoryIcon,
-              !item.isActive && styles.categoryIconInactive,
-            ]}
-          >
+          <View style={[styles.categoryIcon, !item.isActive && styles.categoryIconInactive]}>
             <Text
-              style={[
-                styles.categoryIconText,
-                !item.isActive && styles.categoryIconTextInactive,
-              ]}
+              style={[styles.categoryIconText, !item.isActive && styles.categoryIconTextInactive]}
             >
               {item.name.trim().charAt(0).toLocaleUpperCase('tr-TR')}
             </Text>
@@ -237,28 +209,17 @@ export default function AdminCategoriesScreen() {
 
           <View style={styles.cardTitleContainer}>
             <Text style={styles.categoryName}>{item.name}</Text>
-            <Text style={styles.categoryDescription}>
-              Ekipman kategorisi
-            </Text>
+            <Text style={styles.categoryDescription}>Ekipman kategorisi</Text>
           </View>
 
           <View
-            style={[
-              styles.statusBadge,
-              item.isActive ? styles.activeBadge : styles.inactiveBadge,
-            ]}
+            style={[styles.statusBadge, item.isActive ? styles.activeBadge : styles.inactiveBadge]}
           >
             <View
-              style={[
-                styles.statusDot,
-                item.isActive ? styles.activeDot : styles.inactiveDot,
-              ]}
+              style={[styles.statusDot, item.isActive ? styles.activeDot : styles.inactiveDot]}
             />
             <Text
-              style={[
-                styles.statusText,
-                item.isActive ? styles.activeText : styles.inactiveText,
-              ]}
+              style={[styles.statusText, item.isActive ? styles.activeText : styles.inactiveText]}
             >
               {item.isActive ? 'Aktif' : 'Pasif'}
             </Text>
@@ -271,10 +232,7 @@ export default function AdminCategoriesScreen() {
           <Pressable
             accessibilityRole="button"
             disabled={isChanging || changingStatusId !== null}
-            style={({ pressed }) => [
-              styles.editButton,
-              pressed && styles.pressedButton,
-            ]}
+            style={({ pressed }) => [styles.editButton, pressed && styles.pressedButton]}
             onPress={() => openEditForm(item)}
           >
             <Text style={styles.editButtonText}>Düzenle</Text>
@@ -285,9 +243,7 @@ export default function AdminCategoriesScreen() {
             disabled={isChanging || changingStatusId !== null}
             style={({ pressed }) => [
               styles.statusActionButton,
-              item.isActive
-                ? styles.deactivateButton
-                : styles.activateButton,
+              item.isActive ? styles.deactivateButton : styles.activateButton,
               pressed && styles.pressedButton,
               changingStatusId !== null && styles.disabledButton,
             ]}
@@ -299,13 +255,7 @@ export default function AdminCategoriesScreen() {
                 color={item.isActive ? colors.error : colors.primary}
               />
             ) : (
-              <Text
-                style={
-                  item.isActive
-                    ? styles.deactivateButtonText
-                    : styles.activateButtonText
-                }
-              >
+              <Text style={item.isActive ? styles.deactivateButtonText : styles.activateButtonText}>
                 {item.isActive ? 'Pasife al' : 'Aktifleştir'}
               </Text>
             )}
@@ -319,9 +269,7 @@ export default function AdminCategoriesScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.helperText}>
-          Kategoriler yükleniyor...
-        </Text>
+        <Text style={styles.helperText}>Kategoriler yükleniyor...</Text>
       </View>
     );
   }
@@ -332,12 +280,8 @@ export default function AdminCategoriesScreen() {
         <View style={styles.stateIcon}>
           <Text style={styles.stateIconText}>!</Text>
         </View>
-        <Text style={styles.stateTitle}>
-          Kategoriler yüklenemedi
-        </Text>
-        <Text style={styles.helperText}>
-          Kategori bilgileri alınırken bir hata oluştu.
-        </Text>
+        <Text style={styles.stateTitle}>Kategoriler yüklenemedi</Text>
+        <Text style={styles.helperText}>Kategori bilgileri alınırken bir hata oluştu.</Text>
 
         <Pressable
           accessibilityRole="button"
@@ -367,19 +311,14 @@ export default function AdminCategoriesScreen() {
             progressBackgroundColor={colors.surface}
           />
         }
-        contentContainerStyle={[
-          styles.listContent,
-          categories.length === 0 && styles.emptyList,
-        ]}
+        contentContainerStyle={[styles.listContent, categories.length === 0 && styles.emptyList]}
         ListHeaderComponent={
           <View>
             <View style={styles.header}>
               <View style={styles.headerTextContainer}>
                 <View style={styles.eyebrow}>
                   <View style={styles.eyebrowDot} />
-                  <Text style={styles.eyebrowText}>
-                    YÖNETİM PANELİ
-                  </Text>
+                  <Text style={styles.eyebrowText}>YÖNETİM PANELİ</Text>
                 </View>
 
                 <Text style={styles.title}>Kategori Yönetimi</Text>
@@ -392,15 +331,9 @@ export default function AdminCategoriesScreen() {
             <View style={styles.overviewCard}>
               <View style={styles.overviewTop}>
                 <View style={styles.overviewTextContainer}>
-                  <Text style={styles.overviewLabel}>
-                    Toplam kategori
-                  </Text>
-                  <Text style={styles.overviewValue}>
-                    {categories.length}
-                  </Text>
-                  <Text style={styles.overviewDescription}>
-                    Tanımlı kategori sayısı
-                  </Text>
+                  <Text style={styles.overviewLabel}>Toplam kategori</Text>
+                  <Text style={styles.overviewValue}>{categories.length}</Text>
+                  <Text style={styles.overviewDescription}>Tanımlı kategori sayısı</Text>
                 </View>
 
                 <View style={styles.overviewIcon}>
@@ -436,16 +369,14 @@ export default function AdminCategoriesScreen() {
                 <Text style={styles.noticeIconText}>i</Text>
               </View>
               <Text style={styles.noticeText}>
-                Pasif kategoriler yeni ekipman oluştururken seçilemez.
-                Bu işlem mevcut ekipman kayıtlarını silmez.
+                Pasif kategoriler yeni ekipman oluştururken seçilemez. Bu işlem mevcut ekipman
+                kayıtlarını silmez.
               </Text>
             </View>
 
             <View style={styles.sectionHeader}>
               <View style={styles.sectionTextContainer}>
-                <Text style={styles.sectionTitle}>
-                  Kategoriler
-                </Text>
+                <Text style={styles.sectionTitle}>Kategoriler</Text>
                 <Text style={styles.sectionSubtitle}>
                   Kayıtlı kategorilerini buradan yönetebilirsin.
                 </Text>
@@ -453,10 +384,7 @@ export default function AdminCategoriesScreen() {
 
               <Pressable
                 accessibilityRole="button"
-                style={({ pressed }) => [
-                  styles.primaryButton,
-                  pressed && styles.pressedButton,
-                ]}
+                style={({ pressed }) => [styles.primaryButton, pressed && styles.pressedButton]}
                 onPress={openCreateForm}
               >
                 <Text style={styles.primaryButtonText}>+ Ekle</Text>
@@ -469,21 +397,16 @@ export default function AdminCategoriesScreen() {
             <View style={styles.emptyIcon}>
               <Text style={styles.emptyIconText}>K</Text>
             </View>
-            <Text style={styles.emptyTitle}>
-              Henüz kategori yok
-            </Text>
+            <Text style={styles.emptyTitle}>Henüz kategori yok</Text>
             <Text style={styles.emptyText}>
-              İlk kategorini oluşturarak ekipmanlarını gruplandırmaya
-              başlayabilirsin.
+              İlk kategorini oluşturarak ekipmanlarını gruplandırmaya başlayabilirsin.
             </Text>
             <Pressable
               accessibilityRole="button"
               style={styles.emptyAction}
               onPress={openCreateForm}
             >
-              <Text style={styles.emptyActionText}>
-                İlk kategoriyi oluştur
-              </Text>
+              <Text style={styles.emptyActionText}>İlk kategoriyi oluştur</Text>
             </Pressable>
           </View>
         }
@@ -501,9 +424,7 @@ export default function AdminCategoriesScreen() {
         >
           <View style={styles.modalHeader}>
             <View style={styles.modalHeadingContainer}>
-              <Text style={styles.modalEyebrow}>
-                KATEGORİ İŞLEMLERİ
-              </Text>
+              <Text style={styles.modalEyebrow}>KATEGORİ İŞLEMLERİ</Text>
               <Text style={styles.modalTitle}>
                 {editingCategory ? 'Kategoriyi düzenle' : 'Yeni kategori'}
               </Text>
@@ -548,9 +469,7 @@ export default function AdminCategoriesScreen() {
               <Text style={styles.helperText}>
                 Açıklayıcı ve anlaşılır bir kategori adı kullan.
               </Text>
-              <Text style={styles.characterCount}>
-                {categoryName.length}/100
-              </Text>
+              <Text style={styles.characterCount}>{categoryName.length}/100</Text>
             </View>
 
             <View style={styles.modalNotice}>
@@ -577,9 +496,7 @@ export default function AdminCategoriesScreen() {
                 <ActivityIndicator color={colors.white} />
               ) : (
                 <Text style={styles.primaryButtonText}>
-                  {editingCategory
-                    ? 'Değişiklikleri kaydet'
-                    : 'Kategoriyi oluştur'}
+                  {editingCategory ? 'Değişiklikleri kaydet' : 'Kategoriyi oluştur'}
                 </Text>
               )}
             </Pressable>

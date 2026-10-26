@@ -1,11 +1,5 @@
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  CalendarCheck,
-  House,
-  Package,
-  UserRound,
-} from 'lucide-react-native';
+import { CalendarCheck, House, Package, UserRound } from 'lucide-react-native';
 
 import { EquipmentScreen } from '../screens/app/EquipmentScreen';
 import { HomeScreen } from '../screens/app/HomeScreen';
@@ -52,11 +46,7 @@ export function MainTabs() {
           title: 'Ana Sayfa',
           tabBarLabel: 'Ana Sayfa',
           tabBarIcon: ({ color, size, focused }) => (
-            <House
-              color={color}
-              size={size}
-              strokeWidth={focused ? 2.5 : 2}
-            />
+            <House color={color} size={size} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -68,11 +58,7 @@ export function MainTabs() {
           title: 'Ekipmanlar',
           tabBarLabel: 'Ekipmanlar',
           tabBarIcon: ({ color, size, focused }) => (
-            <Package
-              color={color}
-              size={size}
-              strokeWidth={focused ? 2.5 : 2}
-            />
+            <Package color={color} size={size} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -84,11 +70,7 @@ export function MainTabs() {
           title: 'İşlemlerim',
           tabBarLabel: 'İşlemlerim',
           tabBarIcon: ({ color, size, focused }) => (
-            <CalendarCheck
-              color={color}
-              size={size}
-              strokeWidth={focused ? 2.5 : 2}
-            />
+            <CalendarCheck color={color} size={size} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />
@@ -100,11 +82,7 @@ export function MainTabs() {
           title: 'Profil',
           tabBarLabel: 'Profil',
           tabBarIcon: ({ color, size, focused }) => (
-            <UserRound
-              color={color}
-              size={size}
-              strokeWidth={focused ? 2.5 : 2}
-            />
+            <UserRound color={color} size={size} strokeWidth={focused ? 2.5 : 2} />
           ),
         }}
       />

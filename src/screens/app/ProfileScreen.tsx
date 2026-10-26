@@ -49,8 +49,7 @@ export function ProfileScreen({ navigation }: Props) {
   const { data: notifications = [] } = useQuery({
     queryKey: ['my-notifications'],
     queryFn: async () => {
-      const { data, error } =
-        await notificationService.getMyNotifications();
+      const { data, error } = await notificationService.getMyNotifications();
 
       if (error) {
         throw error;
@@ -60,9 +59,7 @@ export function ProfileScreen({ navigation }: Props) {
     },
   });
 
-  const hasUnreadNotifications = notifications.some(
-    (notification) => !notification.read_at,
-  );
+  const hasUnreadNotifications = notifications.some((notification) => !notification.read_at);
 
   const isAdmin = profile?.role === 'ADMIN';
   const fullName = profile?.full_name || 'Kullanıcı';
@@ -85,10 +82,7 @@ export function ProfileScreen({ navigation }: Props) {
       const { error } = await authService.signOut();
 
       if (error) {
-        Alert.alert(
-          'Çıkış başarısız',
-          error.message || 'Oturum kapatılamadı.',
-        );
+        Alert.alert('Çıkış başarısız', error.message || 'Oturum kapatılamadı.');
       }
     } catch {
       Alert.alert('Çıkış başarısız', 'Beklenmeyen bir hata oluştu.');
@@ -112,16 +106,10 @@ export function ProfileScreen({ navigation }: Props) {
     return (
       <View style={styles.center}>
         <View style={styles.stateIcon}>
-          <Ionicons
-            name="alert-circle-outline"
-            size={32}
-            color={colors.error}
-          />
+          <Ionicons name="alert-circle-outline" size={32} color={colors.error} />
         </View>
         <Text style={styles.stateTitle}>Profil yüklenemedi</Text>
-        <Text style={styles.stateDescription}>
-          Hesap bilgileri alınırken bir sorun oluştu.
-        </Text>
+        <Text style={styles.stateDescription}>Hesap bilgileri alınırken bir sorun oluştu.</Text>
 
         <TouchableOpacity
           style={styles.retryButton}
@@ -146,9 +134,7 @@ export function ProfileScreen({ navigation }: Props) {
         <View style={styles.headerText}>
           <Text style={styles.eyebrow}>HESABIM</Text>
           <Text style={styles.title}>Profil</Text>
-          <Text style={styles.subtitle}>
-            Hesap bilgilerini ve tercihlerini buradan yönet.
-          </Text>
+          <Text style={styles.subtitle}>Hesap bilgilerini ve tercihlerini buradan yönet.</Text>
         </View>
 
         <TouchableOpacity
@@ -157,20 +143,12 @@ export function ProfileScreen({ navigation }: Props) {
           activeOpacity={0.75}
           accessibilityRole="button"
           accessibilityLabel={
-            hasUnreadNotifications
-              ? 'Okunmamış bildirimler var'
-              : 'Bildirimleri aç'
+            hasUnreadNotifications ? 'Okunmamış bildirimler var' : 'Bildirimleri aç'
           }
         >
-          <Ionicons
-            name="notifications-outline"
-            size={24}
-            color={colors.primary}
-          />
+          <Ionicons name="notifications-outline" size={24} color={colors.primary} />
 
-          {hasUnreadNotifications ? (
-            <View style={styles.notificationDot} />
-          ) : null}
+          {hasUnreadNotifications ? <View style={styles.notificationDot} /> : null}
         </TouchableOpacity>
       </View>
 
@@ -179,34 +157,20 @@ export function ProfileScreen({ navigation }: Props) {
           {initials ? (
             <Text style={styles.avatarText}>{initials}</Text>
           ) : (
-            <Ionicons
-              name="person-outline"
-              size={36}
-              color={colors.primary}
-            />
+            <Ionicons name="person-outline" size={36} color={colors.primary} />
           )}
         </View>
 
         <Text style={styles.profileName}>{fullName}</Text>
         <Text style={styles.profileCaption}>EkipmanTakip hesabı</Text>
 
-        <View
-          style={[
-            styles.roleBadge,
-            isAdmin ? styles.adminRoleBadge : styles.userRoleBadge,
-          ]}
-        >
+        <View style={[styles.roleBadge, isAdmin ? styles.adminRoleBadge : styles.userRoleBadge]}>
           <Ionicons
             name={isAdmin ? 'shield-checkmark-outline' : 'person-outline'}
             size={15}
             color={isAdmin ? colors.primary : colors.textSecondary}
           />
-          <Text
-            style={[
-              styles.roleText,
-              isAdmin ? styles.adminRoleText : styles.userRoleText,
-            ]}
-          >
+          <Text style={[styles.roleText, isAdmin ? styles.adminRoleText : styles.userRoleText]}>
             {isAdmin ? 'Yönetici' : 'Kullanıcı'}
           </Text>
         </View>
@@ -214,28 +178,18 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={styles.sectionHeading}>
         <View style={styles.sectionIcon}>
-          <Ionicons
-            name="person-circle-outline"
-            size={22}
-            color={colors.primary}
-          />
+          <Ionicons name="person-circle-outline" size={22} color={colors.primary} />
         </View>
         <View style={styles.sectionHeadingText}>
           <Text style={styles.sectionTitle}>Hesap bilgileri</Text>
-          <Text style={styles.sectionSubtitle}>
-            Kayıtlı profil bilgilerin
-          </Text>
+          <Text style={styles.sectionSubtitle}>Kayıtlı profil bilgilerin</Text>
         </View>
       </View>
 
       <View style={styles.infoCard}>
         <View style={styles.infoRow}>
           <View style={styles.infoIcon}>
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color={colors.primary}
-            />
+            <Ionicons name="person-outline" size={20} color={colors.primary} />
           </View>
 
           <View style={styles.infoContent}>
@@ -248,18 +202,12 @@ export function ProfileScreen({ navigation }: Props) {
 
         <View style={styles.infoRow}>
           <View style={styles.infoIcon}>
-            <Ionicons
-              name="shield-checkmark-outline"
-              size={20}
-              color={colors.primary}
-            />
+            <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
           </View>
 
           <View style={styles.infoContent}>
             <Text style={styles.label}>Hesap rolü</Text>
-            <Text style={styles.value}>
-              {isAdmin ? 'Yönetici' : 'Kullanıcı'}
-            </Text>
+            <Text style={styles.value}>{isAdmin ? 'Yönetici' : 'Kullanıcı'}</Text>
           </View>
 
           <View style={styles.roleIndicator}>
@@ -274,17 +222,11 @@ export function ProfileScreen({ navigation }: Props) {
 
       <View style={styles.sectionHeading}>
         <View style={styles.sectionIcon}>
-          <Ionicons
-            name="settings-outline"
-            size={21}
-            color={colors.primary}
-          />
+          <Ionicons name="settings-outline" size={21} color={colors.primary} />
         </View>
         <View style={styles.sectionHeadingText}>
           <Text style={styles.sectionTitle}>Hesap işlemleri</Text>
-          <Text style={styles.sectionSubtitle}>
-            Bildirimlerini ve oturumunu yönet.
-          </Text>
+          <Text style={styles.sectionSubtitle}>Bildirimlerini ve oturumunu yönet.</Text>
         </View>
       </View>
 
@@ -295,14 +237,8 @@ export function ProfileScreen({ navigation }: Props) {
         accessibilityRole="button"
       >
         <View style={styles.actionIcon}>
-          <Ionicons
-            name="notifications-outline"
-            size={22}
-            color={colors.primary}
-          />
-          {hasUnreadNotifications ? (
-            <View style={styles.actionNotificationDot} />
-          ) : null}
+          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+          {hasUnreadNotifications ? <View style={styles.actionNotificationDot} /> : null}
         </View>
 
         <View style={styles.actionContent}>
@@ -312,18 +248,11 @@ export function ProfileScreen({ navigation }: Props) {
           </Text>
         </View>
 
-        <Ionicons
-          name="chevron-forward"
-          size={19}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="chevron-forward" size={19} color={colors.textSecondary} />
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[
-          styles.logoutButton,
-          isSigningOut && styles.logoutButtonDisabled,
-        ]}
+        style={[styles.logoutButton, isSigningOut && styles.logoutButtonDisabled]}
         onPress={handleSignOut}
         disabled={isSigningOut}
         activeOpacity={0.8}
@@ -336,22 +265,14 @@ export function ProfileScreen({ navigation }: Props) {
           </>
         ) : (
           <>
-            <Ionicons
-              name="log-out-outline"
-              size={21}
-              color={colors.error}
-            />
+            <Ionicons name="log-out-outline" size={21} color={colors.error} />
             <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
           </>
         )}
       </TouchableOpacity>
 
       <View style={styles.footer}>
-        <Ionicons
-          name="shield-checkmark-outline"
-          size={16}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="shield-checkmark-outline" size={16} color={colors.textSecondary} />
         <Text style={styles.footerText}>
           Hesap işlemlerin güvenli oturumun üzerinden yürütülür.
         </Text>

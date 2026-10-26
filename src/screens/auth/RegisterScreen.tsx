@@ -18,21 +18,13 @@ import type { AuthStackParamList } from '../../navigation/AuthStack';
 import { authService } from '../../services/authService';
 import { colors, radii, spacing, typography } from '../../theme';
 
-type RegisterScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  'Register'
->;
+type RegisterScreenProps = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
 const registerSchema = z
   .object({
-    fullName: z
-      .string()
-      .trim()
-      .min(2, 'Ad soyad en az 2 karakter olmalı.'),
+    fullName: z.string().trim().min(2, 'Ad soyad en az 2 karakter olmalı.'),
     email: z.string().trim().email('Geçerli bir e-posta adresi gir.'),
-    password: z
-      .string()
-      .min(6, 'Parola en az 6 karakter olmalı.'),
+    password: z.string().min(6, 'Parola en az 6 karakter olmalı.'),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -40,9 +32,7 @@ const registerSchema = z
     path: ['confirmPassword'],
   });
 
-export default function RegisterScreen({
-  navigation,
-}: RegisterScreenProps) {
+export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,10 +54,7 @@ export default function RegisterScreen({
     });
 
     if (!result.success) {
-      setError(
-        result.error.issues[0]?.message ??
-          'Bilgilerini kontrol edip tekrar dene.',
-      );
+      setError(result.error.issues[0]?.message ?? 'Bilgilerini kontrol edip tekrar dene.');
       return;
     }
 
@@ -93,13 +80,9 @@ export default function RegisterScreen({
         return;
       }
 
-      setSuccessMessage(
-        'Hesabın başarıyla oluşturuldu. Giriş yapabilirsin.',
-      );
+      setSuccessMessage('Hesabın başarıyla oluşturuldu. Giriş yapabilirsin.');
     } catch {
-      setError(
-        'Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.',
-      );
+      setError('Sunucuya bağlanılamadı. İnternet bağlantını kontrol edip tekrar dene.');
     } finally {
       setIsSubmitting(false);
     }
@@ -131,8 +114,7 @@ export default function RegisterScreen({
               <Text style={styles.eyebrow}>EKİPMANTAKİP</Text>
               <Text style={styles.title}>Hesabını oluştur.</Text>
               <Text style={styles.subtitle}>
-                Ekipman rezervasyonlarını ve işlemlerini tek bir yerden
-                yönetmeye başla.
+                Ekipman rezervasyonlarını ve işlemlerini tek bir yerden yönetmeye başla.
               </Text>
             </View>
           </View>
@@ -201,9 +183,7 @@ export default function RegisterScreen({
                 returnKeyType="next"
                 accessibilityLabel="Parola"
               />
-              <Text style={styles.helperText}>
-                Parolan en az 6 karakterden oluşmalı.
-              </Text>
+              <Text style={styles.helperText}>Parolan en az 6 karakterden oluşmalı.</Text>
             </View>
 
             <View style={styles.field}>
@@ -280,9 +260,7 @@ export default function RegisterScreen({
 
           <View style={styles.footerContainer}>
             <View style={styles.footerLine} />
-            <Text style={styles.footer}>
-              Ekipman yönetimi, tek bir yerde.
-            </Text>
+            <Text style={styles.footer}>Ekipman yönetimi, tek bir yerde.</Text>
           </View>
         </View>
       </ScrollView>

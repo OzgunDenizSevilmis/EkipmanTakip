@@ -8,8 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabasePublishableKey =
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl) {
   throw new Error('EXPO_PUBLIC_SUPABASE_URL is not defined.');
@@ -23,19 +22,11 @@ class LargeSecureStore {
   private async encrypt(key: string, value: string) {
     const encryptionKey = crypto.getRandomValues(new Uint8Array(32));
 
-    const cipher = new aesjs.ModeOfOperation.ctr(
-      encryptionKey,
-      new aesjs.Counter(1),
-    );
+    const cipher = new aesjs.ModeOfOperation.ctr(encryptionKey, new aesjs.Counter(1));
 
-    const encryptedBytes = cipher.encrypt(
-      aesjs.utils.utf8.toBytes(value),
-    );
+    const encryptedBytes = cipher.encrypt(aesjs.utils.utf8.toBytes(value));
 
-    await SecureStore.setItemAsync(
-      key,
-      aesjs.utils.hex.fromBytes(encryptionKey),
-    );
+    await SecureStore.setItemAsync(key, aesjs.utils.hex.fromBytes(encryptionKey));
 
     return aesjs.utils.hex.fromBytes(encryptedBytes);
   }
@@ -52,9 +43,7 @@ class LargeSecureStore {
       new aesjs.Counter(1),
     );
 
-    const decryptedBytes = cipher.decrypt(
-      aesjs.utils.hex.toBytes(value),
-    );
+    const decryptedBytes = cipher.decrypt(aesjs.utils.hex.toBytes(value));
 
     return aesjs.utils.utf8.fromBytes(decryptedBytes);
   }
@@ -81,18 +70,14 @@ class LargeSecureStore {
   }
 }
 
-export const supabase = createClient(
-  supabaseUrl,
-  supabasePublishableKey,
-  {
-    auth: {
-      storage: new LargeSecureStore(),
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false,
-    },
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+  auth: {
+    storage: new LargeSecureStore(),
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
   },
-);
+});
 
 AppState.addEventListener('change', (state) => {
   if (state === 'active') {

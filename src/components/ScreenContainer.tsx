@@ -8,11 +8,7 @@ type ScreenContainerProps = {
   children?: ReactNode;
 };
 
-export function ScreenContainer({
-  title,
-  description,
-  children,
-}: ScreenContainerProps) {
+export function ScreenContainer({ title, description, children }: ScreenContainerProps) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>

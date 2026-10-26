@@ -1,4 +1,3 @@
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ReservationDraft = {
@@ -13,10 +12,7 @@ function getDraftKey(userId: string, equipmentId: string) {
 }
 
 export const reservationDraftService = {
-  async get(
-    userId: string,
-    equipmentId: string,
-  ): Promise<ReservationDraft | null> {
+  async get(userId: string, equipmentId: string): Promise<ReservationDraft | null> {
     const key = getDraftKey(userId, equipmentId);
     const storedDraft = await AsyncStorage.getItem(key);
 

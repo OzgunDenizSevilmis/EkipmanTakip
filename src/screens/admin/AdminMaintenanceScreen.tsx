@@ -14,10 +14,7 @@ import {
 } from 'react-native';
 
 import { equipmentService } from '../../services/equipmentService';
-import {
-  maintenanceService,
-  type MaintenanceRecord,
-} from '../../services/maintenanceService';
+import { maintenanceService, type MaintenanceRecord } from '../../services/maintenanceService';
 import { colors, radii, spacing, typography } from '../../theme';
 
 type EquipmentOption = {
@@ -82,11 +79,7 @@ function MaintenanceCard({
     <View style={styles.maintenanceCard}>
       <View style={styles.cardHeader}>
         <View style={styles.equipmentIcon}>
-          <Ionicons
-            name="construct-outline"
-            size={23}
-            color={colors.primary}
-          />
+          <Ionicons name="construct-outline" size={23} color={colors.primary} />
         </View>
 
         <View style={styles.titleContainer}>
@@ -95,30 +88,18 @@ function MaintenanceCard({
           </Text>
 
           {maintenance.equipment?.code ? (
-            <Text style={styles.secondaryText}>
-              Kod: {maintenance.equipment.code}
-            </Text>
+            <Text style={styles.secondaryText}>Kod: {maintenance.equipment.code}</Text>
           ) : null}
         </View>
       </View>
 
-      <View
-        style={[
-          styles.statusBadge,
-          isCompleted ? styles.completedBadge : styles.activeBadge,
-        ]}
-      >
+      <View style={[styles.statusBadge, isCompleted ? styles.completedBadge : styles.activeBadge]}>
         <Ionicons
           name={isCompleted ? 'checkmark-circle-outline' : 'time-outline'}
           size={15}
           color={isCompleted ? '#63D8B4' : '#F4C66A'}
         />
-        <Text
-          style={[
-            styles.statusText,
-            { color: isCompleted ? '#63D8B4' : '#F4C66A' },
-          ]}
-        >
+        <Text style={[styles.statusText, { color: isCompleted ? '#63D8B4' : '#F4C66A' }]}>
           {isCompleted ? 'Tamamlandı' : 'Devam Ediyor'}
         </Text>
       </View>
@@ -129,41 +110,26 @@ function MaintenanceCard({
       <Text style={styles.description}>{maintenance.description}</Text>
 
       <View style={styles.infoRow}>
-        <Ionicons
-          name="calendar-outline"
-          size={17}
-          color={colors.textSecondary}
-        />
+        <Ionicons name="calendar-outline" size={17} color={colors.textSecondary} />
         <View style={styles.infoContent}>
           <Text style={styles.infoLabel}>Başlangıç tarihi</Text>
-          <Text style={styles.value}>
-            {formatDateTime(maintenance.opened_at)}
-          </Text>
+          <Text style={styles.value}>{formatDateTime(maintenance.opened_at)}</Text>
         </View>
       </View>
 
       {maintenance.closed_at ? (
         <View style={styles.infoRow}>
-          <Ionicons
-            name="checkmark-done-outline"
-            size={17}
-            color="#63D8B4"
-          />
+          <Ionicons name="checkmark-done-outline" size={17} color="#63D8B4" />
           <View style={styles.infoContent}>
             <Text style={styles.infoLabel}>Tamamlanma tarihi</Text>
-            <Text style={styles.value}>
-              {formatDateTime(maintenance.closed_at)}
-            </Text>
+            <Text style={styles.value}>{formatDateTime(maintenance.closed_at)}</Text>
           </View>
         </View>
       ) : null}
 
       {!isCompleted ? (
         <TouchableOpacity
-          style={[
-            styles.completeButton,
-            isProcessing && styles.disabledButton,
-          ]}
+          style={[styles.completeButton, isProcessing && styles.disabledButton]}
           onPress={() => onComplete(maintenance)}
           disabled={isProcessing}
           activeOpacity={0.8}
@@ -171,15 +137,9 @@ function MaintenanceCard({
           {isProcessing ? (
             <ActivityIndicator color={colors.white} size="small" />
           ) : (
-            <Ionicons
-              name="checkmark-circle-outline"
-              size={19}
-              color={colors.white}
-            />
+            <Ionicons name="checkmark-circle-outline" size={19} color={colors.white} />
           )}
-          <Text style={styles.buttonText}>
-            {isProcessing ? 'İşleniyor...' : 'Bakımı Tamamla'}
-          </Text>
+          <Text style={styles.buttonText}>{isProcessing ? 'İşleniyor...' : 'Bakımı Tamamla'}</Text>
         </TouchableOpacity>
       ) : null}
     </View>
@@ -192,9 +152,7 @@ export function AdminMaintenanceScreen() {
   const [selectedEquipmentId, setSelectedEquipmentId] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [processingMaintenanceId, setProcessingMaintenanceId] = useState<
-    string | null
-  >(null);
+  const [processingMaintenanceId, setProcessingMaintenanceId] = useState<string | null>(null);
 
   const {
     data: equipment = [],
@@ -224,8 +182,7 @@ export function AdminMaintenanceScreen() {
   } = useQuery<MaintenanceRecord[]>({
     queryKey: ['maintenance-records'],
     queryFn: async () => {
-      const { data, error } =
-        await maintenanceService.getMaintenanceRecords();
+      const { data, error } = await maintenanceService.getMaintenanceRecords();
 
       if (error) {
         throw error;
@@ -235,17 +192,11 @@ export function AdminMaintenanceScreen() {
     },
   });
 
-  const availableEquipment = equipment.filter(
-    (item) => item.lifecycle_status === 'ACTIVE',
-  );
+  const availableEquipment = equipment.filter((item) => item.lifecycle_status === 'ACTIVE');
 
-  const activeMaintenance = maintenanceRecords.filter(
-    (item) => item.closed_at === null,
-  );
+  const activeMaintenance = maintenanceRecords.filter((item) => item.closed_at === null);
 
-  const completedMaintenance = maintenanceRecords.filter(
-    (item) => item.closed_at !== null,
-  );
+  const completedMaintenance = maintenanceRecords.filter((item) => item.closed_at !== null);
 
   async function refreshData() {
     await Promise.all([refetchEquipment(), refetchMaintenance()]);
@@ -291,9 +242,7 @@ export function AdminMaintenanceScreen() {
     } catch (error) {
       Alert.alert(
         'Bakım başlatılamadı',
-        error instanceof Error
-          ? error.message
-          : 'Beklenmeyen bir hata oluştu.',
+        error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu.',
       );
     } finally {
       setIsSubmitting(false);
@@ -320,9 +269,7 @@ export function AdminMaintenanceScreen() {
     setProcessingMaintenanceId(maintenance.id);
 
     try {
-      const { error } = await maintenanceService.completeMaintenance(
-        maintenance.id,
-      );
+      const { error } = await maintenanceService.completeMaintenance(maintenance.id);
 
       if (error) {
         throw error;
@@ -351,9 +298,7 @@ export function AdminMaintenanceScreen() {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
         <Text style={styles.stateTitle}>Bakım kayıtları yükleniyor</Text>
-        <Text style={styles.stateDescription}>
-          Ekipman ve bakım bilgileri hazırlanıyor.
-        </Text>
+        <Text style={styles.stateDescription}>Ekipman ve bakım bilgileri hazırlanıyor.</Text>
       </View>
     );
   }
@@ -362,11 +307,7 @@ export function AdminMaintenanceScreen() {
     return (
       <View style={styles.center}>
         <View style={styles.errorIcon}>
-          <Ionicons
-            name="cloud-offline-outline"
-            size={30}
-            color={colors.error}
-          />
+          <Ionicons name="cloud-offline-outline" size={30} color={colors.error} />
         </View>
         <Text style={styles.stateTitle}>Veriler yüklenemedi</Text>
         <Text style={styles.stateDescription}>
@@ -405,17 +346,11 @@ export function AdminMaintenanceScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerIcon}>
-          <Ionicons
-            name="construct-outline"
-            size={27}
-            color={colors.primary}
-          />
+          <Ionicons name="construct-outline" size={27} color={colors.primary} />
         </View>
         <View style={styles.headerText}>
           <Text style={styles.screenTitle}>Bakım Yönetimi</Text>
-          <Text style={styles.subtitle}>
-            Ekipmanların bakım süreçlerini takip et ve yönet.
-          </Text>
+          <Text style={styles.subtitle}>Ekipmanların bakım süreçlerini takip et ve yönet.</Text>
         </View>
       </View>
 
@@ -446,17 +381,11 @@ export function AdminMaintenanceScreen() {
       <View style={styles.formCard}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionIcon}>
-            <Ionicons
-              name="add-circle-outline"
-              size={22}
-              color={colors.primary}
-            />
+            <Ionicons name="add-circle-outline" size={22} color={colors.primary} />
           </View>
           <View style={styles.sectionHeaderText}>
             <Text style={styles.sectionTitle}>Yeni Bakım Başlat</Text>
-            <Text style={styles.sectionSubtitle}>
-              Bakım kaydı oluşturmak için bilgileri gir.
-            </Text>
+            <Text style={styles.sectionSubtitle}>Bakım kaydı oluşturmak için bilgileri gir.</Text>
           </View>
         </View>
 
@@ -464,23 +393,13 @@ export function AdminMaintenanceScreen() {
 
         {equipmentError ? (
           <View style={styles.inlineError}>
-            <Ionicons
-              name="alert-circle-outline"
-              size={18}
-              color={colors.error}
-            />
+            <Ionicons name="alert-circle-outline" size={18} color={colors.error} />
             <Text style={styles.errorText}>Ekipman listesi yüklenemedi.</Text>
           </View>
         ) : availableEquipment.length === 0 ? (
           <View style={styles.emptyInline}>
-            <Ionicons
-              name="information-circle-outline"
-              size={20}
-              color={colors.textSecondary}
-            />
-            <Text style={styles.emptyText}>
-              Bakım başlatılabilecek aktif ekipman bulunmuyor.
-            </Text>
+            <Ionicons name="information-circle-outline" size={20} color={colors.textSecondary} />
+            <Text style={styles.emptyText}>Bakım başlatılabilecek aktif ekipman bulunmuyor.</Text>
           </View>
         ) : (
           <View style={styles.equipmentList}>
@@ -490,20 +409,12 @@ export function AdminMaintenanceScreen() {
               return (
                 <TouchableOpacity
                   key={item.id}
-                  style={[
-                    styles.equipmentOption,
-                    isSelected && styles.selectedEquipmentOption,
-                  ]}
+                  style={[styles.equipmentOption, isSelected && styles.selectedEquipmentOption]}
                   onPress={() => setSelectedEquipmentId(item.id)}
                   disabled={isSubmitting}
                   activeOpacity={0.8}
                 >
-                  <View
-                    style={[
-                      styles.optionIcon,
-                      isSelected && styles.selectedOptionIcon,
-                    ]}
-                  >
+                  <View style={[styles.optionIcon, isSelected && styles.selectedOptionIcon]}>
                     <Ionicons
                       name="desktop-outline"
                       size={21}
@@ -515,21 +426,13 @@ export function AdminMaintenanceScreen() {
                     <Text style={styles.cardTitle} numberOfLines={2}>
                       {item.name}
                     </Text>
-                    <Text style={styles.secondaryText}>
-                      Kod: {item.code}
-                    </Text>
+                    <Text style={styles.secondaryText}>Kod: {item.code}</Text>
                   </View>
 
                   <Ionicons
-                    name={
-                      isSelected
-                        ? 'checkmark-circle'
-                        : 'ellipse-outline'
-                    }
+                    name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
                     size={22}
-                    color={
-                      isSelected ? colors.primary : colors.textSecondary
-                    }
+                    color={isSelected ? colors.primary : colors.textSecondary}
                   />
                 </TouchableOpacity>
               );
@@ -549,36 +452,24 @@ export function AdminMaintenanceScreen() {
           maxLength={1000}
           editable={!isSubmitting}
         />
-        <Text style={styles.characterCount}>
-          {description.length}/1000 karakter
-        </Text>
+        <Text style={styles.characterCount}>{description.length}/1000 karakter</Text>
 
         <TouchableOpacity
           style={[
             styles.primaryButton,
-            (isSubmitting ||
-              equipmentError ||
-              availableEquipment.length === 0) &&
+            (isSubmitting || equipmentError || availableEquipment.length === 0) &&
               styles.disabledButton,
           ]}
           onPress={() => {
             void handleStartMaintenance();
           }}
-          disabled={
-            isSubmitting ||
-            equipmentError ||
-            availableEquipment.length === 0
-          }
+          disabled={isSubmitting || equipmentError || availableEquipment.length === 0}
           activeOpacity={0.8}
         >
           {isSubmitting ? (
             <ActivityIndicator color={colors.white} size="small" />
           ) : (
-            <Ionicons
-              name="construct-outline"
-              size={19}
-              color={colors.white}
-            />
+            <Ionicons name="construct-outline" size={19} color={colors.white} />
           )}
           <Text style={styles.primaryButtonText}>
             {isSubmitting ? 'Bakım Başlatılıyor...' : 'Bakımı Başlat'}
@@ -592,39 +483,25 @@ export function AdminMaintenanceScreen() {
         </View>
         <View style={styles.sectionHeaderText}>
           <Text style={styles.sectionTitle}>Devam Eden Bakımlar</Text>
-          <Text style={styles.sectionSubtitle}>
-            {activeMaintenance.length} aktif bakım kaydı
-          </Text>
+          <Text style={styles.sectionSubtitle}>{activeMaintenance.length} aktif bakım kaydı</Text>
         </View>
         <View style={styles.countBadge}>
-          <Text style={styles.countBadgeText}>
-            {activeMaintenance.length}
-          </Text>
+          <Text style={styles.countBadgeText}>{activeMaintenance.length}</Text>
         </View>
       </View>
 
       {maintenanceError ? (
         <View style={styles.emptyCard}>
-          <Ionicons
-            name="alert-circle-outline"
-            size={23}
-            color={colors.error}
-          />
+          <Ionicons name="alert-circle-outline" size={23} color={colors.error} />
           <Text style={styles.errorText}>Bakım kayıtları yüklenemedi.</Text>
         </View>
       ) : activeMaintenance.length === 0 ? (
         <View style={styles.emptyCard}>
           <View style={styles.emptyIcon}>
-            <Ionicons
-              name="checkmark-done-outline"
-              size={26}
-              color="#63D8B4"
-            />
+            <Ionicons name="checkmark-done-outline" size={26} color="#63D8B4" />
           </View>
           <Text style={styles.emptyTitle}>Aktif bakım yok</Text>
-          <Text style={styles.emptyText}>
-            Şu anda devam eden bir bakım kaydı bulunmuyor.
-          </Text>
+          <Text style={styles.emptyText}>Şu anda devam eden bir bakım kaydı bulunmuyor.</Text>
         </View>
       ) : (
         activeMaintenance.map((item) => (
@@ -639,38 +516,24 @@ export function AdminMaintenanceScreen() {
 
       <View style={[styles.listSectionHeader, styles.completedSectionHeader]}>
         <View style={styles.listSectionIconCompleted}>
-          <Ionicons
-            name="checkmark-done-outline"
-            size={22}
-            color="#63D8B4"
-          />
+          <Ionicons name="checkmark-done-outline" size={22} color="#63D8B4" />
         </View>
         <View style={styles.sectionHeaderText}>
           <Text style={styles.sectionTitle}>Tamamlanan Bakımlar</Text>
-          <Text style={styles.sectionSubtitle}>
-            Geçmiş bakım kayıtları
-          </Text>
+          <Text style={styles.sectionSubtitle}>Geçmiş bakım kayıtları</Text>
         </View>
         <View style={styles.countBadge}>
-          <Text style={styles.countBadgeText}>
-            {completedMaintenance.length}
-          </Text>
+          <Text style={styles.countBadgeText}>{completedMaintenance.length}</Text>
         </View>
       </View>
 
       {maintenanceError ? null : completedMaintenance.length === 0 ? (
         <View style={styles.emptyCard}>
           <View style={styles.emptyIcon}>
-            <Ionicons
-              name="file-tray-outline"
-              size={26}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="file-tray-outline" size={26} color={colors.textSecondary} />
           </View>
           <Text style={styles.emptyTitle}>Geçmiş kayıt yok</Text>
-          <Text style={styles.emptyText}>
-            Tamamlanan bakım kayıtları burada görüntülenecek.
-          </Text>
+          <Text style={styles.emptyText}>Tamamlanan bakım kayıtları burada görüntülenecek.</Text>
         </View>
       ) : (
         completedMaintenance.map((item) => (
